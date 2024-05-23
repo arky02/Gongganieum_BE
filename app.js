@@ -3,13 +3,13 @@ const app = express();
 const port = 8080; // port 번호 설정
 const bodyParser = require("body-parser");
 const cors = require("cors");
-var indexRouter = require("./index");
-var apiRouter = require("./api");
+var indexRouter = require("./routes/index");
+var apiRouter = require("./routes/api");
 var createError = require("http-errors");
 
 // Swagger setting
-const specs = swaggerJSDoc(options);
-this.app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger_output.json");
 
 // DB
 var maria = require("./config/maria");
@@ -26,6 +26,9 @@ var corsOptionsDelegate = function (req, callback) {
   }
   callback(null, corsOptions); // error, options
 };
+
+// Use Swagger
+app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 //body-parser 모듈을 불러온다.
 app.use(bodyParser.json()); //요청 본문을 json 형태로 파싱
