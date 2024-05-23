@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 3333; // port 번호 설정
+const port = 5000; // port 번호 설정
 const bodyParser = require("body-parser");
 const cors = require("cors");
 var indexRouter = require("./index");
@@ -41,7 +41,7 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-app.set("port", process.env.PORT || 3333);
+app.set("port", process.env.PORT || 5000);
 app.set("host", process.env.HOST || "0.0.0.0");
 
 app.use(
