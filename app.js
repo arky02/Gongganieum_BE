@@ -7,6 +7,10 @@ var indexRouter = require("./index");
 var apiRouter = require("./api");
 var createError = require("http-errors");
 
+// Swagger setting
+const specs = swaggerJSDoc(options);
+this.app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
 // DB
 var maria = require("./config/maria");
 maria.connect();
