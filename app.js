@@ -21,7 +21,10 @@ var maria = require("./config/maria");
 maria.connect();
 
 // CORS Setup
-var allowlist = ["http://localhost:3000"];
+var allowlist = [
+  "http://localhost:3000",
+  "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com",
+];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header("Origin")) !== -1) {
