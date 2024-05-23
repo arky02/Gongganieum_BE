@@ -7,6 +7,11 @@ var indexRouter = require("./routes/index");
 var apiRouter = require("./routes/api");
 var createError = require("http-errors");
 
+// 서버 접속 기본 엔진 설정
+const path = require("path");
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
 // Swagger setting
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger_output.json");
