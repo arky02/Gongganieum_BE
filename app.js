@@ -8,8 +8,8 @@ var apiRouter = require("./api");
 var createError = require("http-errors");
 
 // DB
-var maria = require("./config/maria");
-maria.connect();
+// var maria = require("./config/maria");
+// maria.connect();
 
 // CORS Setup
 var allowlist = ["http://localhost:3000"];
