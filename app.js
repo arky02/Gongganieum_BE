@@ -41,7 +41,7 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-app.set("port", process.env.PORT || 3307);
+app.set("port", process.env.PORT || 3333);
 app.set("host", process.env.HOST || "0.0.0.0");
 
 app.use(
