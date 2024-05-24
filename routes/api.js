@@ -7,11 +7,11 @@ const maria = require("../config/maria");
 
 //save user
 router.post("/save/user", function (req, res) {
-  var height = "";
   var name = "";
+  var age = 0;
   try {
-    height = req.body.height;
     name = req.body.name;
+    age = req.body.age;
   } catch (e) {
     console.log("ERR (get request) : " + e);
     res.status(400).json({
@@ -20,7 +20,7 @@ router.post("/save/user", function (req, res) {
   }
 
   maria.query(
-    `INSERT INTO test(height,profile) VALUES ("${height}", "${name}")`,
+    `INSERT INTO Test(name,age) VALUES ("${name}", ${age})`,
     function (err) {
       if (!err) {
         console.log("(Save User) User is saved : " + name);
