@@ -52,10 +52,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "height": {
+                "name": {
                   "example": "any"
                 },
-                "name": {
+                "age": {
                   "example": "any"
                 }
               }
@@ -81,6 +81,19 @@
         "responses": {
           "201": {
             "description": "Created"
+          }
+        }
+      }
+    },
+    "/popupinfos": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }

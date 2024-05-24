@@ -90,24 +90,21 @@ router.get("/gettest", (req, res) => {
 //   );
 // });
 
-// //return name
-// router.get("/getname", (req, res) => {
-//   const email = req.query.email;
-//   maria.query(
-//     `SELECT name FROM User WHERE email="${email}"`,
-//     function (err, result) {
-//       if (!err) {
-//         console.log("(Return name) Name is sended : " + result);
-//         res.send(result);
-//       } else {
-//         console.log("ERR (Return name) : " + err);
-//         res.status(404).json({
-//           error: "Cannot find name",
-//         });
-//       }
-//     }
-//   );
-// });
+//return popup info list
+router.get("/popupinfos", (req, res) => {
+  // `SELECT name FROM User WHERE email="${email}"`,
+  maria.query(`SELECT * FROM PopupList`, function (err, result) {
+    if (!err) {
+      console.log("All Popup's info are sent");
+      res.send(result);
+    } else {
+      console.log("ERR : " + err);
+      res.status(404).json({
+        error: "Error",
+      });
+    }
+  });
+});
 
 // //chatting api
 // router.post("/chat", async function (req, res) {
