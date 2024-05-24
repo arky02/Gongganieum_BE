@@ -91,7 +91,7 @@ router.get("/gettest", (req, res) => {
 // });
 
 //return popup info list
-router.get("/popupinfos", (req, res) => {
+router.get("/infos", (req, res) => {
   // `SELECT name FROM User WHERE email="${email}"`,
   maria.query(`SELECT * FROM PopupList`, function (err, result) {
     if (!err) {
