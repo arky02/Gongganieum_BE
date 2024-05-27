@@ -7,6 +7,15 @@ const maria = require("../config/maria");
 
 //save user
 router.post("/save/user", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+  #swagger.security = [{
+      "bearerAuth": []
+  }]
+*/
+
   var name = "";
   var age = 0;
   try {
@@ -39,6 +48,15 @@ router.post("/save/user", function (req, res) {
 
 //return name
 router.get("/gettest", (req, res) => {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'GET Test Api'
+  #swagger.description = 'GET Test Api 입니다.'
+  #swagger.security = [{
+      "bearerAuth": []
+  }]
+*/
+
   res.status(201).send({ test: "hi" });
 
   // maria.query(
@@ -92,6 +110,15 @@ router.get("/gettest", (req, res) => {
 
 //return popup info list
 router.get("/infos", (req, res) => {
+  /*
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Test Api'
+  #swagger.description = "전체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다."
+  #swagger.security = [{
+      "bearerAuth": []
+  }]
+*/
+
   // `SELECT name FROM User WHERE email="${email}"`,
   maria.query(`SELECT * FROM PopupList`, function (err, result) {
     if (!err) {

@@ -33,78 +33,7 @@ const doc = {
       description: "any description...",
     },
   },
-  paths: {
-    "/": {
-      get: {
-        tags: "Test",
-        description: "Test for API GET request",
-        responses: {
-          default: {
-            description: "",
-          },
-        },
-      },
-    },
-    "/save/user": {
-      post: {
-        tags: "Test",
-        description: "Test for API POST request",
-        parameters: [
-          {
-            name: "body",
-            in: "body",
-            schema: {
-              type: "object",
-              properties: {
-                name: {
-                  example: "NeulPum",
-                },
-                age: {
-                  example: 20,
-                },
-              },
-            },
-          },
-        ],
-        responses: {
-          200: {
-            description: "OK",
-          },
-          400: {
-            description: "Bad Request",
-          },
-          409: {
-            description: "Conflict",
-          },
-        },
-      },
-    },
-    "/gettest": {
-      get: {
-        tags: "Test",
-        description: "",
-        responses: {
-          201: {
-            description: "Created",
-          },
-        },
-      },
-    },
-    "/popupinfos": {
-      get: {
-        description:
-          "잔체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다.",
-        responses: {
-          200: {
-            description: "OK",
-          },
-          404: {
-            description: "Not Found",
-          },
-        },
-      },
-    },
-  },
+
   definitions: {},
 };
 
