@@ -49,18 +49,17 @@ maria.connect();
 
 var allowlist = [
   "http://localhost:3000",
-  "http://localhost:3000/**",
   "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com/**",
   "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com:8080/**",
 ];
 
-var corsOptionsDelegate = function (req, res, callback) {
+var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header("Origin")) !== -1) {
     corsOptions = { origin: true }; // reflect (enable) the requested origin
   } else {
     corsOptions = { origin: false };
-    res(Error("허가되지 않은 주소입니다."));
+    // res(Error("허가되지 않은 주소입니다."));
   }
   callback(null, corsOptions); // error, options
 };

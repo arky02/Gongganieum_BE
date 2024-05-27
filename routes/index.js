@@ -7,9 +7,6 @@ router.get("/", function (req, res, next) {
   #swagger.tags = ['Test']
   #swagger.summary = 'GET Test Api'
   #swagger.description = 'GET Test Api 입니다.'
-  #swagger.security = [{
-      "bearerAuth": []
-  }]
 */
   res.render("index", { title: "Express" });
 });
