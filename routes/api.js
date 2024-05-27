@@ -55,7 +55,7 @@ router.get("/gettest", (req, res) => {
 });
 
 //return popup info list
-router.get("/info/buildings", (req, res) => {
+router.get("/info/popups", (req, res) => {
   /*
   #swagger.tags = ['GET Requests']
   #swagger.summary = 'GET Request Api'
@@ -77,7 +77,7 @@ router.get("/info/buildings", (req, res) => {
 });
 
 //return building info list
-router.get("/info/popups", (req, res) => {
+router.get("/info/buildings", (req, res) => {
   /*
   #swagger.tags = ['GET Requests']
   #swagger.summary = 'GET Request Api'
