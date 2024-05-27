@@ -22,7 +22,7 @@ maria.connect();
 
 // CORS Setup
 var allowlist = [
-  "http://localhost:3000/**",
+  "http://localhost:3000/*",
   "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com/**",
   "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com:8080/**",
 ];
