@@ -5,8 +5,55 @@ var router = express.Router();
 // var cors = require('cors');
 const maria = require("../config/maria");
 
-//save user
-router.post("/save/user", function (req, res) {
+// get popup info list (type: str, name: str, date: str, address: str, keyword: str, building: str)
+router.get("/info/popups", (req, res) => {
+  /*
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Request Api'
+  #swagger.description = "전체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다."
+*/
+
+  // `SELECT name FROM User WHERE email="${email}"`,
+  maria.query(`SELECT * FROM PopupList`, function (err, result) {
+    if (!err) {
+      console.log("All Popup's info are sent");
+      res.send(result);
+    } else {
+      console.log("ERR : " + err);
+      res.status(404).json({
+        error: "Error",
+      });
+    }
+  });
+});
+
+// get building info list (name: str, address: str, coord: str, iscurrent: str, popups: PopupList[])
+router.get("/info/buildings", (req, res) => {
+  /*
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Request Api'
+  #swagger.description = "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다."
+*/
+
+  maria.query(`SELECT * FROM BuildingList`, function (err, result) {
+    if (!err) {
+      console.log("All Building's info are sent");
+      res.send(result);
+    } else {
+      console.log("ERR : " + err);
+      res.status(404).json({
+        error: "Error",
+      });
+    }
+  });
+});
+
+// ============================================================
+// TEST API : 테스트 용 API (GET, POST)
+// ============================================================
+
+// POST Test Api
+router.post("/save/user/test", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
@@ -36,15 +83,15 @@ router.post("/save/user", function (req, res) {
       } else {
         console.log("ERR (Save User) : " + err);
         res.status(409).json({
-          error: "Already registered email",
+          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
         });
       }
     }
   );
 });
 
-//return name
-router.get("/gettest", (req, res) => {
+// GET Test Api
+router.get("/get/test", (req, res) => {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'GET Test Api'
@@ -52,49 +99,6 @@ router.get("/gettest", (req, res) => {
 */
 
   res.status(201).send({ test: "hi" });
-});
-
-//return popup info list
-router.get("/info/popups", (req, res) => {
-  /*
-  #swagger.tags = ['GET Requests']
-  #swagger.summary = 'GET Request Api'
-  #swagger.description = "전체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다."
-*/
-
-  // `SELECT name FROM User WHERE email="${email}"`,
-  maria.query(`SELECT * FROM PopupList`, function (err, result) {
-    if (!err) {
-      console.log("All Popup's info are sent");
-      res.send(result);
-    } else {
-      console.log("ERR : " + err);
-      res.status(404).json({
-        error: "Error",
-      });
-    }
-  });
-});
-
-//return building info list
-router.get("/info/buildings", (req, res) => {
-  /*
-  #swagger.tags = ['GET Requests']
-  #swagger.summary = 'GET Request Api'
-  #swagger.description = "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다."
-*/
-
-  maria.query(`SELECT * FROM BuildingList`, function (err, result) {
-    if (!err) {
-      console.log("All Building's info are sent");
-      res.send(result);
-    } else {
-      console.log("ERR : " + err);
-      res.status(404).json({
-        error: "Error",
-      });
-    }
-  });
 });
 
 module.exports = router;

@@ -3,7 +3,6 @@ const app = express();
 const port = 8080; // port 번호 설정
 const bodyParser = require("body-parser");
 const cors = require("cors");
-var indexRouter = require("./routes/index");
 var apiRouter = require("./routes/api");
 var createError = require("http-errors");
 
@@ -73,7 +72,6 @@ app.use(bodyParser.urlencoded({ extended: false })); //
 
 app.use(cors(corsOptionsDelegate));
 
-app.use("/", indexRouter);
 app.use("/api", apiRouter);
 
 // catch 404 and forward to error handler
