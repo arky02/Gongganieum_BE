@@ -84,7 +84,7 @@ router.get("/building/search", (req, res) => {
   // 3. isours 필터 적용
   if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
 
-  console.log(whereQuery);
+  console.log("빌딩 검색 조건: ", whereQuery);
 
   // order 적용해서 전체 SQl Query문 생성
   switch (order) {
@@ -123,15 +123,13 @@ router.get("/building/search", (req, res) => {
 
   maria.query(query, function (err, result) {
     if (!err) {
-      id
-        ? console.log(
-            `Return Building with Building Search Condition: ${
-              q && `q: ${q}`
-            }, ${as && `as: ${as}`}, ${cate && `cate: ${cate}`}, ${
-              isours && `isours: ${isours}`
-            }, ${order && `order: ${order}`}`
-          )
-        : console.log("All Building's info are sent");
+      console.log(
+        `Return Building with Building Search Condition: ${q && `q: ${q}`}, ${
+          as && `as: ${as}`
+        }, ${cate && `cate: ${cate}`}, ${isours && `isours: ${isours}`}, ${
+          order && `order: ${order}`
+        }`
+      );
       res.send(result);
     } else {
       console.log("ERR : " + err);
