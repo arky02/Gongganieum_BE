@@ -64,7 +64,7 @@ router.get("/building/search", (req, res) => {
   #swagger.description = "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다."
 */
 
-  const q = req.query?.q ?? null; // -> where
+  let q = req.query?.q ?? null; // -> where
   const as = req.query?.as ?? "address"; // address(default), building, (popup) -> where
   const cate = req.query?.cate ?? null; // str -> where
   const isours = req.query?.isours ?? null; // true, false -> where
