@@ -56,6 +56,90 @@ router.get("/building/infos", (req, res) => {
   );
 });
 
+// Res: Buildings(_id: int, name: str, address: str, coord: str, popups: PopupList[], img: str, isours: bool, tag: str, cate: str)
+router.get("/building/search", (req, res) => {
+  /*
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Request Api'
+  #swagger.description = "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다."
+*/
+
+  const q = req.query?.q ?? null; // -> where
+  const as = req.query?.as ?? "address"; // address(default), building, (popup) -> where
+  const cate = req.query?.cate ?? null; // str -> where
+  const isours = req.query?.isours ?? null; // true, false -> where
+  const order = req.query?.order ?? "new"; // new(default), popular, (likes)
+
+  const query = "";
+  const whereQuery = [];
+
+  // Where 절 생성
+
+  // 1. as 필터 적용
+  whereQuery.push(
+    `b.${as === "building" ? "name" : "address"} LIKE '%${q ?? ""}%'`
+  );
+  // 2. cate 필터 적용
+  if (cate) whereQuery.push(`b.cate = '${cate}'`);
+  // 3. isours 필터 적용
+  if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
+
+  // order 적용해서 전체 SQl Query문 생성
+  switch (order) {
+    case "new":
+      query = `
+        SELECT 
+            b.*, 
+            MIN(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', 1), '%y.%m.%d')) AS earliest_start_date
+        FROM 
+            Buildings b,
+            JSON_TABLE(
+                b.popups, 
+                '$[*]' 
+                COLUMNS (
+                    value JSON PATH '$'
+                )
+            ) AS popup
+        ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
+        GROUP BY 
+            b._id
+        ORDER BY 
+            earliest_start_date DESC;`;
+      break;
+    case "popular":
+      query = `
+      SELECT 
+          b.*, 
+          JSON_LENGTH(b.popups) AS popups_count
+      FROM 
+          Buildings b
+      ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
+      ORDER BY 
+          popups_count DESC;`;
+      break;
+  }
+
+  maria.query(query, function (err, result) {
+    if (!err) {
+      id
+        ? console.log(
+            `Return Building with Building Search Condition: ${
+              q && `q: ${q}`
+            }, ${as && `as: ${as}`}, ${cate && `cate: ${cate}`}, ${
+              isours && `isours: ${isours}`
+            }, ${order && `order: ${order}`}`
+          )
+        : console.log("All Building's info are sent");
+      res.send(result);
+    } else {
+      console.log("ERR : " + err);
+      res.status(404).json({
+        error: "Error",
+      });
+    }
+  });
+});
+
 // ============================================================
 // TEST API : 테스트 용 API (GET, POST)
 // ============================================================
