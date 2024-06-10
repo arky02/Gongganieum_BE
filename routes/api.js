@@ -13,7 +13,6 @@ router.get("/popup/infos", (req, res) => {
   #swagger.description = "전체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다."
 */
 
-  // `SELECT name FROM User WHERE email="${email}"`,
   maria.query(`SELECT * FROM Popups`, function (err, result) {
     if (!err) {
       console.log("All Popup's info are sent");
@@ -27,6 +26,8 @@ router.get("/popup/infos", (req, res) => {
   });
 });
 
+// /building/infos?id={건물id}
+
 // Res: Buildings(_id: int, name: str, address: str, coord: str, popups: PopupList[], img: str, isours: bool, tag: str, cate: str)
 router.get("/building/infos", (req, res) => {
   /*
@@ -35,17 +36,24 @@ router.get("/building/infos", (req, res) => {
   #swagger.description = "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다."
 */
 
-  maria.query(`SELECT * FROM Buildings`, function (err, result) {
-    if (!err) {
-      console.log("All Building's info are sent");
-      res.send(result);
-    } else {
-      console.log("ERR : " + err);
-      res.status(404).json({
-        error: "Error",
-      });
+  const id = req.query?.id ?? null;
+
+  maria.query(
+    `SELECT * FROM Buildings ${id && `where _id=${id}`}`,
+    function (err, result) {
+      if (!err) {
+        id
+          ? console.log(`ID: ${id} Building's info are sent`)
+          : console.log("All Building's info are sent");
+        res.send(result);
+      } else {
+        console.log("ERR : " + err);
+        res.status(404).json({
+          error: "Error",
+        });
+      }
     }
-  });
+  );
 });
 
 // ============================================================
