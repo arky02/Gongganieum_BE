@@ -77,10 +77,10 @@ router.get("/building/search", (req, res) => {
 
   // 1. as 필터 적용
   whereQuery.push(
-    `b.${as === "building" ? "name" : "address"} LIKE '%${q ?? ""}%'`
+    `b.${as === "building" ? "name" : "address"} LIKE ${q ? "%" + q + "%" : ""}`
   );
   // 2. cate 필터 적용
-  if (cate) whereQuery.push(`b.cate = '${cate}'`);
+  if (cate) whereQuery.push(`b.cate = ${cate}`);
   // 3. isours 필터 적용
   if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
 
@@ -124,11 +124,11 @@ router.get("/building/search", (req, res) => {
   maria.query(query, function (err, result) {
     if (!err) {
       console.log(
-        `Return Building with Building Search Condition: ${q && `q: ${q}`}, ${
-          as && `as: ${as}`
-        }, ${cate && `cate: ${cate}`}, ${isours && `isours: ${isours}`}, ${
-          order && `order: ${order}`
-        }`
+        `Return Building with Building Search Condition: ${
+          q ? `q: ${q}` : ""
+        }, ${as ? `as: ${as}` : ""}, ${cate ? `cate: ${cate}` : ""}, ${
+          isours ? `isours: ${isours}` : ""
+        }, ${order ? `order: ${order}` : ""}`
       );
       res.send(result);
     } else {
