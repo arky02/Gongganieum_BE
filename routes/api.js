@@ -5,8 +5,8 @@ var router = express.Router();
 // var cors = require('cors');
 const maria = require("../config/maria");
 
-// get popup info list (type: str, name: str, date: str, address: str, keyword: str, building: str)
-router.get("/info/popups", (req, res) => {
+// Res: Popups(_id: int, name: str, type: str, date: str, address: str, keyword: str, building: str)
+router.get("/popup/infos", (req, res) => {
   /*
   #swagger.tags = ['GET Requests']
   #swagger.summary = 'GET Request Api'
@@ -14,7 +14,7 @@ router.get("/info/popups", (req, res) => {
 */
 
   // `SELECT name FROM User WHERE email="${email}"`,
-  maria.query(`SELECT * FROM PopupList`, function (err, result) {
+  maria.query(`SELECT * FROM Popups`, function (err, result) {
     if (!err) {
       console.log("All Popup's info are sent");
       res.send(result);
@@ -27,15 +27,15 @@ router.get("/info/popups", (req, res) => {
   });
 });
 
-// get building info list (name: str, address: str, coord: str, iscurrent: str, popups: PopupList[])
-router.get("/info/buildings", (req, res) => {
+// Res: Buildings(_id: int, name: str, address: str, coord: str, popups: PopupList[], img: str, isours: bool, tag: str, cate: str)
+router.get("/building/infos", (req, res) => {
   /*
   #swagger.tags = ['GET Requests']
   #swagger.summary = 'GET Request Api'
   #swagger.description = "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다."
 */
 
-  maria.query(`SELECT * FROM BuildingList`, function (err, result) {
+  maria.query(`SELECT * FROM Buildings`, function (err, result) {
     if (!err) {
       console.log("All Building's info are sent");
       res.send(result);
