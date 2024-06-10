@@ -75,10 +75,10 @@ router.get("/building/search", (req, res) => {
 
   // Where 절 생성
 
+  q = "%" + q + "%";
+
   // 1. as 필터 적용
-  whereQuery.push(
-    `b.${as === "building" ? "name" : "address"} LIKE ${q ? "%" + q + "%" : ""}`
-  );
+  whereQuery.push(`b.${as === "building" ? "name" : "address"} LIKE ${q}`);
   // 2. cate 필터 적용
   if (cate) whereQuery.push(`b.cate = ${cate}`);
   // 3. isours 필터 적용
