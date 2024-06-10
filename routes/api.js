@@ -39,7 +39,7 @@ router.get("/building/infos", (req, res) => {
   const id = req.query?.id ?? null;
 
   maria.query(
-    `SELECT * FROM Buildings ${id && `where _id=${id}`}`,
+    `SELECT * FROM Buildings ${id ? `where _id=${id}` : ""}`,
     function (err, result) {
       if (!err) {
         id
