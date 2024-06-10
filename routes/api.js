@@ -70,8 +70,8 @@ router.get("/building/search", (req, res) => {
   const isours = req.query?.isours ?? null; // true, false -> where
   const order = req.query?.order ?? "new"; // new(default), popular, (likes)
 
-  const query = "";
-  const whereQuery = [];
+  let query = "";
+  let whereQuery = [];
 
   // Where 절 생성
 
@@ -83,6 +83,8 @@ router.get("/building/search", (req, res) => {
   if (cate) whereQuery.push(`b.cate = '${cate}'`);
   // 3. isours 필터 적용
   if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
+
+  console.log(whereQuery);
 
   // order 적용해서 전체 SQl Query문 생성
   switch (order) {
