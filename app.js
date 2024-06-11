@@ -4,6 +4,7 @@ const port = 8080; // port 번호 설정
 const bodyParser = require("body-parser");
 const cors = require("cors");
 var apiRouter = require("./routes/api");
+var popupRouter = require("./routes/apis/popup");
 var createError = require("http-errors");
 
 // 서버 접속 기본 엔진 설정
@@ -73,6 +74,7 @@ app.use(bodyParser.urlencoded({ extended: false })); //
 app.use(cors(corsOptionsDelegate));
 
 app.use("/api", apiRouter);
+app.use("/api/apis/popup", popupRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -82,31 +84,5 @@ app.use(function (req, res, next) {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-
-// app.set("port", process.env.PORT || 8080);
-// app.set("host", process.env.HOST || "0.0.0.0");
-
-// app.use(
-//   cors({
-//     origin(req, res) {
-//       console.log("접속된 주소: " + req),
-//         -1 == allowlist.indexOf(req) && req
-//           ? res(Error("허가되지 않은 주소입니다."))
-//           : res(null, !0);
-//     },
-//     credentials: !0,
-//     optionsSuccessStatus: 200,
-//   })
-// );
-
-// // app.get("/", function (req, res) {
-// //   res.send("접속된 아이피: " + req.ip);
-// // });
-
-// app.listen(app.get("port"), app.get("host"), () =>
-//   console.log(
-//     "Server is running on : " + app.get("host") + ":" + app.get("port")
-//   )
-// );
 
 module.exports = app;
