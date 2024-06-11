@@ -86,6 +86,7 @@ router.get("/building/search", (req, res) => {
   if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
 
   console.log("빌딩 검색 조건: ", whereQuery);
+  console.log("정렬 조건: ", order);
 
   // order 적용해서 전체 SQl Query문 생성
   switch (order) {
