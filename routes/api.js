@@ -68,7 +68,7 @@ router.get("/building/search", (req, res) => {
   const as = req.query?.as ?? "address"; // address(default), building, (popup) -> where
   const cate = req.query?.cate ?? null; // str -> where
   const isours = req.query?.isours ?? null; // true, false -> where
-  const order = req.query?.order ?? "new"; // new(default), popular, (likes)
+  const order = req.query?.order ?? "popular"; // new(default), popular, (likes)
 
   let query = "";
   let whereQuery = [];
@@ -90,6 +90,7 @@ router.get("/building/search", (req, res) => {
   // order 적용해서 전체 SQl Query문 생성
   switch (order) {
     case "new":
+      console.log("new");
       query = `
         SELECT 
             b.*, 
@@ -110,6 +111,7 @@ router.get("/building/search", (req, res) => {
             earliest_start_date DESC;`;
       break;
     case "popular":
+      console.log("popular");
       query = `
       SELECT 
           b.*, 
