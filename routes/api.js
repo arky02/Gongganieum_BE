@@ -64,11 +64,11 @@ router.get("/building/search", (req, res) => {
   #swagger.description = "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다."
 */
 
-  let q = req.query?.q ? req.query.q.replaceAll('"', "") : null; // -> where
+  let q = req.query?.q ?? null; // -> where
   const as = req.query?.as ?? "address"; // address(default), building, (popup) -> where
   const cate = req.query?.cate ?? null; // str -> where
   const isours = req.query?.isours ?? null; // true, false -> where
-  const order = req.query?.order ? req.query.order.replaceAll('"', "") : "new"; // new(default), popular, (likes)
+  const order = req.query?.order ?? "new"; // new(default), popular, (likes)
 
   let query = "";
   let whereQuery = [];
@@ -78,9 +78,9 @@ router.get("/building/search", (req, res) => {
     `b.${as === "building" ? "name" : "address"} LIKE '${"%" + q + "%"}'` // 1. as 필터로 q 검색 => b.address LIKE '%강남%'
   );
 
-  if (cate) whereQuery.push(`b.cate = ${cate}`); // 2. cate 필터 적용 =>
-  // 3. isours 필터 적용
-  if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
+  if (cate) whereQuery.push(`b.cate = '${cate}'`); // 2. cate 필터 적용 => b.cate = 패션
+
+  if (isours !== null) whereQuery.push(`b.isours = ${isours}`); // 3. isours 필터 적용 => b.isours = false
 
   console.log("빌딩 검색 조건: ", whereQuery);
   console.log("정렬 조건: ", order);
