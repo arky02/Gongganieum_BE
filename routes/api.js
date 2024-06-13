@@ -92,8 +92,7 @@ router.get("/building/search", (req, res) => {
       query = `
         SELECT 
             b.name,
-            b.address, 
-            
+            b.address
         FROM 
             Buildings b,
             JSON_TABLE(
