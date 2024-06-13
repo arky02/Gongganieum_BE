@@ -98,7 +98,9 @@ router.get("/building/search", (req, res) => {
 
         ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
         GROUP BY 
-            b._id`;
+            b._id
+        ORDER BY
+            b.name ASC;`;
       break;
     case "popular":
       console.log("popular");
