@@ -142,6 +142,192 @@ router.get("/building/search", (req, res) => {
 });
 
 // ============================================================
+// USER API : User 관련 API (GET, POST)
+// ============================================================
+
+// User Api - 유저 생성 (회원가입)
+router.post("/user/register", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+  let uuid = null,
+    name = null,
+    nickname = null,
+    email = null,
+    description = null,
+    img = null;
+
+  try {
+    uuid = req.body.uuid;
+    name = req.body.name;
+    nickname = req.body.nickname;
+    email = req.body.email;
+    description = req.body?.description ?? "";
+    img = req.body?.img ?? null;
+  } catch (e) {
+    console.log("ERR ('/user/register') : " + e);
+    res.status(400).json({
+      error: "ERR_PARAMS : uuid, name, nickname, email은 필수 입력 값입니다.",
+    });
+  }
+
+  maria.query(
+    `
+    INSERT INTO Users(name, nickname, email, description, img) VALUES ('${name}', '${nickname}', '${email}', '${description}', '${img}');
+    SELECT _id from Users WHERE email = '${email}';
+    `,
+    function (err, result) {
+      if (!err) {
+        console.log(
+          "(User Register) User is saved! name : " +
+            name +
+            ", user id: " +
+            String(result)
+        );
+        res.status(201).send(result);
+      } else {
+        console.log(
+          "ERR (User Register) user name : " +
+            name +
+            ", user id: " +
+            String(result) +
+            "/ Error content: " +
+            err
+        );
+        res.status(409).json({
+          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+        });
+      }
+    }
+  );
+});
+
+// User Api - 특정 id의 유저 정보 리턴
+router.post("/user/info", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  const id = req.query?.id ?? 1; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+
+  maria.query(
+    `
+    SELECT * from Users WHERE _id = ${id};
+    `,
+    function (err, result) {
+      if (!err) {
+        console.log(
+          "(Search User Info) 유저 정보 리턴, user id: " + String(id)
+        );
+        res.send(result);
+      } else {
+        console.log(
+          "ERR (Search User Info) 해당 아이디의 유저가 없습니다! user id: " +
+            String(id)
+        );
+        res.status(404).json({
+          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
+        });
+      }
+    }
+  );
+});
+
+// User Api - 특정 id의 유저 삭제 (탈퇴)
+router.post("/user/remove", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  const id = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+
+  if (id === 1) {
+    console.log(
+      "ERR ('/user/remove') : Test 계정(id = 1) 정보는 삭제할 수 없습니다."
+    );
+    res.status(400).json({
+      error: "ERR_PARAMS : Test 계정(id = 1) 정보는 삭제할 수 없습니다.",
+    });
+  }
+
+  maria.query(
+    `
+    DELETE from Users WHERE _id = ${id};
+    `,
+    function (err, result) {
+      if (!err) {
+        // 성공
+        console.log("(Delete User) 유저 삭제 성공, user id: " + String(id));
+        res.status(204).json({
+          message: `유저 정보가 정상적으로 삭제되었습니다! (유저 탈퇴 성공) user id: "+ ${String(
+            id
+          )}`,
+        });
+      } else {
+        console.log(
+          "ERR (Delete User) 해당 아이디의 유저가 없습니다! user id: " +
+            String(id)
+        );
+        res.status(404).json({
+          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
+        });
+      }
+    }
+  );
+});
+
+// User Like Api - Authorize된 유저가 찜한 빌딩 id 리스트 리턴
+router.post("/user/building/likes", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  const id = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+
+  if (id === 1) {
+    console.log(
+      "ERR ('/user/remove') : Test 계정(id = 1) 정보는 삭제할 수 없습니다."
+    );
+    res.status(400).json({
+      error: "ERR_PARAMS : Test 계정(id = 1) 정보는 삭제할 수 없습니다.",
+    });
+  }
+
+  maria.query(
+    `
+    DELETE from Users WHERE _id = ${id};
+    `,
+    function (err, result) {
+      if (!err) {
+        // 성공
+        console.log("(Delete User) 유저 삭제 성공, user id: " + String(id));
+        res.status(204).json({
+          message: `유저 정보가 정상적으로 삭제되었습니다! (유저 탈퇴 성공) user id: "+ ${String(
+            id
+          )}`,
+        });
+      } else {
+        console.log(
+          "ERR (Delete User) 해당 아이디의 유저가 없습니다! user id: " +
+            String(id)
+        );
+        res.status(404).json({
+          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
+        });
+      }
+    }
+  );
+});
+
+// ============================================================
 // TEST API : 테스트 용 API (GET, POST)
 // ============================================================
 
@@ -195,3 +381,16 @@ router.get("/get/test", (req, res) => {
 });
 
 module.exports = router;
+
+// 빌딩 아이디에 해당하는 빌딩의 좋아요 숫자 출력
+
+// SELECT buildingId, COUNT(userId) AS likes_count
+// FROM BuildingLikes
+// WHERE buildingId = 101
+// GROUP BY buildingId;
+
+// 해당 유저가 누른 빌딩 좋아요 id 리스트 -> 빌딩 id 리스트 반환됨
+
+// SELECT buildingId
+// FROM BuildingLikes
+// WHERE userId = @userId;
