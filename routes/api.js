@@ -93,7 +93,7 @@ router.get("/building/search", (req, res) => {
         SELECT 
             b.name,
             b.address, 
-            MIN(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', 1), '%y.%m.%d')) AS earliest_start_date
+            
         FROM 
             Buildings b,
             JSON_TABLE(
