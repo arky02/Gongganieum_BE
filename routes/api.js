@@ -100,7 +100,7 @@ router.get("/building/search", (req, res) => {
         GROUP BY 
             b._id
         ORDER BY
-            b.name ASC;`;
+            b.address ASC;`;
       break;
     case "popular":
       console.log("popular");
