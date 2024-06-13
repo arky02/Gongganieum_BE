@@ -94,7 +94,7 @@ router.get("/building/search", (req, res) => {
             b.name,
             b.address
         FROM 
-            Buildings b,
+            Buildings b
 
         ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
         GROUP BY 
