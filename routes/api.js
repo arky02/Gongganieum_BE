@@ -91,16 +91,22 @@ router.get("/building/search", (req, res) => {
       console.log("new");
       query = `
         SELECT 
-            b.name,
-            b.address
+            b.*, 
+            MIN(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', 1), '%y.%m.%d')) AS earliest_start_date
         FROM 
-            Buildings b
-
+            Buildings b,
+            JSON_TABLE(
+                b.popups, 
+                '$[*]' 
+                COLUMNS (
+                    value JSON PATH '$'
+                )
+            ) AS popup
         ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
         GROUP BY 
             b._id
-        ORDER BY
-            b.address ASC;`;
+        ORDER BY 
+            earliest_start_date DESC;`;
       break;
     case "popular":
       console.log("popular");
