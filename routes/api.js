@@ -282,7 +282,7 @@ router.post("/user/remove", function (req, res) {
   );
 });
 
-// User Like Api - 유저가 찜한 빌딩 id 리스트 리턴
+// 찜하기 - 유저가 찜한 빌딩 id 리스트 리턴
 router.post("/user/building/likes", function (req, res) {
   /*
   #swagger.tags = ['Test']
@@ -296,7 +296,7 @@ router.post("/user/building/likes", function (req, res) {
     `
     SELECT buildingId
     FROM BuildingLikes
-    WHERE userId = ${id}
+    WHERE userId = ${id};
     `,
     function (err, result) {
       if (!err) {
@@ -318,7 +318,50 @@ router.post("/user/building/likes", function (req, res) {
   );
 });
 
-// User Like Api - 특정 id의 빌딩에 눌린 좋아요 개수 출력
+// 찜하기 - 유저 빌딩 찜하기 리스트에 해당 건물 id 추가 / 삭제
+router.post("/user/building/likes", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  const userId = req.query?.user; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+  const buildingId = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+
+  maria.query(
+    `
+    CALL ToggleLike(${userId}, ${buildingId});
+    select count(userId) from BuildingLikes where userId=${userId} & buildingId=${buildingId};
+    `,
+    function (err, result) {
+      if (!err) {
+        // 성공
+        console.log(
+          "(찜하기) 빌딩 찜하기 성공, user id: " +
+            String(userId) +
+            ", 건물 id: " +
+            String(buildingId)
+        );
+        res.status(204).json({
+          message: String(result),
+        });
+      } else {
+        console.log(
+          "ERR (찜하기) 빌딩 찜하기 실패! user id: " +
+            String(userId) +
+            ", 건물 id: " +
+            String(buildingId)
+        );
+        res.status(400).json({
+          error: `에러가 발생했습니다!`,
+        });
+      }
+    }
+  );
+});
+
+// 찜하기 - 특정 id의 빌딩에 눌린 좋아요 개수 출력
 router.post("/building/likes/count", function (req, res) {
   /*
   #swagger.tags = ['Test']
@@ -360,6 +403,7 @@ router.post("/building/likes/count", function (req, res) {
     }
   );
 });
+
 // ============================================================
 // TEST API : 테스트 용 API (GET, POST)
 // ============================================================
