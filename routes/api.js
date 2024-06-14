@@ -282,8 +282,44 @@ router.post("/user/remove", function (req, res) {
   );
 });
 
-// User Like Api - Authorize된 유저가 찜한 빌딩 id 리스트 리턴
+// User Like Api - 유저가 찜한 빌딩 id 리스트 리턴
 router.post("/user/building/likes", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  const id = req.query?.user; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+
+  maria.query(
+    `
+    SELECT buildingId
+    FROM BuildingLikes
+    WHERE userId = ${id}
+    `,
+    function (err, result) {
+      if (!err) {
+        // 성공
+        console.log(
+          "(찜하기) 유저가 찜한 빌딩 id 리스트 출력, user id: " + String(id)
+        );
+        res.send(result);
+      } else {
+        console.log(
+          "ERR (찜하기) 유저 찜한 빌딩 id 리스트 리턴 실패! user id: " +
+            String(id)
+        );
+        res.status(400).json({
+          error: `에러가 발생했습니다!`,
+        });
+      }
+    }
+  );
+});
+
+// User Like Api - 특정 id의 빌딩에 눌린 좋아요 개수 출력
+router.post("/building/likes/count", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
@@ -292,32 +328,30 @@ router.post("/user/building/likes", function (req, res) {
 
   const id = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
 
-  if (id === 1) {
-    console.log(
-      "ERR ('/user/remove') : Test 계정(id = 1) 정보는 삭제할 수 없습니다."
-    );
-    res.status(400).json({
-      error: "ERR_PARAMS : Test 계정(id = 1) 정보는 삭제할 수 없습니다.",
-    });
-  }
-
   maria.query(
     `
-    DELETE from Users WHERE _id = ${id};
+    SELECT buildingId, COUNT(userId) AS likes_count
+    FROM BuildingLikes
+    WHERE buildingId = ${id}
+    GROUP BY buildingId;
     `,
     function (err, result) {
       if (!err) {
         // 성공
-        console.log("(Delete User) 유저 삭제 성공, user id: " + String(id));
-        res.status(204).json({
-          message: `유저 정보가 정상적으로 삭제되었습니다! (유저 탈퇴 성공) user id: "+ ${String(
-            id
-          )}`,
-        });
+        console.log(
+          "(빌딩 좋아요 개수 출력) building id: " +
+            String(id) +
+            ", like count: " +
+            String(result)
+        );
+        res.send(result);
+        console.log(result);
       } else {
         console.log(
-          "ERR (Delete User) 해당 아이디의 유저가 없습니다! user id: " +
-            String(id)
+          "ERR(빌딩 좋아요 개수 출력) building id: " +
+            String(id) +
+            ", like count: " +
+            String(result)
         );
         res.status(404).json({
           error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
@@ -326,7 +360,6 @@ router.post("/user/building/likes", function (req, res) {
     }
   );
 });
-
 // ============================================================
 // TEST API : 테스트 용 API (GET, POST)
 // ============================================================
