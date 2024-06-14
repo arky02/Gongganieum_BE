@@ -205,7 +205,7 @@ router.post("/user/register", function (req, res) {
 });
 
 // User Api - 특정 id의 유저 정보 리턴
-router.post("/user/info", function (req, res) {
+router.get("/user/info", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
@@ -238,7 +238,7 @@ router.post("/user/info", function (req, res) {
 });
 
 // User Api - 특정 id의 유저 삭제 (탈퇴)
-router.post("/user/remove", function (req, res) {
+router.get("/user/remove", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
@@ -283,7 +283,7 @@ router.post("/user/remove", function (req, res) {
 });
 
 // 찜하기 - 유저가 찜한 빌딩 id 리스트 리턴
-router.post("/user/building/likes", function (req, res) {
+router.get("/user/building/likes", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
@@ -362,7 +362,7 @@ router.post("/user/building/likes", function (req, res) {
 });
 
 // 찜하기 - 특정 id의 빌딩에 눌린 좋아요 개수 출력
-router.post("/building/likes/count", function (req, res) {
+router.get("/building/likes/count", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
