@@ -174,7 +174,7 @@ router.post("/user/register", function (req, res) {
   maria.query(
     `
     INSERT INTO Users(name, nickname, email, description, img) VALUES (${name}, ${nickname}, ${email}, ${description}, ${img});
-    SELECT _id from Users WHERE email = '${email}';
+    SELECT _id from Users WHERE email = ${email};
     `,
     function (err, result) {
       if (!err) {
