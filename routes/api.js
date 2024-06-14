@@ -152,15 +152,13 @@ router.post("/user/register", function (req, res) {
   #swagger.summary = 'POST Test Api'
   #swagger.description = 'POST Test Api 입니다.'
 */
-  let uuid = null,
-    name = null,
+  let name = null,
     nickname = null,
     email = null,
     description = null,
     img = null;
 
   try {
-    uuid = req.body.uuid;
     name = req.body.name;
     nickname = req.body.nickname;
     email = req.body.email;
@@ -175,7 +173,7 @@ router.post("/user/register", function (req, res) {
 
   maria.query(
     `
-    INSERT INTO Users(name, nickname, email, description, img) VALUES ('${name}', '${nickname}', '${email}', '${description}', '${img}');
+    INSERT INTO Users(name, nickname, email, description, img) VALUES (${name}, ${nickname}, ${email}, ${description}, ${img});
     SELECT _id from Users WHERE email = '${email}';
     `,
     function (err, result) {
@@ -223,7 +221,7 @@ router.get("/user/info", function (req, res) {
         console.log(
           "(Search User Info) 유저 정보 리턴, user id: " + String(id)
         );
-        res.send(result);
+        res.send(result[0]);
       } else {
         console.log(
           "ERR (Search User Info) 해당 아이디의 유저가 없습니다! user id: " +
