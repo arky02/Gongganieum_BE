@@ -13,16 +13,32 @@ const doc = {
   produces: ["application/json"],
   tags: [
     {
+      name: "Popup",
+      description: "Popup 관련 API Requests",
+    },
+    {
+      name: "Building",
+      description: "Building 관련 API Requests",
+    },
+    {
+      name: "User",
+      description: "User 관련 API Requests",
+    },
+    {
+      name: "찜하기 - User",
+      description: "찜하기 - User 관련 API Requests",
+    },
+    {
+      name: "찜하기 - Building",
+      description: "찜하기 - Building 관련 API Requests",
+    },
+    {
+      name: "ETC",
+      description: "기타 API Requests",
+    },
+    {
       name: "Test",
-      description: "테스트 용 API 입니다.",
-    },
-    {
-      name: "GET Requests",
-      description: "GET Request 관련 API 입니다.",
-    },
-    {
-      name: "POST Requests",
-      description: "POST Request 관련 API 입니다.",
+      description: "테스트 용 API Requests",
     },
   ],
   securityDefinitions: {
