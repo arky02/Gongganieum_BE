@@ -196,7 +196,7 @@ router.post("/user/register", function (req, res) {
     name = req.body.name;
     nickname = req.body.nickname;
     email = req.body.email;
-    description = req.body?.description ?? " ";
+    description = req.body?.description ?? null;
     img = req.body?.img ?? null;
     console.log(name, nickname, email, description, img);
   } catch (e) {
