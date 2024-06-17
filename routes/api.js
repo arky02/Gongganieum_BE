@@ -283,7 +283,7 @@ router.get("/user/remove", function (req, res) {
 // 찜하기 - 유저가 찜한 빌딩 id 리스트 리턴
 router.get("/user/building/likes", function (req, res) {
   /*
-  #swagger.tags = ['찜하기,User']
+  #swagger.tags = ['찜하기','User']
   #swagger.summary = '유저가 찜한 빌딩 id 리스트 리턴 - 임시 api'
   #swagger.description = '유저가 찜한 빌딩 id 리스트 리턴하는 GET Request'
 */
@@ -319,7 +319,7 @@ router.get("/user/building/likes", function (req, res) {
 // 찜하기 - 유저 빌딩 찜하기 리스트에 해당 건물 id 추가 / 삭제
 router.post("/user/building/likes", function (req, res) {
   /*
-  #swagger.tags = ['찜하기,User']
+  #swagger.tags = ['찜하기','User']
   #swagger.summary = '유저의 빌딩 찜하기 리스트에 해당 건물 id 추가/삭제(토글) - 임시 api'
   #swagger.description = '유저의 빌딩 찜하기 리스트에 해당 건물 id 추가/삭제(토글)하는 POST Request'
 */
@@ -362,7 +362,7 @@ router.post("/user/building/likes", function (req, res) {
 // 찜하기 - 특정 id의 빌딩에 눌린 좋아요 개수 출력
 router.get("/building/likes/count", function (req, res) {
   /*
-  #swagger.tags = ['찜하기,Building']
+  #swagger.tags = ['찜하기','Building']
   #swagger.summary = '특정 건물 id의 찜하기 개수 리턴'
   #swagger.description = '특정 건물 id의 찜하기 개수 리턴하는 GET Request'
 */
