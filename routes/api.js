@@ -196,12 +196,13 @@ router.post("/user/register", function (req, res) {
     name = req.body.name;
     nickname = req.body.nickname;
     email = req.body.email;
-    description = req.body?.description ?? "";
+    description = req.body?.description ?? " ";
     img = req.body?.img ?? null;
+    console.log(name, nickname, email, description, img);
   } catch (e) {
     console.log("ERR ('/user/register') : " + e);
     res.status(400).json({
-      error: "ERR_PARAMS : uuid, name, nickname, email은 필수 입력 값입니다.",
+      error: "ERR_PARAMS : name, nickname, email은 필수 입력 값입니다.",
     });
   }
 
