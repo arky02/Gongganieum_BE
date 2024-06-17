@@ -5,8 +5,8 @@
     "title": "늘품 Server API",
     "description": "늘품 팝업 웹 개발 Server API 입니다."
   },
-  "host": "localhost:3000",
-  "basePath": "/",
+  "host": "ec2-3-23-49-89.us-east-2.compute.amazonaws.com:8080/",
+  "basePath": "api/",
   "tags": [
     {
       "name": "Test",
@@ -21,7 +21,10 @@
       "description": "POST Request 관련 API 입니다."
     }
   ],
-  "schemes": ["http", "https"],
+  "schemes": [
+    "http",
+    "https"
+  ],
   "securityDefinitions": {
     "apiKeyAuth": {
       "type": "apiKey",
@@ -30,24 +33,71 @@
       "description": "any description..."
     }
   },
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
-    "/": {
+    "/popup/infos": {
       "get": {
-        "tags": "Test",
-        "description": "Test for API GET request",
+        "tags": [
+          "GET Requests"
+        ],
+        "summary": "GET Request Api",
+        "description": "전체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다.",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
-    "/save/user": {
+    "/building/infos": {
+      "get": {
+        "tags": [
+          "GET Requests"
+        ],
+        "summary": "GET Request Api",
+        "description": "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/building/search": {
+      "get": {
+        "tags": [
+          "GET Requests"
+        ],
+        "summary": "GET Request Api",
+        "description": "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/user/register": {
       "post": {
-        "tags": "Test",
-        "description": "Test for API POST request",
+        "tags": [
+          "Test"
+        ],
+        "summary": "POST Test Api",
+        "description": "POST Test Api 입니다.",
         "parameters": [
           {
             "name": "body",
@@ -56,10 +106,136 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "example": "NeulPum"
+                  "example": "any"
+                },
+                "nickname": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      }
+    },
+    "/user/info": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "POST Test Api",
+        "description": "POST Test Api 입니다.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/user/remove": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "POST Test Api",
+        "description": "POST Test Api 입니다.",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/user/building/likes": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "POST Test Api",
+        "description": "POST Test Api 입니다.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "POST Test Api",
+        "description": "POST Test Api 입니다.",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/building/likes/count": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "POST Test Api",
+        "description": "POST Test Api 입니다.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/save/user/test": {
+      "post": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "POST Test Api",
+        "description": "POST Test Api 입니다.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
                 },
                 "age": {
-                  "example": 20
+                  "example": "any"
                 }
               }
             }
@@ -78,30 +254,19 @@
         }
       }
     },
-    "/gettest": {
+    "/get/test": {
       "get": {
-        "tags": "Test",
-        "description": "",
+        "tags": [
+          "Test"
+        ],
+        "summary": "GET Test Api",
+        "description": "GET Test Api 입니다.",
         "responses": {
           "201": {
             "description": "Created"
           }
         }
       }
-    },
-    "/popupinfos": {
-      "get": {
-        "description": "잔체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다.",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
     }
-  },
-  "definitions": {}
+  }
 }
