@@ -5,7 +5,7 @@
     "title": "늘품 Server API",
     "description": "늘품 팝업 웹 개발 Server API 입니다."
   },
-  "host": "ec2-3-23-49-89.us-east-2.compute.amazonaws.com:8080/",
+  "host": "ec2-3-34-222-145.ap-northeast-2.compute.amazonaws.com:8080/",
   "basePath": "api/",
   "tags": [
     {
@@ -21,10 +21,7 @@
       "description": "POST Request 관련 API 입니다."
     }
   ],
-  "schemes": [
-    "http",
-    "https"
-  ],
+  "schemes": ["http", "https"],
   "securityDefinitions": {
     "apiKeyAuth": {
       "type": "apiKey",
@@ -33,18 +30,12 @@
       "description": "any description..."
     }
   },
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "paths": {
     "/popup/infos": {
       "get": {
-        "tags": [
-          "GET Requests"
-        ],
+        "tags": ["GET Requests"],
         "summary": "GET Request Api",
         "description": "전체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다.",
         "responses": {
@@ -59,9 +50,7 @@
     },
     "/building/infos": {
       "get": {
-        "tags": [
-          "GET Requests"
-        ],
+        "tags": ["GET Requests"],
         "summary": "GET Request Api",
         "description": "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다.",
         "responses": {
@@ -76,9 +65,7 @@
     },
     "/building/search": {
       "get": {
-        "tags": [
-          "GET Requests"
-        ],
+        "tags": ["GET Requests"],
         "summary": "GET Request Api",
         "description": "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다.",
         "responses": {
@@ -93,9 +80,7 @@
     },
     "/user/register": {
       "post": {
-        "tags": [
-          "Test"
-        ],
+        "tags": ["Test"],
         "summary": "POST Test Api",
         "description": "POST Test Api 입니다.",
         "parameters": [
@@ -133,9 +118,7 @@
     },
     "/user/info": {
       "get": {
-        "tags": [
-          "Test"
-        ],
+        "tags": ["Test"],
         "summary": "POST Test Api",
         "description": "POST Test Api 입니다.",
         "responses": {
@@ -150,9 +133,7 @@
     },
     "/user/remove": {
       "get": {
-        "tags": [
-          "Test"
-        ],
+        "tags": ["Test"],
         "summary": "POST Test Api",
         "description": "POST Test Api 입니다.",
         "responses": {
@@ -170,9 +151,7 @@
     },
     "/user/building/likes": {
       "get": {
-        "tags": [
-          "Test"
-        ],
+        "tags": ["Test"],
         "summary": "POST Test Api",
         "description": "POST Test Api 입니다.",
         "responses": {
@@ -185,9 +164,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Test"
-        ],
+        "tags": ["Test"],
         "summary": "POST Test Api",
         "description": "POST Test Api 입니다.",
         "responses": {
@@ -202,9 +179,7 @@
     },
     "/building/likes/count": {
       "get": {
-        "tags": [
-          "Test"
-        ],
+        "tags": ["Test"],
         "summary": "POST Test Api",
         "description": "POST Test Api 입니다.",
         "responses": {
@@ -219,9 +194,7 @@
     },
     "/save/user/test": {
       "post": {
-        "tags": [
-          "Test"
-        ],
+        "tags": ["Test"],
         "summary": "POST Test Api",
         "description": "POST Test Api 입니다.",
         "parameters": [
@@ -256,9 +229,7 @@
     },
     "/get/test": {
       "get": {
-        "tags": [
-          "Test"
-        ],
+        "tags": ["Test"],
         "summary": "GET Test Api",
         "description": "GET Test Api 입니다.",
         "responses": {

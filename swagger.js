@@ -6,7 +6,7 @@ const doc = {
     title: "늘품 Server API",
     description: "늘품 팝업 웹 개발 Server API 입니다.",
   },
-  host: "ec2-3-23-49-89.us-east-2.compute.amazonaws.com:8080/",
+  host: "ec2-3-34-222-145.ap-northeast-2.compute.amazonaws.com:8080/",
   basePath: "api/",
   schemes: ["http", "https"],
   consumes: ["application/json"],
