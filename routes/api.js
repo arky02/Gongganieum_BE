@@ -5,12 +5,15 @@ var router = express.Router();
 // var cors = require('cors');
 const maria = require("../config/maria");
 
-// Res: Popups(_id: int, name: str, type: str, date: str, address: str, keyword: str, building: str)
+// =================================================================================================
+// Popup API : Popup 관련 API (GET) - 1개
+// =================================================================================================
+
 router.get("/popup/infos", (req, res) => {
   /*
   #swagger.tags = ['Popup']
   #swagger.summary = '전체 팝업 리스트 정보 리턴'
-  #swagger.description = "전체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request"
+  #swagger.description = "Response Datatype: Popups[]"
 */
 
   maria.query(`SELECT * FROM Popups`, function (err, result) {
@@ -26,14 +29,15 @@ router.get("/popup/infos", (req, res) => {
   });
 });
 
-// /building/infos?id={건물id}
+// =================================================================================================
+// Building API : Building 관련 API (GET) - 3개
+// =================================================================================================
 
-// Res: Buildings(_id: int, name: str, address: str, coord: str, popups: PopupList[], img: str, isours: bool, tag: str, cate: str)
 router.get("/building/infos", (req, res) => {
   /*
   #swagger.tags = ['Building']
   #swagger.summary = '특정 건물 id의 건물 정보 리턴'
-  #swagger.description = "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request"
+  #swagger.description = "Response Datatype: Buildings[]"
 */
 
   const id = req.query?.id ?? null;
@@ -56,12 +60,11 @@ router.get("/building/infos", (req, res) => {
   );
 });
 
-// Res: Buildings(_id: int, name: str, address: str, coord: str, popups: PopupList[], img: str, isours: bool, tag: str, cate: str)
 router.get("/building/search", (req, res) => {
   /*
   #swagger.tags = ['Building']
   #swagger.summary = '특정 정렬 조건, 필터 조건으로 건물 검색'
-  #swagger.description = "특정 정렬 조건, 필터 조건으로 건물 검색하는 GET Request"
+  #swagger.description = "Response Datatype: Buildings[]"
 */
 
   let q = req.query?.q ?? null; // -> where
@@ -141,16 +144,47 @@ router.get("/building/search", (req, res) => {
   });
 });
 
-// ============================================================
-// USER API : User 관련 API (GET, POST)
-// ============================================================
+// ======================================================================================================================================
+// USER API : User 관련 API (GET, GET Authorize, POST, POST Authorize, PATCH Authorize) - 5개
+// ======================================================================================================================================
 
-// User Api - 유저 생성 (회원가입)
+router.get("/user/info", function (req, res) {
+  /*
+  #swagger.tags = ['User']
+  #swagger.summary = '특정 id의 유저 정보 리턴'
+  #swagger.description = 'Response Datatype: Users'
+*/
+
+  const id = req.query?.id ?? 1; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+
+  maria.query(
+    `
+    SELECT * from Users WHERE _id = ${id};
+    `,
+    function (err, result) {
+      if (!err) {
+        console.log(
+          "(Search User Info) 유저 정보 리턴, user id: " + String(id)
+        );
+        res.send(result[0]);
+      } else {
+        console.log(
+          "ERR (Search User Info) 해당 아이디의 유저가 없습니다! user id: " +
+            String(id)
+        );
+        res.status(404).json({
+          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
+        });
+      }
+    }
+  );
+});
+
 router.post("/user/register", function (req, res) {
   /*
  #swagger.tags = ['User']
   #swagger.summary = '유저 생성 (회원가입)'
-  #swagger.description = '유저 생성 (회원가입)하는 POST Request'
+  #swagger.description = 'Response Datatype: int(생성한 유저의 ID)'
 */
   let name = null,
     nickname = null,
@@ -202,45 +236,11 @@ router.post("/user/register", function (req, res) {
   );
 });
 
-// User Api - 특정 id의 유저 정보 리턴
-router.get("/user/info", function (req, res) {
-  /*
-  #swagger.tags = ['User']
-  #swagger.summary = '특정 id의 유저 정보 리턴'
-  #swagger.description = '특정 id의 유저 정보 리턴하는 GET Request'
-*/
-
-  const id = req.query?.id ?? 1; // id 안적으면 Test 유저(_id = 1) 정보 리턴
-
-  maria.query(
-    `
-    SELECT * from Users WHERE _id = ${id};
-    `,
-    function (err, result) {
-      if (!err) {
-        console.log(
-          "(Search User Info) 유저 정보 리턴, user id: " + String(id)
-        );
-        res.send(result[0]);
-      } else {
-        console.log(
-          "ERR (Search User Info) 해당 아이디의 유저가 없습니다! user id: " +
-            String(id)
-        );
-        res.status(404).json({
-          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
-        });
-      }
-    }
-  );
-});
-
-// User Api - 특정 id의 유저 삭제 (탈퇴)
 router.get("/user/remove", function (req, res) {
   /*
   #swagger.tags = ['User']
   #swagger.summary = '유저 삭제 (탈퇴) - 임시 api'
-  #swagger.description = '특정 id의 유저 정보 삭제하는 GET Request'
+  #swagger.description = 'Response Datatype: int(삭제한 유저의 id)'
 */
 
   const id = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
@@ -280,12 +280,15 @@ router.get("/user/remove", function (req, res) {
   );
 });
 
-// 찜하기 - 유저가 찜한 빌딩 id 리스트 리턴
+// =================================================================================================
+// 찜하기 API : 찜하기 관련 API (GET Authorize, POST Authorize) - 3개
+// =================================================================================================
+
 router.get("/user/building/likes", function (req, res) {
   /*
-  #swagger.tags = ['찜하기','User']
+  #swagger.tags = ['찜하기']
   #swagger.summary = '유저가 찜한 빌딩 id 리스트 리턴 - 임시 api'
-  #swagger.description = '유저가 찜한 빌딩 id 리스트 리턴하는 GET Request'
+  #swagger.description = 'Response Datatype: int(건물의 찜하기 개수)'
 */
 
   const id = req.query?.user; // id 안적으면 Test 유저(_id = 1) 정보 리턴
@@ -316,12 +319,11 @@ router.get("/user/building/likes", function (req, res) {
   );
 });
 
-// 찜하기 - 유저 빌딩 찜하기 리스트에 해당 건물 id 추가 / 삭제
 router.post("/user/building/likes", function (req, res) {
   /*
-  #swagger.tags = ['찜하기','User']
+  #swagger.tags = ['찜하기']
   #swagger.summary = '유저의 빌딩 찜하기 리스트에 해당 건물 id 추가/삭제(토글) - 임시 api'
-  #swagger.description = '유저의 빌딩 찜하기 리스트에 해당 건물 id 추가/삭제(토글)하는 POST Request'
+  #swagger.description = 'Response Datatype: null'
 */
 
   const userId = req.query?.user; // id 안적으면 Test 유저(_id = 1) 정보 리턴
@@ -359,12 +361,11 @@ router.post("/user/building/likes", function (req, res) {
   );
 });
 
-// 찜하기 - 특정 id의 빌딩에 눌린 좋아요 개수 출력
 router.get("/building/likes/count", function (req, res) {
   /*
-  #swagger.tags = ['찜하기','Building']
+  #swagger.tags = ['찜하기']
   #swagger.summary = '특정 건물 id의 찜하기 개수 리턴'
-  #swagger.description = '특정 건물 id의 찜하기 개수 리턴하는 GET Request'
+  #swagger.description = 'Response Datatype: int(건물의 찜하기 개수)'
 */
 
   const id = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
@@ -402,11 +403,10 @@ router.get("/building/likes/count", function (req, res) {
   );
 });
 
-// ============================================================
-// TEST API : 테스트 용 API (GET, POST)
-// ============================================================
+// =================================================================================================
+// TEST API : 테스트 용 API (GET, POST) - 2개
+// =================================================================================================
 
-// POST Test Api
 router.post("/save/user/test", function (req, res) {
   /*
   #swagger.tags = ['Test']
@@ -444,7 +444,6 @@ router.post("/save/user/test", function (req, res) {
   );
 });
 
-// GET Test Api
 router.get("/get/test", (req, res) => {
   /*
   #swagger.tags = ['Test']
