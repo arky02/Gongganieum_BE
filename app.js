@@ -21,6 +21,7 @@ maria.connect();
 
 var allowlist = [
   "http://localhost:3000",
+  "http://localhost:3001",
   "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com/**",
   "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com/**",
   "http://ec2-3-34-222-145.ap-northeast-2.compute.amazonaws.com:8080/**",
