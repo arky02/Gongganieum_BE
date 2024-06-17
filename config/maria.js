@@ -8,6 +8,7 @@ var db_info = {
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   charset: "utf8mb4",
+  multipleStatements: true,
 };
 
 const conn = maria.createConnection(db_info);
