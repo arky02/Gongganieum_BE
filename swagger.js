@@ -25,12 +25,8 @@ const doc = {
       description: "User 관련 API Requests",
     },
     {
-      name: "찜하기 - User",
-      description: "찜하기 - User 관련 API Requests",
-    },
-    {
-      name: "찜하기 - Building",
-      description: "찜하기 - Building 관련 API Requests",
+      name: "찜하기",
+      description: "찜하기 관련 API Requests",
     },
     {
       name: "ETC",
