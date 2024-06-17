@@ -222,7 +222,7 @@ router.post("/user/register", function (req, res) {
           "(User Register) User is saved! name : " +
             name +
             ", user id: " +
-            String(result)
+            result
         );
         res.status(201).send(result);
       } else {
