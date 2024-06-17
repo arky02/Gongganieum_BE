@@ -224,7 +224,7 @@ router.post("/user/register", function (req, res) {
             ", user id: " +
             result
         );
-        res.status(201).send(result);
+        res.status(201).send(result[1][0]);
       } else {
         console.log(
           "ERR (User Register) user name : " +
