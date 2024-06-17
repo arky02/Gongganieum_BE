@@ -198,7 +198,10 @@ router.post("/user/register", function (req, res) {
     email = req.body.email;
     description = req.body?.description ?? null;
     img = req.body?.img ?? null;
-    console.log(name, nickname, email, description, img);
+    // console.log(name, nickname, email, description, img);
+    console.log(
+      `INSERT INTO Users(name, nickname, email, description, img) VALUES (${name}, ${nickname}, ${email}, ${description}, ${img})`
+    );
   } catch (e) {
     console.log("ERR ('/user/register') : " + e);
     res.status(400).json({
