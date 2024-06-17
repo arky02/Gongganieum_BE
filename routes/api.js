@@ -148,8 +148,8 @@ router.get("/building/search", (req, res) => {
 // User Api - 유저 생성 (회원가입)
 router.post("/user/register", function (req, res) {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
+ #swagger.tags = ['POST Requests']
+  #swagger.summary = 'POST Request Api'
   #swagger.description = 'POST Test Api 입니다.'
 */
   let name = null,
@@ -205,9 +205,9 @@ router.post("/user/register", function (req, res) {
 // User Api - 특정 id의 유저 정보 리턴
 router.get("/user/info", function (req, res) {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
-  #swagger.description = 'POST Test Api 입니다.'
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Request Api'
+  #swagger.description = 'GET Test Api 입니다.'
 */
 
   const id = req.query?.id ?? 1; // id 안적으면 Test 유저(_id = 1) 정보 리턴
@@ -238,9 +238,8 @@ router.get("/user/info", function (req, res) {
 // User Api - 특정 id의 유저 삭제 (탈퇴)
 router.get("/user/remove", function (req, res) {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
-  #swagger.description = 'POST Test Api 입니다.'
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Request Api'
 */
 
   const id = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
@@ -283,9 +282,9 @@ router.get("/user/remove", function (req, res) {
 // 찜하기 - 유저가 찜한 빌딩 id 리스트 리턴
 router.get("/user/building/likes", function (req, res) {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
-  #swagger.description = 'POST Test Api 입니다.'
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Request Api'
+  #swagger.description = 'GET Test Api 입니다.'
 */
 
   const id = req.query?.user; // id 안적으면 Test 유저(_id = 1) 정보 리턴
@@ -319,8 +318,8 @@ router.get("/user/building/likes", function (req, res) {
 // 찜하기 - 유저 빌딩 찜하기 리스트에 해당 건물 id 추가 / 삭제
 router.post("/user/building/likes", function (req, res) {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
+  #swagger.tags = ['POST Requests']
+  #swagger.summary = 'POST Request Api'
   #swagger.description = 'POST Test Api 입니다.'
 */
 
@@ -362,9 +361,9 @@ router.post("/user/building/likes", function (req, res) {
 // 찜하기 - 특정 id의 빌딩에 눌린 좋아요 개수 출력
 router.get("/building/likes/count", function (req, res) {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
-  #swagger.description = 'POST Test Api 입니다.'
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Request Api'
+  #swagger.description = 'GET Test Api 입니다.'
 */
 
   const id = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
@@ -409,8 +408,8 @@ router.get("/building/likes/count", function (req, res) {
 // POST Test Api
 router.post("/save/user/test", function (req, res) {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
+  #swagger.tags = ['POST Requests']
+  #swagger.summary = 'POST Request Api'
   #swagger.description = 'POST Test Api 입니다.'
 */
 
@@ -447,8 +446,8 @@ router.post("/save/user/test", function (req, res) {
 // GET Test Api
 router.get("/get/test", (req, res) => {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'GET Test Api'
+  #swagger.tags = ['GET Requests']
+  #swagger.summary = 'GET Request Api'
   #swagger.description = 'GET Test Api 입니다.'
 */
 
