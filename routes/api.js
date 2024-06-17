@@ -196,11 +196,13 @@ router.post("/user/register", function (req, res) {
     name = req.body.name;
     nickname = req.body.nickname;
     email = req.body.email;
-    description = req.body?.description ?? null;
-    img = req.body?.img ?? null;
-    // console.log(name, nickname, email, description, img);
+    description = req.body?.description
+      ? '"' + req.body?.description + '"'
+      : null;
+    img = req.body?.img ? '"' + req.body?.img + '"' : null;
+
     console.log(
-      `INSERT INTO Users(name, nickname, email, description, img) VALUES (${name}, ${nickname}, ${email}, ${description}, ${img})`
+      `INSERT INTO Users(name, nickname, email, description, img) VALUES ("${name}", "${nickname}", "${email}", ${description}, ${img})`
     );
   } catch (e) {
     console.log("ERR ('/user/register') : " + e);
@@ -211,7 +213,7 @@ router.post("/user/register", function (req, res) {
 
   maria.query(
     `
-    INSERT INTO Users(name, nickname, email, description, img) VALUES ("${name}", "${nickname}", "${email}", "${description}", "${img}");
+    INSERT INTO Users(name, nickname, email, description, img) VALUES ("${name}", "${nickname}", "${email}", ${description}, ${img});
     SELECT _id from Users WHERE email = "${email}";
     `,
     function (err, result) {
