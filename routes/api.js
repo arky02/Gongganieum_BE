@@ -94,8 +94,26 @@ router.get("/building/search", (req, res) => {
       console.log("new");
       query = `
         SELECT 
-            b.*, 
-            MIN(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', 1), '%y.%m.%d')) AS earliest_start_date
+            b._id,
+            b.address,
+            b.cate,
+            b.coord,
+            b.img,
+            b.isours,
+            b.name,
+            b.tag,
+            (
+                SELECT JSON_ARRAYAGG(popup ORDER BY STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', 1), '%y.%m.%d') DESC)
+                FROM JSON_TABLE(
+                    b.popups,
+                    '$[*]'
+                    COLUMNS (
+                        value JSON PATH '$'
+                    )
+                ) AS popup
+            ) AS sorted_popups,
+            MIN(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', 1), '%y.%m.%d')) AS earliest_start_date,
+            MAX(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', -1), '%y.%m.%d')) AS latest_end_date
         FROM 
             Buildings b,
             JSON_TABLE(
