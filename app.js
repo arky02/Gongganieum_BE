@@ -1,8 +1,8 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const port = 8080; // port 번호 설정
 const bodyParser = require("body-parser");
-const cors = require("cors");
 var apiRouter = require("./routes/api");
 var createError = require("http-errors");
 
@@ -28,18 +28,20 @@ var allowlist = [
   "https://neul-pum.vercel.app/**",
 ];
 
-var corsOptionsDelegate = function (req, callback) {
-  var corsOptions;
-  console.log("Origin:", req.header("Origin"));
-  if (allowlist.indexOf(req.header("Origin")) !== -1) {
-    corsOptions = { origin: true }; // reflect (enable) the requested origin
-  } else {
-    corsOptions = { origin: false };
-  }
-  callback(null, corsOptions); // error, options
-};
-
-app.use(cors(corsOptionsDelegate));
+app.use((req, res, next) => {
+  console.log("Received request:", req.method, req.url);
+  next();
+});
+app.use(
+  cors((req, callback) => {
+    const origin = req.header("Origin");
+    console.log("CORS Origin Check:", origin);
+    const corsOptions = allowlist.includes(origin)
+      ? { origin: true }
+      : { origin: false };
+    callback(null, corsOptions);
+  })
+);
 
 // Use Swagger
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
