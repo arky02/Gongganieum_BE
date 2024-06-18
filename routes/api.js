@@ -270,9 +270,8 @@ router.get("/user/remove", function (req, res) {
         // 성공
         console.log("(Delete User) 유저 삭제 성공, user id: " + String(id));
         res.status(200).json({
-          message: `유저 정보가 정상적으로 삭제되었습니다! (유저 탈퇴 성공) user id: "+ ${String(
-            id
-          )}`,
+          message: `유저 정보가 정상적으로 삭제되었습니다! (유저 탈퇴 성공)`,
+          user_id: id,
         });
       } else {
         console.log(
