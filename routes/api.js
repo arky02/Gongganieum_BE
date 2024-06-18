@@ -269,7 +269,7 @@ router.get("/user/remove", function (req, res) {
       if (!err) {
         // 성공
         console.log("(Delete User) 유저 삭제 성공, user id: " + String(id));
-        res.status(204).json({
+        res.status(200).json({
           message: `유저 정보가 정상적으로 삭제되었습니다! (유저 탈퇴 성공) user id: "+ ${String(
             id
           )}`,
@@ -350,8 +350,8 @@ router.post("/user/building/likes", function (req, res) {
             ", 건물 id: " +
             String(buildingId)
         );
-        res.status(204).json({
-          message: String(result),
+        res.status(200).json({
+          message: result[1],
         });
       } else {
         console.log(
