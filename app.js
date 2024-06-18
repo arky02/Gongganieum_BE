@@ -21,17 +21,16 @@ maria.connect();
 
 var allowlist = [
   "http://localhost:3000",
-  "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com/**",
-  "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com:8080/**",
-  "http://ec2-3-34-222-145.ap-northeast-2.compute.amazonaws.com/**",
-  "http://ec2-3-34-222-145.ap-northeast-2.compute.amazonaws.com:8080/**",
-  "https://neul-pum.vercel.app/**",
+  "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com",
+  "http://ec2-3-34-222-145.ap-northeast-2.compute.amazonaws.com",
+  "https://neul-pum.vercel.app",
 ];
 
 app.use((req, res, next) => {
   console.log("Received request:", req.method, req.url);
   next();
 });
+
 app.use(
   cors((req, callback) => {
     const origin = req.header("Origin");
