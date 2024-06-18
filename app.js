@@ -30,14 +30,16 @@ var allowlist = [
 
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
+  console.log("Origin:", req.header("Origin"));
   if (allowlist.indexOf(req.header("Origin")) !== -1) {
     corsOptions = { origin: true }; // reflect (enable) the requested origin
   } else {
     corsOptions = { origin: false };
-    // res(Error("허가되지 않은 주소입니다."));
   }
   callback(null, corsOptions); // error, options
 };
+
+app.use(cors(corsOptionsDelegate));
 
 // Use Swagger
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
@@ -45,8 +47,6 @@ app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 //body-parser 모듈을 불러온다.
 app.use(bodyParser.json()); //요청 본문을 json 형태로 파싱
 app.use(bodyParser.urlencoded({ extended: false })); //
-
-app.use(cors(corsOptionsDelegate));
 
 app.use("/api", apiRouter);
 
