@@ -180,6 +180,7 @@ router.get("/user/info", function (req, res) {
   );
 });
 
+// TODO: 중복됐을 경우 다른 오류 코드 전송
 router.post("/user/register", function (req, res) {
   /*
  #swagger.tags = ['User']
