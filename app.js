@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 app.use(
   cors((req, callback) => {
     const origin = req.header("Origin");
-    console.log("CORS Origin Check:", origin);
+    // console.log("CORS Origin Check:", origin);
     const corsOptions = allowlist.includes(origin)
       ? { origin: true }
       : { origin: false };
@@ -57,7 +57,7 @@ app.use(function (req, res, next) {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`listening on port ${port}`);
 });
 
 // app.set("port", process.env.PORT || 8080);
