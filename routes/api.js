@@ -118,18 +118,30 @@ router.get("/building/search", (req, res) => {
         ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
         GROUP BY 
             b._id
-        ORDER BY 
+        ORDER BY
             earliest_start_date DESC;`;
       break;
     case "popular":
       console.log("popular");
       query = `
       SELECT 
-          b.*, 
-          JSON_LENGTH(b.popups) AS popups_count
+          b.*,
+          JSON_LENGTH(b.popups) AS popups_count,
+          MAX(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', -1), '%y.%m.%d')) AS latest_end_date
       FROM 
           Buildings b
+      LEFT JOIN
+          JSON_TABLE(
+              b.popups, 
+              '$[*]' 
+              COLUMNS (
+                  value JSON PATH '$'
+              )
+          ) AS popup
+      ON TRUE
       ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
+      GROUP BY
+          b._id
       ORDER BY 
           popups_count DESC;`;
       break;
