@@ -4,7 +4,7 @@ module.exports = {
       name: "poppop-backend",
       script: "app.js",
       watch: true,
-      instances: 1,
+      instances: 0,
       exec_mode: "cluster",
       exec_interpreter: "node",
     },
