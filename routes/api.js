@@ -337,8 +337,8 @@ router.get("/user/building/likes", function (req, res) {
         console.log(
           "(찜하기) 유저가 찜한 빌딩 id 리스트 출력, user id: " +
             String(id) +
-            ", < 결과: " +
-            result[0]
+            ", => 결과: " +
+            String(result[0])
         );
         res.send(result[0]);
       } else {
@@ -377,7 +377,7 @@ router.post("/user/building/likes", function (req, res) {
             String(userId) +
             ", 건물 id: " +
             String(buildingId) +
-            ", < 결과: " +
+            ", => 결과: " +
             result[1][0]
         );
         res.status(200).send(result[1][0]);
