@@ -9,19 +9,34 @@
   "basePath": "api/",
   "tags": [
     {
+      "name": "Popup",
+      "description": "Popup 관련 API Requests"
+    },
+    {
+      "name": "Building",
+      "description": "Building 관련 API Requests"
+    },
+    {
+      "name": "User",
+      "description": "User 관련 API Requests"
+    },
+    {
+      "name": "찜하기",
+      "description": "찜하기 관련 API Requests"
+    },
+    {
+      "name": "ETC",
+      "description": "기타 API Requests"
+    },
+    {
       "name": "Test",
-      "description": "테스트 용 API 입니다."
-    },
-    {
-      "name": "GET Requests",
-      "description": "GET Request 관련 API 입니다."
-    },
-    {
-      "name": "POST Requests",
-      "description": "POST Request 관련 API 입니다."
+      "description": "테스트 용 API Requests"
     }
   ],
-  "schemes": ["http", "https"],
+  "schemes": [
+    "http",
+    "https"
+  ],
   "securityDefinitions": {
     "apiKeyAuth": {
       "type": "apiKey",
@@ -30,14 +45,20 @@
       "description": "any description..."
     }
   },
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
     "/popup/infos": {
       "get": {
-        "tags": ["GET Requests"],
-        "summary": "GET Request Api",
-        "description": "전체 팝업 리스트의 정보(카테고리, 팝업명, 진행 기간, 진행 장소, 관련 키워드)를 가져오는 GET request 입니다.",
+        "tags": [
+          "Popup"
+        ],
+        "summary": "전체 팝업 리스트 정보 리턴",
+        "description": "Response Datatype: Popups[]",
         "responses": {
           "200": {
             "description": "OK"
@@ -50,9 +71,11 @@
     },
     "/building/infos": {
       "get": {
-        "tags": ["GET Requests"],
-        "summary": "GET Request Api",
-        "description": "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다.",
+        "tags": [
+          "Building"
+        ],
+        "summary": "특정 건물 id의 건물 정보 리턴",
+        "description": "Response Datatype: Buildings[]",
         "responses": {
           "200": {
             "description": "OK"
@@ -65,9 +88,28 @@
     },
     "/building/search": {
       "get": {
-        "tags": ["GET Requests"],
-        "summary": "GET Request Api",
-        "description": "전체 건물 리스트의 정보(건물 이름, 주소, 좌표, 현재 팝업 진행 여부, 진행된 팝업 정보 리스트)를 가져오는 GET request 입니다.",
+        "tags": [
+          "Building"
+        ],
+        "summary": "특정 정렬 조건, 필터 조건으로 건물 검색",
+        "description": "Response Datatype: Buildings[]",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/user/info": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "특정 id의 유저 정보 리턴",
+        "description": "Response Datatype: Users",
         "responses": {
           "200": {
             "description": "OK"
@@ -80,9 +122,11 @@
     },
     "/user/register": {
       "post": {
-        "tags": ["Test"],
-        "summary": "POST Test Api",
-        "description": "POST Test Api 입니다.",
+        "tags": [
+          "User"
+        ],
+        "summary": "유저 생성 (회원가입)",
+        "description": "Response Datatype: int(생성한 유저의 ID)",
         "parameters": [
           {
             "name": "body",
@@ -116,29 +160,16 @@
         }
       }
     },
-    "/user/info": {
+    "/user/remove": {
       "get": {
-        "tags": ["Test"],
-        "summary": "POST Test Api",
-        "description": "POST Test Api 입니다.",
+        "tags": [
+          "User"
+        ],
+        "summary": "유저 삭제 (탈퇴) - 임시 api",
+        "description": "Response Datatype: int(삭제한 유저의 id)",
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/user/remove": {
-      "get": {
-        "tags": ["Test"],
-        "summary": "POST Test Api",
-        "description": "POST Test Api 입니다.",
-        "responses": {
-          "204": {
-            "description": "No Content"
           },
           "400": {
             "description": "Bad Request"
@@ -151,9 +182,11 @@
     },
     "/user/building/likes": {
       "get": {
-        "tags": ["Test"],
-        "summary": "POST Test Api",
-        "description": "POST Test Api 입니다.",
+        "tags": [
+          "찜하기"
+        ],
+        "summary": "유저가 찜한 빌딩 id 리스트 리턴 - 임시 api",
+        "description": "Response Datatype: int(건물의 찜하기 개수)",
         "responses": {
           "200": {
             "description": "OK"
@@ -164,12 +197,14 @@
         }
       },
       "post": {
-        "tags": ["Test"],
-        "summary": "POST Test Api",
-        "description": "POST Test Api 입니다.",
+        "tags": [
+          "찜하기"
+        ],
+        "summary": "유저의 빌딩 찜하기 리스트에 해당 건물 id 추가/삭제(토글) - 임시 api",
+        "description": "Response Datatype: null",
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
@@ -179,9 +214,11 @@
     },
     "/building/likes/count": {
       "get": {
-        "tags": ["Test"],
-        "summary": "POST Test Api",
-        "description": "POST Test Api 입니다.",
+        "tags": [
+          "찜하기"
+        ],
+        "summary": "특정 건물 id의 찜하기 개수 리턴",
+        "description": "Response Datatype: int(건물의 찜하기 개수)",
         "responses": {
           "200": {
             "description": "OK"
@@ -194,7 +231,9 @@
     },
     "/save/user/test": {
       "post": {
-        "tags": ["Test"],
+        "tags": [
+          "Test"
+        ],
         "summary": "POST Test Api",
         "description": "POST Test Api 입니다.",
         "parameters": [
@@ -229,7 +268,9 @@
     },
     "/get/test": {
       "get": {
-        "tags": ["Test"],
+        "tags": [
+          "Test"
+        ],
         "summary": "GET Test Api",
         "description": "GET Test Api 입니다.",
         "responses": {
