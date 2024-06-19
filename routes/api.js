@@ -377,7 +377,7 @@ router.post("/user/building/likes", function (req, res) {
             ", < 결과: " +
             result[1][0]
         );
-        res.status(200).json(result[1][0]);
+        res.status(200).send(result[1][0][0]);
       } else {
         console.log(
           "ERR (찜하기) 빌딩 찜하기 실패! user id: " +
