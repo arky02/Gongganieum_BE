@@ -360,7 +360,7 @@ router.post("/user/building/likes", function (req, res) {
   maria.query(
     `
     CALL ToggleLikes(${userId}, ${buildingId});
-    select count(userId) from BuildingLikes where userId=${userId} and buildingId=${buildingId};
+    select count(buildingId) from BuildingLikes where userId=${userId} and buildingId=${buildingId};
     `,
     function (err, result) {
       if (!err) {
@@ -371,9 +371,7 @@ router.post("/user/building/likes", function (req, res) {
             ", 건물 id: " +
             String(buildingId)
         );
-        res.status(200).json({
-          message: result[1][0],
-        });
+        res.status(200).json(result[1][0]);
       } else {
         console.log(
           "ERR (찜하기) 빌딩 찜하기 실패! user id: " +
