@@ -415,21 +415,11 @@ router.get("/building/likes/count", function (req, res) {
     function (err, result) {
       if (!err) {
         // 성공
-        console.log(
-          "(빌딩 좋아요 개수 출력) building id: " +
-            String(id) +
-            ", like count: " +
-            String(result[0])
-        );
+        console.log("(빌딩 좋아요 개수 출력) building id: " + String(id));
         res.send(result[0]);
         console.log(result[0]);
       } else {
-        console.log(
-          "ERR(빌딩 좋아요 개수 출력) building id: " +
-            String(id) +
-            ", like count: " +
-            String(result[0])
-        );
+        console.log("ERR(빌딩 좋아요 개수 출력) building id: " + String(id));
         res.status(404).json({
           error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
         });
