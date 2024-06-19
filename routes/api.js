@@ -372,7 +372,7 @@ router.post("/user/building/likes", function (req, res) {
             String(buildingId)
         );
         res.status(200).json({
-          message: result[1],
+          message: result[1][0],
         });
       } else {
         console.log(
