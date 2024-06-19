@@ -359,8 +359,8 @@ router.post("/user/building/likes", function (req, res) {
 
   maria.query(
     `
-    CALL ToggleLike(${userId}, ${buildingId});
-    select count(userId) from BuildingLikes where userId=${userId} & buildingId=${buildingId};
+    CALL ToggleLikes(${userId}, ${buildingId});
+    select count(userId) from BuildingLikes where userId=${userId} and buildingId=${buildingId};
     `,
     function (err, result) {
       if (!err) {
