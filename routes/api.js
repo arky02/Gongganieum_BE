@@ -335,9 +335,12 @@ router.get("/user/building/likes", function (req, res) {
       if (!err) {
         // 성공
         console.log(
-          "(찜하기) 유저가 찜한 빌딩 id 리스트 출력, user id: " + String(id)
+          "(찜하기) 유저가 찜한 빌딩 id 리스트 출력, user id: " +
+            String(id) +
+            ", < 결과: " +
+            result[0]
         );
-        res.send(result);
+        res.send(result[0]);
       } else {
         console.log(
           "ERR (찜하기) 유저 찜한 빌딩 id 리스트 리턴 실패! user id: " +
@@ -377,7 +380,7 @@ router.post("/user/building/likes", function (req, res) {
             ", < 결과: " +
             result[1][0]
         );
-        res.status(200).send(result);
+        res.status(200).send(result[1][0]);
       } else {
         console.log(
           "ERR (찜하기) 빌딩 찜하기 실패! user id: " +
