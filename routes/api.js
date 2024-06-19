@@ -216,7 +216,11 @@ router.post("/user/register", function (req, res) {
     nickname = null,
     email = null,
     description = null,
-    img = null;
+    img = null,
+    company = null,
+    brand = null,
+    product = null,
+    tag = null;
 
   try {
     name = req.body.name;
@@ -226,21 +230,26 @@ router.post("/user/register", function (req, res) {
       ? '"' + req.body?.description + '"'
       : null;
     img = req.body?.img ? '"' + req.body?.img + '"' : null;
+    company = req.body.company;
+    brand = req.body.brand;
+    product = req.body.product;
+    tag = req.body.tag;
 
     console.log(
-      `INSERT INTO Users(name, nickname, email, description, img) VALUES ("${name}", "${nickname}", "${email}", ${description}, ${img})`
+      `INSERT INTO Users(name, nickname, email, description, img, company, brand, product, tag) VALUES ("${name}", "${nickname}", "${email}", ${description}, ${img}, "${company}", "${brand}", "${product}", "${tag}")`
     );
   } catch (e) {
     console.log("ERR ('/user/register') : " + e);
     res.status(400).json({
-      error: "ERR_PARAMS : name, nickname, email은 필수 입력 값입니다.",
+      error:
+        "ERR_PARAMS : name, nickname, email, company, brand, product, tag는 필수 입력 값입니다.",
     });
   }
 
   maria.query(
     `
-    INSERT INTO Users(name, nickname, email, description, img) VALUES ("${name}", "${nickname}", "${email}", ${description}, ${img});
-    SELECT _id from Users WHERE email = "${email}";
+    INSERT INTO Users(name, nickname, email, description, img, company, brand, product, tag) VALUES ("${name}", "${nickname}", "${email}", ${description}, ${img}, "${company}", "${brand}", "${product}", "${tag}");
+    SELECT _id as user_id from Users WHERE email = "${email}";
     `,
     function (err, result) {
       if (!err) {
@@ -295,7 +304,7 @@ router.get("/user/remove", function (req, res) {
         // 성공
         console.log("(Delete User) 유저 삭제 성공, user id: " + String(id));
         res.status(200).json({
-          message: `유저 정보가 정상적으로 삭제되었습니다! (유저 탈퇴 성공)`,
+          message: "유저 삭제 성공",
           user_id: id,
         });
       } else {
