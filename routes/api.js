@@ -4,6 +4,8 @@ var express = require("express");
 var router = express.Router();
 // var cors = require('cors');
 const maria = require("../config/maria");
+const axios = require("axios");
+const qs = require("qs");
 
 // =================================================================================================
 // Popup API : Popup 관련 API (GET) - 1개
