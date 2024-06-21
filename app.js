@@ -61,30 +61,4 @@ app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
 
-// app.set("port", process.env.PORT || 8080);
-// app.set("host", process.env.HOST || "0.0.0.0");
-
-// app.use(
-//   cors({
-//     origin(req, res) {
-//       console.log("접속된 주소: " + req),
-//         -1 == allowlist.indexOf(req) && req
-//           ? res(Error("허가되지 않은 주소입니다."))
-//           : res(null, !0);
-//     },
-//     credentials: !0,
-//     optionsSuccessStatus: 200,
-//   })
-// );
-
-// // app.get("/", function (req, res) {
-// //   res.send("접속된 아이피: " + req.ip);
-// // });
-
-// app.listen(app.get("port"), app.get("host"), () =>
-//   console.log(
-//     "Server is running on : " + app.get("host") + ":" + app.get("port")
-//   )
-// );
-
 module.exports = app;
