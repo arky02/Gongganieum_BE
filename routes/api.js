@@ -477,10 +477,12 @@ router.get("/kakao/callback", async (req, res) => {
     const response = await axios.get(url, Header);
     const { nickname, profile_image: img } = response.data.properties;
     const payload = { nickname, img };
+    console.log(payload);
     const accessToken = makeToken(payload);
     const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
     res.cookie("accessToken", accessToken, cookiOpt);
-    res.send(alert_and_move("/", `${nickname}님 로그인 되었습니다^^`));
+    res.send(payload);
+    res.redirect("/");
   } catch (err) {
     console.log(err);
   }
