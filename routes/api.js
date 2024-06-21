@@ -440,6 +440,45 @@ router.get("/building/likes/count", function (req, res) {
   );
 });
 
+router.get("/kakao/callback", async (req, res) => {
+  let token;
+  try {
+    const url = "https://kauth.kakao.com/oauth/token";
+    const body = qs.stringify({
+      grant_type: "authorization_code",
+      client_id: "10e27455bc8bc405be98a80e91415931",
+      client_secret: "ONXbCwm2AOtJv0olZK69kioV45nttCb3",
+      redirectUri: "http://localhost:3000/oauth/kakao",
+      code: req.query.code,
+    });
+    const header = { "content-type": "application/x-www-form-urlencoded" };
+    const response = await axios.post(url, body, header);
+    token = response.data.access_token;
+  } catch (err) {
+    console.log(err);
+    console.log("에러1");
+    res.send("에러1");
+  }
+
+  try {
+    const url = "https://kapi.kakao.com/v2/user/me";
+    const Header = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(url, Header);
+    const { nickname, profile_image: img } = response.data.properties;
+    const payload = { nickname, img };
+    const accessToken = makeToken(payload);
+    const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
+    res.cookie("accessToken", accessToken, cookiOpt);
+    res.send(alertmove("/", `${nickname}님 로그인 되었습니다^^`));
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // =================================================================================================
 // TEST API : 테스트 용 API (GET, POST) - 2개
 // =================================================================================================
