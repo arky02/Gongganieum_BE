@@ -481,8 +481,8 @@ router.get("/kakao/callback", async (req, res) => {
     const accessToken = makeToken(payload);
     const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
     res.cookie("accessToken", accessToken, cookiOpt);
-    res.send(payload);
-    res.redirect("/");
+    res.send(token);
+    // res.redirect("/");
   } catch (err) {
     console.log(err);
   }
