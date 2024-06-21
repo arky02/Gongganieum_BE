@@ -7,6 +7,9 @@ const maria = require("../config/maria");
 const axios = require("axios");
 const qs = require("qs");
 
+const { makeToken } = require("../utils/jwt.js");
+const alert_and_move = require("../utils/alert_and_move.js");
+
 // =================================================================================================
 // Popup API : Popup 관련 API (GET) - 1개
 // =================================================================================================
@@ -475,7 +478,7 @@ router.get("/kakao/callback", async (req, res) => {
     const accessToken = makeToken(payload);
     const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
     res.cookie("accessToken", accessToken, cookiOpt);
-    res.send(alertmove("/", `${nickname}님 로그인 되었습니다^^`));
+    res.send(alert_and_move("/", `${nickname}님 로그인 되었습니다^^`));
   } catch (err) {
     console.log(err);
   }
