@@ -465,6 +465,8 @@ router.get("/kakao/callback", async (req, res) => {
     res.send("에러1");
   }
 
+  console.log("token", token);
+
   try {
     const url = "https://kapi.kakao.com/v2/user/me";
     const Header = {
