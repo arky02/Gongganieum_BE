@@ -76,7 +76,7 @@ router.get("/building/search", (req, res) => {
 */
 
   let q = req.query?.q ?? null; // -> where
-  const as = req.query?.as ?? "address"; // address(default), building, (popup) -> where
+  const as = req.query?.as ?? "address"; // address(default), building, popup -> where
   const cate = req.query?.cate ?? null; // str -> where
   const isours = req.query?.isours ?? null; // true, false -> where
   const order = req.query?.order ?? "new"; // new(default), popular, (likes)
@@ -85,9 +85,14 @@ router.get("/building/search", (req, res) => {
   let whereQuery = [];
 
   // Where 절 생성
-  whereQuery.push(
-    `b.${as === "building" ? "name" : "address"} LIKE '${"%" + q + "%"}'` // 1. as 필터로 q 검색 => b.address LIKE '%강남%'
-  );
+  // popup.popup_name = '${"%" + q + "%"}'
+  const q_filter =
+    as === "popup"
+      ? `popup.popup_name = '${"%" + q + "%"}'`
+      : `b.${as === "building" ? "name" : "address"} LIKE '${"%" + q + "%"}'`;
+
+  // 1. as 필터로 q 검색 => b.address LIKE '%강남%'
+  whereQuery.push(q_filter);
 
   if (cate) whereQuery.push(`b.cate = '${cate}'`); // 2. cate 필터 적용 => b.cate = 패션
 
@@ -153,6 +158,24 @@ router.get("/building/search", (req, res) => {
       ORDER BY 
           popups_count DESC;`;
       break;
+    case "popup":
+      query = `
+      SELECT 
+          b.*
+      FROM 
+          Buildings b
+      JOIN 
+          JSON_TABLE(
+              b.popups, 
+              '$[*]' 
+              COLUMNS (
+                  popup_name VARCHAR(255) PATH '$.name'
+              )
+          ) AS popup
+      ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
+      WHERE 
+          popup.popup_name = '${"%" + q + "%"}';
+`;
   }
 
   maria.query(query, function (err, result) {
@@ -477,6 +500,17 @@ router.get("/naver/callback", async (req, res) => {
     };
     const response = await axios.get(url, Header);
     console.log(response);
+
+    // data: {
+    //   resultcode: '00',
+    //   message: 'success',
+    //   response: {
+    //     id: 'IL3MaH6AHrU-pIIuSJyoHw0C5opTzf9ZZ0R3xk9LKqg',
+    //     email: 'kyean07@naver.com',
+    //     name: '김기연'
+    //   }
+    // }
+
     // const { nickname, profile_image: img } = response.data.properties;
     // const payload = { nickname, img };
     // console.log(payload);
