@@ -547,11 +547,12 @@ router.get("/naver/callback", async (req, res) => {
       },
     };
     const response = await axios.get(url, Header);
-    const { nickname, profile_image: img } = response.data.properties;
-    const payload = { nickname, img };
-    console.log(payload);
-    const accessToken = makeToken(payload);
-    const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
+    console.log(response.data.properties);
+    // const { nickname, profile_image: img } = response.data.properties;
+    // const payload = { nickname, img };
+    // console.log(payload);
+    // const accessToken = makeToken(payload);
+    // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
 
     // DB에 유저 정보 1차 저장
 
