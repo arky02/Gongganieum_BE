@@ -476,7 +476,7 @@ router.get("/naver/callback", async (req, res) => {
       },
     };
     const response = await axios.get(url, Header);
-    console.log(response.data.properties);
+    console.log(response);
     // const { nickname, profile_image: img } = response.data.properties;
     // const payload = { nickname, img };
     // console.log(payload);
