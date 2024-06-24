@@ -173,8 +173,6 @@ router.get("/building/search", (req, res) => {
               )
           ) AS popup
       ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
-      WHERE 
-          popup.popup_name = '${"%" + q + "%"}';
 `;
   }
 
