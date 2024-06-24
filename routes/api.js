@@ -448,6 +448,78 @@ router.get("/building/likes/count", function (req, res) {
 router.get("/kakao/callback", async (req, res) => {
   let token;
   try {
+    const url = "	https://nid.naver.com/oauth2.0/token";
+    const body = qs.stringify({
+      grant_type: "authorization_code",
+      client_id: "8_nLWgqOkGlSkyVVYEGj",
+      client_secret: "3YDZdvIDsf",
+      redirectUri: "http://localhost:3000/oauth/naver",
+      code: req.query.code,
+      state: null,
+    });
+    const header = { "content-type": "application/x-www-form-urlencoded" };
+    const response = await axios.post(url, body, header);
+    token = response.data.access_token;
+  } catch (err) {
+    console.log(err);
+    console.log("에러1");
+    res.send("에러1");
+  }
+
+  console.log("token", token);
+
+  try {
+    const url = "https://openapi.naver.com/v1/nid/me";
+    const Header = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(url, Header);
+    const { nickname, profile_image: img } = response.data.properties;
+    const payload = { nickname, img };
+    console.log(payload);
+    const accessToken = makeToken(payload);
+    const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
+
+    // DB에 유저 정보 1차 저장
+
+    // maria.query(
+    //   `
+    //   SELECT buildingId, COUNT(userId) AS likes_count
+    //   FROM BuildingLikes
+    //   WHERE buildingId = ${id}
+    //   GROUP BY buildingId;
+    //   `,
+    //   function (err, result) {
+    //     if (!err) {
+    //       // 성공
+    //       console.log("(빌딩 좋아요 개수 출력) building id: " + String(id));
+    //       res.send(result[0]);
+    //       console.log(result[0]);
+    //     } else {
+    //       console.log("ERR(빌딩 좋아요 개수 출력) building id: " + String(id));
+    //       res.status(404).json({
+    //         error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
+    //       });
+    //     }
+    //   }
+    // );
+
+    res.cookie("accessToken", accessToken, cookiOpt);
+    res
+      .status(200)
+      .json({ accessToken: accessToken, nickname: nickname, img: img });
+
+    // res.redirect("/");
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get("/naver/callback", async (req, res) => {
+  let token;
+  try {
     const url = "https://kauth.kakao.com/oauth/token";
     const body = qs.stringify({
       grant_type: "authorization_code",
@@ -480,8 +552,36 @@ router.get("/kakao/callback", async (req, res) => {
     console.log(payload);
     const accessToken = makeToken(payload);
     const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
+
+    // DB에 유저 정보 1차 저장
+
+    // maria.query(
+    //   `
+    //   SELECT buildingId, COUNT(userId) AS likes_count
+    //   FROM BuildingLikes
+    //   WHERE buildingId = ${id}
+    //   GROUP BY buildingId;
+    //   `,
+    //   function (err, result) {
+    //     if (!err) {
+    //       // 성공
+    //       console.log("(빌딩 좋아요 개수 출력) building id: " + String(id));
+    //       res.send(result[0]);
+    //       console.log(result[0]);
+    //     } else {
+    //       console.log("ERR(빌딩 좋아요 개수 출력) building id: " + String(id));
+    //       res.status(404).json({
+    //         error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
+    //       });
+    //     }
+    //   }
+    // );
+
     res.cookie("accessToken", accessToken, cookiOpt);
-    res.send(token);
+    res
+      .status(200)
+      .json({ accessToken: accessToken, nickname: nickname, img: img });
+
     // res.redirect("/");
   } catch (err) {
     console.log(err);
@@ -553,3 +653,4 @@ module.exports = router;
 // SELECT buildingId
 // FROM BuildingLikes
 // WHERE userId = @userId;
+LXj1eXt4hJkCvJF1DAwWMUzwRyUAlGWGAAAAAQoqJRAAAAGQOXC2PSrXsvB0zxAC;
