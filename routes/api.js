@@ -653,4 +653,3 @@ module.exports = router;
 // SELECT buildingId
 // FROM BuildingLikes
 // WHERE userId = @userId;
-LXj1eXt4hJkCvJF1DAwWMUzwRyUAlGWGAAAAAQoqJRAAAAGQOXC2PSrXsvB0zxAC;
