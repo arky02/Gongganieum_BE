@@ -83,7 +83,7 @@ router.get("/building/search", (req, res) => {
   const page = req.query?.page ?? null; // 페이지네이션 페이지 번호
   const limit = req.query?.limit ?? null; // 페이지네이션으로 가져올 요소의 개수
 
-  let whereQuery = [];
+  let where_query = [];
 
   // Where 절 생성
   // popup.popup_name like '${"%" + q + "%"}'
@@ -94,29 +94,35 @@ router.get("/building/search", (req, res) => {
 
   // 1. as 필터로 q 검색어 검색 (공백제거, 일부로 검색)
   if (q)
-    whereQuery.push(
+    where_query.push(
       `REPLACE(${q_filter}, ' ', '') LIKE '${
         "%" + q.replace(/\s+/g, "") + "%"
       }'`
     );
 
   // 2. cate 필터 적용
-  if (cate) whereQuery.push(`b.cate = '${cate}'`);
+  if (cate) where_query.push(`b.cate = '${cate}'`);
 
   // 3. isours 필터 적용
-  if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
+  if (isours !== null) where_query.push(`b.isours = ${isours}`);
 
   // 4. order 적용
   let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
   if (order === "popular") order_filter = "popups_count DESC";
 
-  // 5. 페이지네이션 적용 (page, limit)
+  // 5. order에 따라 추출해야하는 select 쿼리 적용
+  let select_query =
+    "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"; // order = new (default) 적용
+  if (order === "popular")
+    select_query = "JSON_LENGTH(b.popups) AS popups_count";
+
+  // 6. 페이지네이션 적용 (page, limit)
   const page_filter =
     page && limit
       ? "LIMIT " + String(limit) + " page " + String((page - 1) * limit)
       : "";
 
-  console.log("빌딩 검색 조건: ", whereQuery);
+  console.log("빌딩 검색 조건: ", where_query);
   console.log("정렬 조건: ", order);
 
   // 전체 SQl Query문 생성
@@ -124,11 +130,7 @@ router.get("/building/search", (req, res) => {
         SELECT 
             b.*,
             MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date,
-            ${
-              order === "new" &&
-              "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"
-            }
-            ${order === "popular" && "JSON_LENGTH(b.popups) AS popups_count"}
+            ${select_query}
         FROM 
             Buildings b
         JOIN 
@@ -137,10 +139,10 @@ router.get("/building/search", (req, res) => {
                 '$[*]' 
                 COLUMNS (
                     popup_name VARCHAR(255) PATH '$.name',
-			              popup_date VARCHAR(512) PATH '$.date'
+                    popup_date VARCHAR(512) PATH '$.date'
                 )
             ) AS popup
-        ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
+        ${where_query.length > 0 ? `WHERE ${where_query.join(" AND ")}` : ""}
         GROUP BY 
             b._id
         ORDER BY
