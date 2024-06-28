@@ -80,6 +80,8 @@ router.get("/building/search", (req, res) => {
   const cate = req.query?.cate ?? null; // str -> where
   const isours = req.query?.isours ?? null; // true, false -> where
   const order = req.query?.order ?? "new"; // new(default), popular, (likes)
+  const offset = req.query?.page ?? null; // 페이지네이션 페이지 번호
+  const limit = req.query?.limit ?? null; // 페이지네이션으로 가져올 요소의 개수
 
   let query = "";
   let whereQuery = [];
@@ -137,7 +139,13 @@ router.get("/building/search", (req, res) => {
         GROUP BY 
             b._id
         ORDER BY
-            earliest_start_date DESC;`;
+            earliest_start_date DESC
+       ${
+         limit &&
+         offset &&
+         "LIMIT " + String(limit) + " OFFSET " + String((offset - 1) * limit)
+       } +";"`;
+
       break;
     case "popular":
       console.log("popular");
@@ -162,7 +170,12 @@ router.get("/building/search", (req, res) => {
       GROUP BY
           b._id
       ORDER BY 
-          popups_count DESC;`;
+          popups_count DESC
+    ${
+      limit &&
+      offset &&
+      "LIMIT " + String(limit) + " OFFSET " + String((offset - 1) * limit)
+    } +";"`;
       break;
   }
 
