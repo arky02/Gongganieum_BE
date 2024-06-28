@@ -14,8 +14,6 @@ const alert_and_move = require("../utils/alert_and_move.js");
 // Popup API : Popup 관련 API (GET) - 1개
 // =================================================================================================
 
-getReq();
-
 const getReq = async () => {
   const response = await axios.get(
     "https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&size=10&page=1&query=[쿼리]&type=address&category=road&format=json&errorformat=json&key=ACD06AF5-4717-3696-8A0F-13A93EEC7187"
@@ -23,6 +21,7 @@ const getReq = async () => {
   console.log(response);
 };
 
+getReq();
 router.get("/popup/infos", (req, res) => {
   /*
   #swagger.tags = ['Popup']
