@@ -80,10 +80,9 @@ router.get("/building/search", (req, res) => {
   const cate = req.query?.cate ?? null; // str -> where
   const isours = req.query?.isours ?? null; // true, false -> where
   const order = req.query?.order ?? "new"; // new(default), popular, (likes)
-  const offset = req.query?.page ?? null; // 페이지네이션 페이지 번호
+  const page = req.query?.page ?? null; // 페이지네이션 페이지 번호
   const limit = req.query?.limit ?? null; // 페이지네이션으로 가져올 요소의 개수
 
-  let query = "";
   let whereQuery = [];
 
   // Where 절 생성
@@ -107,26 +106,29 @@ router.get("/building/search", (req, res) => {
   // 3. isours 필터 적용
   if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
 
+  // 4. order 적용
+  let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
+  if ((order = "popular")) order_filter = "popups_count DESC";
+
+  // 5. 페이지네이션 적용 (page, limit)
+  const page_filter =
+    page && limit
+      ? "LIMIT " + String(limit) + " page " + String((page - 1) * limit)
+      : "";
+
   console.log("빌딩 검색 조건: ", whereQuery);
   console.log("정렬 조건: ", order);
 
-  // 4. order 적용, 전체 SQl Query문 생성
-  switch (order) {
-    case "new":
-      console.log("new");
-      query = `
+  // 전체 SQl Query문 생성
+  const query = `
         SELECT 
-            b._id,
-            b.address,
-            b.cate,
-            b.coord,
-            b.img,
-            b.isours,
-            b.name,
-            b.tag,
-            b.popups,
-            MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date,
-            MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date
+            b.*,
+            MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date,
+            ${
+              order === "new" &&
+              "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"
+            }
+            ${order === "popular" && "JSON_LENGTH(b.popups) AS popups_count"}
         FROM 
             Buildings b
         JOIN 
@@ -142,45 +144,8 @@ router.get("/building/search", (req, res) => {
         GROUP BY 
             b._id
         ORDER BY
-            earliest_start_date DESC
-       ${
-         limit &&
-         offset &&
-         "LIMIT " + String(limit) + " OFFSET " + String((offset - 1) * limit)
-       } +";"`;
-
-      break;
-    case "popular":
-      console.log("popular");
-      query = `
-      SELECT 
-          b.*,
-          JSON_LENGTH(b.popups) AS popups_count,
-          MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date
-      FROM 
-          Buildings b
-      LEFT JOIN
-          JSON_TABLE(
-              b.popups, 
-              '$[*]' 
-              COLUMNS (
-                  popup_name VARCHAR(255) PATH '$.name',
-			            popup_date VARCHAR(512) PATH '$.date'
-              )
-          ) AS popup
-      ON TRUE
-      ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
-      GROUP BY
-          b._id
-      ORDER BY 
-          popups_count DESC
-    ${
-      limit &&
-      offset &&
-      "LIMIT " + String(limit) + " OFFSET " + String((offset - 1) * limit)
-    } +";"`;
-      break;
-  }
+            ${order_filter}
+        ${page_filter};`;
 
   maria.query(query, function (err, result) {
     if (!err) {
@@ -191,6 +156,7 @@ router.get("/building/search", (req, res) => {
           isours ? `isours: ${isours}` : ""
         }, ${order ? `order: ${order}` : ""}`
       );
+      if (page_filter) console.log(page_filter);
       res.send(result);
     } else {
       console.log("ERR : " + err);
