@@ -85,10 +85,10 @@ router.get("/building/search", (req, res) => {
   let whereQuery = [];
 
   // Where 절 생성
-  // popup.popup_name = '${"%" + q + "%"}'
+  // popup.popup_name like '${"%" + q + "%"}'
   const q_filter =
     as === "popup"
-      ? `popup.popup_name = '${"%" + q + "%"}'`
+      ? `popup.popup_name like '${"%" + q + "%"}'`
       : `b.${as === "building" ? "name" : "address"} LIKE '${"%" + q + "%"}'`;
 
   // 1. as 필터로 q 검색 => b.address LIKE '%강남%'
@@ -116,8 +116,8 @@ router.get("/building/search", (req, res) => {
             b.name,
             b.tag,
             b.popups,
-            MIN(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', 1), '%y.%m.%d')) AS earliest_start_date,
-            MAX(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', -1), '%y.%m.%d')) AS latest_end_date
+            MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date,
+            MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date
         FROM 
             Buildings b
         JOIN 
@@ -125,7 +125,8 @@ router.get("/building/search", (req, res) => {
                 b.popups, 
                 '$[*]' 
                 COLUMNS (
-                    value JSON PATH '$'
+                    popup_name VARCHAR(255) PATH '$.name',
+			              popup_date VARCHAR(512) PATH '$.date'
                 )
             ) AS popup
         ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
@@ -140,7 +141,7 @@ router.get("/building/search", (req, res) => {
       SELECT 
           b.*,
           JSON_LENGTH(b.popups) AS popups_count,
-          MAX(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', -1), '%y.%m.%d')) AS latest_end_date
+          MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date
       FROM 
           Buildings b
       LEFT JOIN
@@ -148,7 +149,8 @@ router.get("/building/search", (req, res) => {
               b.popups, 
               '$[*]' 
               COLUMNS (
-                  value JSON PATH '$'
+                  popup_name VARCHAR(255) PATH '$.name',
+			            popup_date VARCHAR(512) PATH '$.date'
               )
           ) AS popup
       ON TRUE
@@ -158,22 +160,6 @@ router.get("/building/search", (req, res) => {
       ORDER BY 
           popups_count DESC;`;
       break;
-    case "popup":
-      query = `
-      SELECT 
-          b.*
-      FROM 
-          Buildings b
-      JOIN 
-          JSON_TABLE(
-              b.popups, 
-              '$[*]' 
-              COLUMNS (
-                  popup_name VARCHAR(255) PATH '$.name'
-              )
-          ) AS popup
-      ${whereQuery.length > 0 ? `WHERE ${whereQuery.join(" AND ")}` : ""}
-`;
   }
 
   maria.query(query, function (err, result) {
