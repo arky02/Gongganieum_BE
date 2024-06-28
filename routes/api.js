@@ -108,7 +108,7 @@ router.get("/building/search", (req, res) => {
 
   // 4. order 적용
   let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
-  if ((order = "popular")) order_filter = "popups_count DESC";
+  if (order === "popular") order_filter = "popups_count DESC";
 
   // 5. 페이지네이션 적용 (page, limit)
   const page_filter =
