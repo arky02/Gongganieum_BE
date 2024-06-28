@@ -92,7 +92,9 @@ router.get("/building/search", (req, res) => {
   if (as === "building") q_filter = "b.name";
 
   // 1. as 필터로 q 검색어 검색 (공백제거, 일부로 검색)
-  whereQuery.push(`REPLACE(${q_filter}, ' ', '') LIKE '${"%" + q + "%"}'`);
+  whereQuery.push(
+    `REPLACE(${q_filter}, ' ', '') LIKE '${"%" + q.replace(/\s+/g, "") + "%"}'`
+  );
 
   // 2. cate 필터 적용
   if (cate) whereQuery.push(`b.cate = '${cate}'`);
