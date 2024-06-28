@@ -147,6 +147,8 @@ router.get("/building/search", (req, res) => {
             ${order_filter}
         ${page_filter};`;
 
+  console.log(query);
+
   maria.query(query, function (err, result) {
     if (!err) {
       console.log(
