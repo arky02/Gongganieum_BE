@@ -16,12 +16,24 @@ const alert_and_move = require("../utils/alert_and_move.js");
 
 const getReq = async () => {
   const response = await axios.get(
-    "https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&size=10&page=1&query=[쿼리]&type=address&category=road&format=json&errorformat=json&key=ACD06AF5-4717-3696-8A0F-13A93EEC7187"
+    "https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&size=10&page=1&query=성수이로26길 28&type=address&category=road&format=json&errorformat=json&key=ACD06AF5-4717-3696-8A0F-13A93EEC7187"
   );
   console.log(response);
+  return response;
 };
 
-getReq();
+router.get("/testtest", (req, res) => {
+  /*
+  #swagger.tags = ['Popup']
+  #swagger.summary = '전체 팝업 리스트 정보 리턴'
+  #swagger.description = "Response Datatype: Popups[]"
+*/
+  const response = getReq();
+  console.log(response);
+
+  res.send(response);
+});
+
 router.get("/popup/infos", (req, res) => {
   /*
   #swagger.tags = ['Popup']
