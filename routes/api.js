@@ -101,7 +101,7 @@ router.get("/building/search", (req, res) => {
     );
 
   // 2. cate 필터 적용
-  if (cate) where_query.push(`b.cate = '${cate}'`);
+  if (cate && cate !== "전체") where_query.push(`b.cate = '${cate}'`);
 
   // 3. isours 필터 적용
   if (isours !== null) where_query.push(`b.isours = ${isours}`);
