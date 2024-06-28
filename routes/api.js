@@ -86,22 +86,24 @@ router.get("/building/search", (req, res) => {
 
   // Where 절 생성
   // popup.popup_name like '${"%" + q + "%"}'
-  const q_filter =
-    as === "popup"
-      ? `popup.popup_name like '${"%" + q + "%"}'`
-      : `b.${as === "building" ? "name" : "address"} LIKE '${"%" + q + "%"}'`;
 
-  // 1. as 필터로 q 검색 => b.address LIKE '%강남%'
-  whereQuery.push(q_filter);
+  let q_filter = "b.address";
+  if (as === "popup") q_filter = "popup.popup_name";
+  if (as === "building") q_filter = "b.name";
 
-  if (cate) whereQuery.push(`b.cate = '${cate}'`); // 2. cate 필터 적용 => b.cate = 패션
+  // 1. as 필터로 q 검색어 검색 (공백제거, 일부로 검색)
+  whereQuery.push(`REPLACE(${q_filter}, ' ', '') LIKE '${"%" + q + "%"}'`);
 
-  if (isours !== null) whereQuery.push(`b.isours = ${isours}`); // 3. isours 필터 적용 => b.isours = false
+  // 2. cate 필터 적용
+  if (cate) whereQuery.push(`b.cate = '${cate}'`);
+
+  // 3. isours 필터 적용
+  if (isours !== null) whereQuery.push(`b.isours = ${isours}`);
 
   console.log("빌딩 검색 조건: ", whereQuery);
   console.log("정렬 조건: ", order);
 
-  // order 적용해서 전체 SQl Query문 생성
+  // 4. order 적용, 전체 SQl Query문 생성
   switch (order) {
     case "new":
       console.log("new");
