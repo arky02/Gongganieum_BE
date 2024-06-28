@@ -119,7 +119,7 @@ router.get("/building/search", (req, res) => {
   // 6. 페이지네이션 적용 (page, limit)
   const page_filter =
     page && limit
-      ? "LIMIT " + String(limit) + " page " + String((page - 1) * limit)
+      ? "LIMIT " + String(limit) + " OFFSET " + String((page - 1) * limit)
       : "";
 
   console.log("빌딩 검색 조건: ", where_query);
