@@ -502,6 +502,13 @@ router.get("/naver/callback", async (req, res) => {
           });
         } else {
           console.log("ERR (소셜로그인 - Naver) : " + err);
+          console.log(
+            "Error Query: " +
+              `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
+                img ? '"' + img + '"' : null
+              });
+      SELECT _id as user_id from Users WHERE email = "${email}";`
+          );
           res.status(409).json({
             error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
           });
@@ -615,10 +622,10 @@ router.get("/kakao/callback", async (req, res) => {
     // 3. DB에 Guest로 유저 정보 최초 저장 (회원가입, Role - Guest)
     let newUserId;
     maria.query(
-      `INSERT INTO Users(name, email, img) VALUES ("${name}","${
-        name + "@naver.com"
-      }",${img ? "" + img + "" : null});
-      SELECT _id as user_id from Users WHERE email = ${name + "@naver.com"};`,
+      `INSERT INTO Users(name, email, img) VALUES ("${name}","${name}@naver.com",${
+        img ? "" + img + "" : null
+      });
+      SELECT _id as user_id from Users WHERE email = "${name + "@naver.com"}";`,
       function (err) {
         if (!err) {
           console.log(
@@ -641,6 +648,13 @@ router.get("/kakao/callback", async (req, res) => {
           res.status(409).json({
             error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
           });
+          console.log(
+            "Error Query: " +
+              `INSERT INTO Users(name, email, img) VALUES ("${name}","${
+                name + "@naver.com"
+              }",${img ? "" + img + "" : null});
+      SELECT _id as user_id from Users WHERE email = "${name}@naver.com";`
+          );
         }
       }
     );
