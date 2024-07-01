@@ -460,7 +460,7 @@ router.get("/naver/callback", async (req, res) => {
   } catch (err) {
     console.log(err);
     console.log("ERR: Error while getting Authorization Code");
-    res.send("ERR: Error while getting Authorization Code");
+    res.status(400).send("ERR: Error while getting Authorization Code");
   }
   console.log("token", token);
 
@@ -483,7 +483,7 @@ router.get("/naver/callback", async (req, res) => {
       `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
         img ? '"' + img + '"' : null
       });
-      SELECT _id as user_id from Users WHERE email = ${email};`,
+      SELECT _id as user_id from Users WHERE email = "${email}";`,
       function (err, result) {
         if (!err) {
           console.log(
@@ -500,7 +500,7 @@ router.get("/naver/callback", async (req, res) => {
               ", img: " +
               img
           );
-          newUserId = String(result[1][0]["user_id"]);
+          newUserId = result[1][0]["user_id"]; // int
           // res.status(200).json({
           //   message: "네이버로 회원가입 되었습니다.",
           // });
@@ -618,7 +618,7 @@ router.get("/kakao/callback", async (req, res) => {
   } catch (err) {
     console.log(err);
     console.log("ERR: Error while getting Authorization Code");
-    res.send("ERR: Error while getting Authorization Code");
+    res.status(400).send("ERR: Error while getting Authorization Code");
   }
   console.log("token", token);
 
@@ -658,7 +658,7 @@ router.get("/kakao/callback", async (req, res) => {
               ", img: " +
               img
           );
-          newUserId = String(result[1][0]["user_id"]);
+          newUserId = result[1][0]["user_id"]; // int
           // res.status(200).json({
           //   message: "네이버로 회원가입 되었습니다.",
           // });
