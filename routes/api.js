@@ -523,7 +523,7 @@ router.get("/naver/callback", async (req, res) => {
 
     // res.redirect("/");
 
-    res.status(200).send("success");
+    res.status(200).json(response?.data?.response);
   } catch (err) {
     console.log(err);
   }
