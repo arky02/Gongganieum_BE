@@ -258,7 +258,7 @@ router.post("/user/register", function (req, res) {
           "(User Register) User is saved! name : " +
             name +
             ", user id: " +
-            String(result)
+            String(result[1][0])
         );
         res.status(201).send(result[1][0]);
       } else {
@@ -473,8 +473,7 @@ router.get("/naver/callback", async (req, res) => {
       },
     };
     const response = await axios.get(url, Header);
-    // console.log(response);
-    console.log(response?.data?.response);
+    console.log("NAVER user info response", response?.data?.response);
     const { name, email, profile_image: img } = response?.data?.response;
 
     // 3. DB에 Guest로 유저 정보 최초 저장 (회원가입, Role - Guest)
@@ -488,7 +487,7 @@ router.get("/naver/callback", async (req, res) => {
         if (!err) {
           console.log(
             "(소셜로그인 -  Naver) User is registered! UserId: " +
-              String(result) +
+              String(result[1][0]) +
               "name: " +
               name +
               ", email: " +
@@ -496,7 +495,7 @@ router.get("/naver/callback", async (req, res) => {
               ", img: " +
               img
           );
-          newUserId = String(result);
+          newUserId = String(result[1][0]);
           res.status(200).json({
             message: "네이버로 회원가입 되었습니다.",
           });
@@ -616,7 +615,7 @@ router.get("/kakao/callback", async (req, res) => {
       },
     };
     const response = await axios.get(url, Header);
-    console.log(response.data.properties);
+    console.log("NAVER user info response", response?.data?.properties);
     const { nickname: name, profile_image: img } = response.data.properties;
 
     // 3. DB에 Guest로 유저 정보 최초 저장 (회원가입, Role - Guest)
@@ -626,11 +625,11 @@ router.get("/kakao/callback", async (req, res) => {
         img ? '"' + img + '"' : null
       });
       SELECT _id as user_id from Users WHERE email = "${name + "@naver.com"}";`,
-      function (err) {
+      function (err, result) {
         if (!err) {
           console.log(
             "(소셜로그인 -  Kakao) User is registered! UserId: " +
-              String(result) +
+              String(result[1][0]) +
               "name: " +
               name +
               ", email: " +
@@ -639,7 +638,7 @@ router.get("/kakao/callback", async (req, res) => {
               ", img: " +
               img
           );
-          newUserId = String(result);
+          newUserId = String(result[1][0]);
           res.status(200).json({
             message: "네이버로 회원가입 되었습니다.",
           });
@@ -686,7 +685,8 @@ router.get("/kakao/callback", async (req, res) => {
     // );
 
     // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-    const payload = { userId: newUserId, email };
+    console.log("카카오 로그인 - 이메일 정보 없어서 이름+@naver.com으로 대체");
+    const payload = { userId: newUserId, email: name + "@naver.com" };
     console.log("payload", payload);
     const accessToken = makeToken(payload);
     console.log("accessToken", accessToken);
