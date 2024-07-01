@@ -475,6 +475,23 @@ router.get("/naver/callback", async (req, res) => {
     // console.log(response);
     console.log(response?.data?.response);
 
+    // maria.query(
+    //   `INSERT INTO Users(name, email, img) VALUES (${nickname},${},${img});`,
+    //   function (err) {
+    //     if (!err) {
+    //       console.log("(Save User) User is saved : " + name);
+    //       res.status(200).json({
+    //         message: "User is saved",
+    //       });
+    //     } else {
+    //       console.log("ERR (Save User) : " + err);
+    //       res.status(409).json({
+    //         error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+    //       });
+    //     }
+    //   }
+    // );
+
     // data: {
     //   resultcode: '00',
     //   message: 'success',
@@ -568,7 +585,27 @@ router.get("/kakao/callback", async (req, res) => {
     const payload = { nickname, img };
     console.log(payload);
     const accessToken = makeToken(payload);
+    console.log(accessToken);
     const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
+
+    // maria.query(
+    //   `INSERT INTO Users(name, email, img) VALUES (${nickname},${},${img});`,
+    //   function (err) {
+    //     if (!err) {
+    //       console.log("(Save User) User is saved : " + name);
+    //       res.status(200).json({
+    //         message: "User is saved",
+    //       });
+    //     } else {
+    //       console.log("ERR (Save User) : " + err);
+    //       res.status(409).json({
+    //         error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+    //       });
+    //     }
+    //   }
+    // );
+
+    // insert into Users(name, email, img) values("test1","test1",null);
 
     // DB에 유저 정보 1차 저장
 
