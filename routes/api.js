@@ -486,13 +486,13 @@ router.get("/naver/callback", async (req, res) => {
       SELECT _id as user_id from Users WHERE email = ${email};`,
       function (err, result) {
         if (!err) {
-          console.log("db insert query response", result);
-          console.log("db insert query response", result[1][0]);
-          console.log("db insert query response", result[1][0]["user_id"]);
-          console.log("db insert query response", result[1][0]?.user_id);
+          console.log(
+            "db insert query response - userID",
+            result[1][0]["user_id"]
+          );
           console.log(
             "(소셜로그인 -  Naver) User is registered! UserId: " +
-              String(result[1][0]) +
+              String(result[1][0]["user_id"]) +
               "name: " +
               name +
               ", email: " +
@@ -500,7 +500,7 @@ router.get("/naver/callback", async (req, res) => {
               ", img: " +
               img
           );
-          newUserId = String(result[1][0]);
+          newUserId = String(result[1][0]["user_id"]);
           // res.status(200).json({
           //   message: "네이버로 회원가입 되었습니다.",
           // });
@@ -513,7 +513,7 @@ router.get("/naver/callback", async (req, res) => {
           console.log("accessToken", accessToken);
           const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
 
-          res.cookie("accessToken", accessToken, cookiOpt);
+          // res.cookie("accessToken", accessToken, cookiOpt);
           res.status(200).json({ accessToken: accessToken, role: "GUEST" });
         } else {
           console.log("ERR (소셜로그인 - Naver) : " + err);
@@ -643,13 +643,13 @@ router.get("/kakao/callback", async (req, res) => {
       SELECT _id as user_id from Users WHERE email = "${name + "@naver.com"}";`,
       function (err, result) {
         if (!err) {
-          console.log("db insert query response", result);
-          console.log("db insert query response", result[1][0]);
-          console.log("db insert query response", result[1][0]["user_id"]);
-          console.log("db insert query response", result[1][0]?.user_id);
+          console.log(
+            "db insert query response - userID",
+            result[1][0]["user_id"]
+          );
           console.log(
             "(소셜로그인 -  Kakao) User is registered! UserId: " +
-              String(result[1][0]) +
+              String(result[1][0]["user_id"]) +
               "name: " +
               name +
               ", email: " +
@@ -658,7 +658,7 @@ router.get("/kakao/callback", async (req, res) => {
               ", img: " +
               img
           );
-          newUserId = String(result[1][0]);
+          newUserId = String(result[1][0]["user_id"]);
           // res.status(200).json({
           //   message: "네이버로 회원가입 되었습니다.",
           // });
@@ -718,16 +718,16 @@ router.get("/kakao/callback", async (req, res) => {
     // );
 
     // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-    console.log("카카오 로그인 - 이메일 정보 없어서 이름+@naver.com으로 대체");
-    const payload = { userId: newUserId, email: name + "@naver.com" };
-    console.log("userId", newUserId);
-    console.log("payload", payload);
-    const accessToken = makeToken(payload);
-    console.log("accessToken", accessToken);
-    const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
+    // console.log("카카오 로그인 - 이메일 정보 없어서 이름+@naver.com으로 대체");
+    // const payload = { userId: newUserId, email: name + "@naver.com" };
+    // console.log("userId", newUserId);
+    // console.log("payload", payload);
+    // const accessToken = makeToken(payload);
+    // console.log("accessToken", accessToken);
+    // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
 
-    // res.cookie("accessToken", accessToken, cookiOpt);
-    res.status(200).json({ accessToken: accessToken, role: "GUEST" });
+    // // res.cookie("accessToken", accessToken, cookiOpt);
+    // res.status(200).json({ accessToken: accessToken, role: "GUEST" });
 
     // res.redirect("/");
   } catch (err) {
