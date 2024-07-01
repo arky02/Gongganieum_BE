@@ -474,7 +474,7 @@ router.get("/naver/callback", async (req, res) => {
     };
     const response = await axios.get(url, Header);
     // console.log(response);
-    console.log(response?.data);
+    console.log(response?.data?.response);
 
     // data: {
     //   resultcode: '00',
