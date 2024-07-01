@@ -225,33 +225,32 @@ router.post("/user/register", function (req, res) {
     tag = null;
 
   try {
-    name = req.body.name;
-    nickname = req.body.nickname;
-    email = req.body.email;
+    name = '"' + req.body.name + '"'; // 필수 입력 값
+    nickname = req.body.nickname ? '"' + req.body?.nickname + '"' : null;
+    email = '"' + req.body.email + '"'; // 필수 입력 값
     description = req.body?.description
       ? '"' + req.body?.description + '"'
       : null;
-    img = req.body?.img ? '"' + req.body?.img + '"' : null;
-    company = req.body.company;
-    brand = req.body.brand;
-    product = req.body.product;
-    tag = req.body.tag;
+    img = req.body?.img ? '"' + req.body?.img + '"' : null; // 필수 입력 값
+    company = req.body?.company ? '"' + req.body?.company + '"' : null;
+    brand = req.body.brand ? '"' + req.body?.brand + '"' : null;
+    product = req.body.product ? '"' + req.body?.product + '"' : null;
+    tag = req.body.tag ? '"' + req.body?.tag + '"' : null;
 
     console.log(
-      `INSERT INTO Users(name, nickname, email, description, img, company, brand, product, tag) VALUES ("${name}", "${nickname}", "${email}", ${description}, ${img}, "${company}", "${brand}", "${product}", "${tag}")`
+      `INSERT INTO Users(name, nickname, email, description, img, company, brand, product, tag) VALUES (${name}, ${nickname}, ${email}, ${description}, ${img}, ${company}, ${brand}, ${product}, ${tag})`
     );
   } catch (e) {
     console.log("ERR ('/user/register') : " + e);
     res.status(400).json({
-      error:
-        "ERR_PARAMS : name, nickname, email, company, brand, product, tag는 필수 입력 값입니다.",
+      error: "ERR_PARAMS : name, email, img는 필수 입력 값입니다.",
     });
   }
 
   maria.query(
     `
-    INSERT INTO Users(name, nickname, email, description, img, company, brand, product, tag) VALUES ("${name}", "${nickname}", "${email}", ${description}, ${img}, "${company}", "${brand}", "${product}", "${tag}");
-    SELECT _id as user_id from Users WHERE email = "${email}";
+    INSERT INTO Users(name, nickname, email, description, img, company, brand, product, tag) VALUES (${name}, ${nickname}, ${email}, ${description}, ${img}, ${company}, ${brand}, ${product}, ${tag});
+    SELECT _id as user_id from Users WHERE email = ${email};
     `,
     function (err, result) {
       if (!err) {
@@ -474,7 +473,7 @@ router.get("/naver/callback", async (req, res) => {
     };
     const response = await axios.get(url, Header);
     // console.log(response);
-    console.log(response);
+    console.log(response?.data?.response);
 
     // data: {
     //   resultcode: '00',
