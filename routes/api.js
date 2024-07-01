@@ -517,7 +517,7 @@ router.get("/naver/callback", async (req, res) => {
     );
 
     // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-    const payload = { newUserId: userId, email };
+    const payload = { userId: newUserId, email };
     console.log("payload", payload);
     const accessToken = makeToken(payload);
     console.log("accessToken", accessToken);
@@ -623,7 +623,7 @@ router.get("/kakao/callback", async (req, res) => {
     let newUserId;
     maria.query(
       `INSERT INTO Users(name, email, img) VALUES ("${name}","${name}@naver.com",${
-        img ? "" + img + "" : null
+        img ? '"' + img + '"' : null
       });
       SELECT _id as user_id from Users WHERE email = "${name + "@naver.com"}";`,
       function (err) {
@@ -686,7 +686,7 @@ router.get("/kakao/callback", async (req, res) => {
     // );
 
     // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-    const payload = { newUserId: userId, email };
+    const payload = { userId: newUserId, email };
     console.log("payload", payload);
     const accessToken = makeToken(payload);
     console.log("accessToken", accessToken);
