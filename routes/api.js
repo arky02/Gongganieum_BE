@@ -488,7 +488,8 @@ router.get("/naver/callback", async (req, res) => {
         if (!err) {
           console.log("db insert query response", result);
           console.log("db insert query response", result[1][0]);
-          console.log("db insert query response", result[1][0]["userId"]);
+          console.log("db insert query response", result[1][0]["user_id"]);
+          console.log("db insert query response", result[1][0]?.user_id);
           console.log(
             "(소셜로그인 -  Naver) User is registered! UserId: " +
               String(result[1][0]) +
@@ -644,7 +645,8 @@ router.get("/kakao/callback", async (req, res) => {
         if (!err) {
           console.log("db insert query response", result);
           console.log("db insert query response", result[1][0]);
-          console.log("db insert query response", result[1][0]["userId"]);
+          console.log("db insert query response", result[1][0]["user_id"]);
+          console.log("db insert query response", result[1][0]?.user_id);
           console.log(
             "(소셜로그인 -  Kakao) User is registered! UserId: " +
               String(result[1][0]) +
@@ -671,7 +673,7 @@ router.get("/kakao/callback", async (req, res) => {
           console.log("accessToken", accessToken);
           const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
 
-          res.cookie("accessToken", accessToken, cookiOpt);
+          // res.cookie("accessToken", accessToken, cookiOpt);
           res.status(200).json({ accessToken: accessToken, role: "GUEST" });
         } else {
           console.log("ERR (소셜로그인 - Kakao) : " + err);
@@ -724,7 +726,7 @@ router.get("/kakao/callback", async (req, res) => {
     console.log("accessToken", accessToken);
     const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
 
-    res.cookie("accessToken", accessToken, cookiOpt);
+    // res.cookie("accessToken", accessToken, cookiOpt);
     res.status(200).json({ accessToken: accessToken, role: "GUEST" });
 
     // res.redirect("/");
