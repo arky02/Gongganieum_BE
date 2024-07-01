@@ -474,7 +474,7 @@ router.get("/naver/callback", async (req, res) => {
     };
     const response = await axios.get(url, Header);
     // console.log(response);
-    console.log(response?.data?.response);
+    console.log(response);
 
     // data: {
     //   resultcode: '00',
@@ -527,7 +527,7 @@ router.get("/naver/callback", async (req, res) => {
     // id: "IL3MaH6AHrU-pIIuSJyoHw0C5opTzf9ZZ0R3xk9LKqg"
     // name: "김기연"
 
-    res.status(200).json(response);
+    res.status(200).json(response?.data);
     // res.status(200).json(response?.data?.response);
   } catch (err) {
     console.log(err);
