@@ -474,6 +474,7 @@ router.get("/naver/callback", async (req, res) => {
     };
     const response = await axios.get(url, Header);
     console.log(response);
+    console.log(response?.data);
 
     // data: {
     //   resultcode: '00',
@@ -515,12 +516,14 @@ router.get("/naver/callback", async (req, res) => {
     //   }
     // );
 
-    res.cookie("accessToken", accessToken, cookiOpt);
-    res
-      .status(200)
-      .json({ accessToken: accessToken, nickname: nickname, img: img });
+    // res.cookie("accessToken", accessToken, cookiOpt);
+    // res
+    //   .status(200)
+    //   .json({ accessToken: accessToken, nickname: nickname, img: img });
 
     // res.redirect("/");
+
+    res.send(response);
   } catch (err) {
     console.log(err);
   }
