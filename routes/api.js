@@ -523,7 +523,12 @@ router.get("/naver/callback", async (req, res) => {
 
     // res.redirect("/");
 
-    res.status(200).json(response?.data?.response);
+    // email: "kyean07@naver.com"
+    // id: "IL3MaH6AHrU-pIIuSJyoHw0C5opTzf9ZZ0R3xk9LKqg"
+    // name: "김기연"
+
+    res.status(200).json(response);
+    // res.status(200).json(response?.data?.response);
   } catch (err) {
     console.log(err);
   }
