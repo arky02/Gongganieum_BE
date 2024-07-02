@@ -521,7 +521,7 @@ router.get("/oauth/callback", async (req, res) => {
   const img = oauthUserInfoRes.profile_image;
 
   // 3. UserRole 체크, 회원가입 필요 여부 확인
-  let userRole = "GUEST",
+  let userRole = "",
     userId = "";
   maria.query(
     `SELECT _id as user_id from Users WHERE email = "${email}";`,
@@ -529,6 +529,7 @@ router.get("/oauth/callback", async (req, res) => {
       if (err) {
         // 회원 정보 없음 => ROLE: GUEST 처리
         console.log(`EMAIL ${email}, 회원 정보 없음 => ROLE: GUEST 처리`);
+        userRole = "GUEST";
         console.log(err);
       } else {
         // 이미 회원임 => ROLE: USER, 바로 로그인
@@ -552,8 +553,6 @@ router.get("/oauth/callback", async (req, res) => {
       }
     }
   );
-
-  if (userRole === "USER") return;
 
   // 4. UserRole이 Guest인 경우 => DB에 Role: Guest로 유저 정보 최초 저장 (회원가입)
   if (userRole === "GUEST") {
