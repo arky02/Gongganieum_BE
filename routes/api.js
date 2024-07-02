@@ -506,7 +506,7 @@ router.get("/naver/callback", async (req, res) => {
           // });
 
           // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-          const payload = { userId: newUserId, email };
+          const payload = { userId: newUserId, email, name };
           console.log("payload", payload);
           console.log("userId", newUserId);
           const accessToken = makeToken(payload);
@@ -514,7 +514,7 @@ router.get("/naver/callback", async (req, res) => {
           const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
 
           // res.cookie("accessToken", accessToken, cookiOpt);
-          res.status(200).json({ accessToken: accessToken, role: "GUEST" });
+          res.status(200).json({ accessToken, name, role: "GUEST" });
         } else {
           console.log("ERR (소셜로그인 - Naver) : " + err);
           console.log(
@@ -530,70 +530,6 @@ router.get("/naver/callback", async (req, res) => {
         }
       }
     );
-
-    // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-    // const payload = { userId: newUserId, email };
-    // console.log("payload", payload);
-    // console.log("userId", newUserId);
-    // const accessToken = makeToken(payload);
-    // console.log("accessToken", accessToken);
-    // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
-
-    // res.cookie("accessToken", accessToken, cookiOpt);
-    // res.status(200).json({ accessToken: accessToken, role: "GUEST" });
-
-    // data: {
-    //   resultcode: '00',
-    //   message: 'success',
-    //   response: {
-    //     id: 'IL3MaH6AHrU-pIIuSJyoHw0C5opTzf9ZZ0R3xk9LKqg',
-    //     email: 'kyean07@naver.com',
-    //     name: '김기연'
-    //   }
-    // }
-
-    // const { nickname, profile_image: img } = response.data.properties;
-    // const payload = { nickname, img };
-    // console.log(payload);
-    // const accessToken = makeToken(payload);
-    // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
-
-    // DB에 유저 정보 1차 저장
-
-    // maria.query(
-    //   `
-    //   SELECT buildingId, COUNT(userId) AS likes_count
-    //   FROM BuildingLikes
-    //   WHERE buildingId = ${id}
-    //   GROUP BY buildingId;
-    //   `,
-    //   function (err, result) {
-    //     if (!err) {
-    //       // 성공
-    //       console.log("(빌딩 좋아요 개수 출력) building id: " + String(id));
-    //       res.send(result[0]);
-    //       console.log(result[0]);
-    //     } else {
-    //       console.log("ERR(빌딩 좋아요 개수 출력) building id: " + String(id));
-    //       res.status(404).json({
-    //         error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
-    //       });
-    //     }
-    //   }
-    // );
-
-    // res.cookie("accessToken", accessToken, cookiOpt);
-    // res
-    //   .status(200)
-    //   .json({ accessToken: accessToken, nickname: nickname, img: img });
-
-    // res.redirect("/");
-
-    // email: "kyean07@naver.com"
-    // id: "IL3MaH6AHrU-pIIuSJyoHw0C5opTzf9ZZ0R3xk9LKqg"
-    // name: "김기연"
-
-    // res.status(200).json(response?.data?.response);
   } catch (err) {
     console.log(err);
   }
@@ -666,7 +602,11 @@ router.get("/kakao/callback", async (req, res) => {
           console.log(
             "카카오 로그인 - 이메일 정보 없어서 이름+@naver.com으로 대체"
           );
-          const payload = { userId: newUserId, email: name + "@naver.com" };
+          const payload = {
+            userId: newUserId,
+            email: name + "@naver.com",
+            name: name,
+          };
           console.log("userId", newUserId);
           console.log("payload", payload);
           const accessToken = makeToken(payload);
@@ -674,7 +614,7 @@ router.get("/kakao/callback", async (req, res) => {
           const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
 
           // res.cookie("accessToken", accessToken, cookiOpt);
-          res.status(200).json({ accessToken: accessToken, role: "GUEST" });
+          res.status(200).json({ accessToken, name, role: "GUEST" });
         } else {
           console.log("ERR (소셜로그인 - Kakao) : " + err);
           res.status(409).json({
