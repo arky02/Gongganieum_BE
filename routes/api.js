@@ -537,7 +537,8 @@ router.get("/oauth/callback", async (req, res) => {
           `EMAIL: ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
         );
         userRole = "USER";
-        userId = result[0].user_id; // int
+        console.log(result);
+        userId = result[0]?.user_id; // int
         console.log("기존 유저, 아이디:", result[0].user_id);
 
         // ===== ROLE: USER SEND RESPONSE  =====
