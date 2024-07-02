@@ -17,3 +17,10 @@ const OAUTH_CLIENT_ID = {
   naver: process.env.OAUTH_NAVER_CLIENT_ID,
   kakao: process.env.OAUTH_KAKAO_CLIENT_ID,
 };
+
+module.exports = {
+  OAUTH_GET_TOKEN_URL,
+  OAUTH_GET_USERINFO_URL,
+  OAUTH_CLIENT_SECRET,
+  OAUTH_CLIENT_ID,
+};

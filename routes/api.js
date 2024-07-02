@@ -6,6 +6,12 @@ var router = express.Router();
 const maria = require("../config/maria");
 const axios = require("axios");
 const qs = require("qs");
+const {
+  OAUTH_GET_TOKEN_URL,
+  OAUTH_GET_USERINFO_URL,
+  OAUTH_CLIENT_SECRET,
+  OAUTH_CLIENT_ID,
+} = require("../constants.js");
 
 const { makeToken } = require("../utils/jwt.js");
 const alert_and_move = require("../utils/alert_and_move.js");
