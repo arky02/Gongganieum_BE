@@ -553,6 +553,8 @@ router.get("/oauth/callback", async (req, res) => {
     }
   );
 
+  if (userRole === "USER") return;
+
   // 4. UserRole이 Guest인 경우 => DB에 Role: Guest로 유저 정보 최초 저장 (회원가입)
   if (userRole === "GUEST") {
     console.log("GUEST? ", userRole);
