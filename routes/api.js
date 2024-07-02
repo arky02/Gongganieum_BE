@@ -441,18 +441,32 @@ router.get("/building/likes/count", function (req, res) {
   );
 });
 
-router.get("/naver/callback", async (req, res) => {
+// Response로 JWT AccessToken(_id, email), Role 정보 보내기
+const sendOAuthResponse = ({ userId, email, name, role }) => {
+  const payload = { userId, email, name };
+  console.log("payload", payload);
+  const accessToken = makeToken(payload);
+  console.log("accessToken", accessToken);
+  // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
+  // res.cookie("accessToken", accessToken, cookiOpt);
+
+  res.status(200).json({ accessToken, name, role });
+};
+
+router.get("/oauth/callback", async (req, res) => {
+  // OAuth Provider = Kakao | Naver
+  let oauthProvider = req.query.provider;
   // 1. Authorization Code로 naver 서비스 AccessToken 획독
   let token;
   try {
-    const url = "	https://nid.naver.com/oauth2.0/token";
+    const url = OAUTH_GET_TOKEN_URL[oauthProvider];
     const body = qs.stringify({
       grant_type: "authorization_code",
-      client_id: "8_nLWgqOkGlSkyVVYEGj",
-      client_secret: "3YDZdvIDsf",
-      redirectUri: "http://localhost:3000/oauth/naver",
+      client_id: OAUTH_CLIENT_ID[oauthProvider],
+      client_secret: OAUTH_CLIENT_SECRET[oauthProvider],
+      redirectUri: `http://localhost:3000/oauth/${oauthProvider}`,
       code: req.query.code, // 프론트로부터 받은 Authorization Code
-      state: null,
+      state: null, // state는 네이버만
     });
     const header = { "content-type": "application/x-www-form-urlencoded" };
     const response = await axios.post(url, body, header);
@@ -466,210 +480,102 @@ router.get("/naver/callback", async (req, res) => {
 
   // 2. AccessToken으로 naver 유저 정보 획득
   try {
-    const url = "https://openapi.naver.com/v1/nid/me";
+    const url = OAUTH_GET_USERINFO_URL[oauthProvider];
     const Header = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
     const response = await axios.get(url, Header);
-    console.log("NAVER user info response", response?.data?.response);
 
-    const { name, email, profile_image: img } = response?.data?.response;
+    let oauthUserInfoRes;
+    if (oauthProvider === "NAVER") {
+      oauthUserInfoRes = response?.data?.response;
+      console.log("NAVER user info response", response?.data?.response);
+    } else {
+      oauthUserInfoRes = response?.data?.properties;
+      console.log("KAKAO user info response", response?.data?.properties);
+    }
 
-    // 3. DB에 Guest로 유저 정보 최초 저장 (회원가입, Role - Guest)
-    let newUserId;
+    // const { name, email, profile_image: img } = oauthUserInfoRes; => 네이버
+    // const { nickname: name, profile_image: img } = oauthUserInfoRes; => 카카오
+
+    const name =
+      oauthProvider === "NAVER"
+        ? oauthUserInfoRes.name
+        : oauthUserInfoRes.nickname;
+    const email =
+      oauthProvider === "NAVER" ? oauthUserInfoRes.email : name + "@naver.com";
+    const img = oauthUserInfoRes.profile_image;
+
+    // 3. UserRole 체크, 회원가입 필요 여부 확인
+    let userRole = "GUEST",
+      userId = "";
     maria.query(
-      `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
-        img ? '"' + img + '"' : null
-      });
+      `SELECT _id as user_id from Users WHERE email = "${email}";`,
+      function (err, result) {
+        if (err) {
+          // 회원 정보 없음 => ROLE: GUEST 처리
+          console.log(`EMAIL ${email}, 회원 정보 없음 => ROLE: GUEST 처리`);
+          console.log(err);
+        }
+        // 이미 회원임 => ROLE: USER 처리, 바로 로그인
+        console.log(
+          `EMAIL ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
+        );
+        userRole = "USER";
+        userId = String(result);
+        console.log("기존유저아이디", result);
+      }
+    );
+
+    // 4. UserRole이 Guest인 경우 => DB에 Role: Guest로 유저 정보 최초 저장 (회원가입)
+    userRole === "GUEST" &&
+      maria.query(
+        `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
+          img ? '"' + img + '"' : null
+        });
       SELECT _id as user_id from Users WHERE email = "${email}";`,
-      function (err, result) {
-        if (!err) {
-          console.log(
-            "db insert query response - userID",
-            result[1][0]["user_id"]
-          );
-          console.log(
-            "(소셜로그인 -  Naver) User is registered! UserId: " +
-              String(result[1][0]["user_id"]) +
-              "name: " +
-              name +
-              ", email: " +
-              email +
-              ", img: " +
-              img
-          );
-          newUserId = result[1][0]["user_id"]; // int
-          // res.status(200).json({
-          //   message: "네이버로 회원가입 되었습니다.",
-          // });
-
-          // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-          const payload = { userId: newUserId, email, name };
-          console.log("payload", payload);
-          console.log("userId", newUserId);
-          const accessToken = makeToken(payload);
-          console.log("accessToken", accessToken);
-          const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
-
-          // res.cookie("accessToken", accessToken, cookiOpt);
-          res.status(200).json({ accessToken, name, role: "GUEST" });
-        } else {
-          console.log("ERR (소셜로그인 - Naver) : " + err);
-          console.log(
-            "Error Query: " +
-              `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
-                img ? '"' + img + '"' : null
-              });
+        function (err, result) {
+          if (!err) {
+            console.log(
+              "db insert query response - userID",
+              result[1][0]["user_id"]
+            );
+            console.log(
+              "(소셜로그인) User is registered! UserId: " +
+                String(result[1][0]["user_id"]) +
+                "name: " +
+                name +
+                ", email: " +
+                email +
+                ", img: " +
+                img
+            );
+            userId = result[1][0]["user_id"]; // 새롭게 추가된 유저의 아이디
+          } else {
+            console.log("ERR (소셜로그인) : " + err);
+            console.log(
+              "Error Query: " +
+                `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
+                  img ? '"' + img + '"' : null
+                });
       SELECT _id as user_id from Users WHERE email = "${email}";`
-          );
-          res.status(409).json({
-            error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
-          });
+            );
+            res.status(409).json({
+              error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+            });
+          }
         }
-      }
-    );
-  } catch (err) {
-    console.log(err);
-  }
-});
+      );
 
-// TODO: email 없음
-router.get("/kakao/callback", async (req, res) => {
-  // 1. Authorization Code로 Kakao 서비스 AccessToken 획독
-  let token;
-  try {
-    const url = "https://kauth.kakao.com/oauth/token";
-    const body = qs.stringify({
-      grant_type: "authorization_code",
-      client_id: "10e27455bc8bc405be98a80e91415931",
-      client_secret: "ONXbCwm2AOtJv0olZK69kioV45nttCb3",
-      redirectUri: "http://localhost:3000/oauth/kakao",
-      code: req.query.code,
+    // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
+    sendOAuthResponse({
+      userId: userId,
+      email,
+      name,
+      role: userRole,
     });
-    const header = { "content-type": "application/x-www-form-urlencoded" };
-    const response = await axios.post(url, body, header);
-    token = response.data.access_token;
-  } catch (err) {
-    console.log(err);
-    console.log("ERR: Error while getting Authorization Code");
-    res.status(400).send("ERR: Error while getting Authorization Code");
-  }
-  console.log("token", token);
-
-  // 2. AccessToken으로 kakao 유저 정보 획득
-  try {
-    const url = "https://kapi.kakao.com/v2/user/me";
-    const Header = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const response = await axios.get(url, Header);
-    console.log("KAKAO user info response", response?.data?.properties);
-    const { nickname: name, profile_image: img } = response.data.properties;
-
-    // 3. DB에 Guest로 유저 정보 최초 저장 (회원가입, Role - Guest)
-    let newUserId;
-    maria.query(
-      `INSERT INTO Users(name, email, img) VALUES ("${name}","${name}@naver.com",${
-        img ? '"' + img + '"' : null
-      });
-      SELECT _id as user_id from Users WHERE email = "${name + "@naver.com"}";`,
-      function (err, result) {
-        if (!err) {
-          console.log(
-            "db insert query response - userID",
-            result[1][0]["user_id"]
-          );
-          console.log(
-            "(소셜로그인 -  Kakao) User is registered! UserId: " +
-              String(result[1][0]["user_id"]) +
-              "name: " +
-              name +
-              ", email: " +
-              name +
-              "@naver.com" +
-              ", img: " +
-              img
-          );
-          newUserId = result[1][0]["user_id"]; // int
-          // res.status(200).json({
-          //   message: "네이버로 회원가입 되었습니다.",
-          // });
-          // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-          console.log(
-            "카카오 로그인 - 이메일 정보 없어서 이름+@naver.com으로 대체"
-          );
-          const payload = {
-            userId: newUserId,
-            email: name + "@naver.com",
-            name: name,
-          };
-          console.log("userId", newUserId);
-          console.log("payload", payload);
-          const accessToken = makeToken(payload);
-          console.log("accessToken", accessToken);
-          const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
-
-          // res.cookie("accessToken", accessToken, cookiOpt);
-          res.status(200).json({ accessToken, name, role: "GUEST" });
-        } else {
-          console.log("ERR (소셜로그인 - Kakao) : " + err);
-          res.status(409).json({
-            error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
-          });
-          console.log(
-            "Error Query: " +
-              `INSERT INTO Users(name, email, img) VALUES ("${name}","${
-                name + "@naver.com"
-              }",${img ? "" + img + "" : null});
-      SELECT _id as user_id from Users WHERE email = "${name}@naver.com";`
-          );
-        }
-      }
-    );
-
-    // insert into Users(name, email, img) values("test1","test1",null);
-
-    // DB에 유저 정보 1차 저장
-
-    // maria.query(
-    //   `
-    //   SELECT buildingId, COUNT(userId) AS likes_count
-    //   FROM BuildingLikes
-    //   WHERE buildingId = ${id}
-    //   GROUP BY buildingId;
-    //   `,
-    //   function (err, result) {
-    //     if (!err) {
-    //       // 성공
-    //       console.log("(빌딩 좋아요 개수 출력) building id: " + String(id));
-    //       res.send(result[0]);
-    //       console.log(result[0]);
-    //     } else {
-    //       console.log("ERR(빌딩 좋아요 개수 출력) building id: " + String(id));
-    //       res.status(404).json({
-    //         error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
-    //       });
-    //     }
-    //   }
-    // );
-
-    // 4. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-    // console.log("카카오 로그인 - 이메일 정보 없어서 이름+@naver.com으로 대체");
-    // const payload = { userId: newUserId, email: name + "@naver.com" };
-    // console.log("userId", newUserId);
-    // console.log("payload", payload);
-    // const accessToken = makeToken(payload);
-    // console.log("accessToken", accessToken);
-    // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
-
-    // // res.cookie("accessToken", accessToken, cookiOpt);
-    // res.status(200).json({ accessToken: accessToken, role: "GUEST" });
-
-    // res.redirect("/");
   } catch (err) {
     console.log(err);
   }
