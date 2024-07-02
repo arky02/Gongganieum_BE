@@ -448,7 +448,7 @@ router.get("/building/likes/count", function (req, res) {
 });
 
 // Response로 JWT AccessToken(_id, email), Role 정보 보내기
-const sendOAuthResponse = ({ userId, email, name, role }) => {
+const makeOAuthResponseData = ({ userId, email, name, role }) => {
   const payload = { userId, email, name };
   console.log("payload", payload);
   const accessToken = makeToken(payload);
@@ -456,7 +456,7 @@ const sendOAuthResponse = ({ userId, email, name, role }) => {
   // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
   // res.cookie("accessToken", accessToken, cookiOpt);
 
-  res.status(200).json({ accessToken, name, role });
+  return { accessToken, name, role };
 };
 
 router.get("/oauth/callback", async (req, res) => {
@@ -526,14 +526,15 @@ router.get("/oauth/callback", async (req, res) => {
           // 회원 정보 없음 => ROLE: GUEST 처리
           console.log(`EMAIL ${email}, 회원 정보 없음 => ROLE: GUEST 처리`);
           console.log(err);
+        } else {
+          // 이미 회원임 => ROLE: USER 처리, 바로 로그인
+          console.log(
+            `EMAIL ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
+          );
+          userRole = "USER";
+          userId = result[0].user_id; // int
+          console.log("기존유저아이디", result[0].user_id);
         }
-        // 이미 회원임 => ROLE: USER 처리, 바로 로그인
-        console.log(
-          `EMAIL ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
-        );
-        userRole = "USER";
-        userId = String(result);
-        console.log("기존유저아이디", result);
       }
     );
 
@@ -560,7 +561,7 @@ router.get("/oauth/callback", async (req, res) => {
                 ", img: " +
                 img
             );
-            userId = result[1][0]["user_id"]; // 새롭게 추가된 유저의 아이디
+            userId = result[1][0]["user_id"]; // 새롭게 추가된 유저의 아이디 (int)
           } else {
             console.log("ERR (소셜로그인) : " + err);
             console.log(
@@ -578,12 +579,13 @@ router.get("/oauth/callback", async (req, res) => {
       );
 
     // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-    sendOAuthResponse({
+    const resJsonData = makeOAuthResponseData({
       userId: userId,
       email,
       name,
       role: userRole,
     });
+    res.status(200).json(resJsonData);
   } catch (err) {
     console.log(err);
   }
