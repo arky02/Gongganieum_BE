@@ -1,6 +1,6 @@
 const OAUTH_GET_TOKEN_URL = {
-  naver: "https://kauth.kakao.com/oauth/token",
-  kakao: "https://nid.naver.com/oauth2.0/token",
+  kakao: "https://kauth.kakao.com/oauth/token",
+  naver: "https://nid.naver.com/oauth2.0/token",
 };
 
 const OAUTH_GET_USERINFO_URL = {
