@@ -535,30 +535,28 @@ router.get("/oauth/callback", async (req, res) => {
         // ROLE: GUEST 처리 필요 => DB 저장
         console.log(`EMAIL ${email}, 회원 정보 없음 => ROLE: GUEST 처리`);
         userRole = "GUEST";
-        console.log(err);
+      } else {
+        // 결과 존재 O, 이미 회원임
+        // ROLE: USER, 바로 로그인!
+        console.log(
+          `EMAIL: ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
+        );
+        userRole = "USER";
+        console.log(result);
+        userId = result[0]?.user_id; // int
+        console.log("기존 유저, 아이디:", result[0]?.user_id);
+
+        // ===== ROLE: USER SEND RESPONSE  =====
+        // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
+        sendOAuthResponseData({
+          userId,
+          email,
+          name,
+          role: userRole,
+          res,
+        });
         return;
       }
-
-      // 결과 존재, 이미 회원임
-      // ROLE: USER, 바로 로그인!
-      console.log(
-        `EMAIL: ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
-      );
-      userRole = "USER";
-      console.log(result);
-      userId = result[0]?.user_id; // int
-      console.log("기존 유저, 아이디:", result[0]?.user_id);
-
-      // ===== ROLE: USER SEND RESPONSE  =====
-      // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-      sendOAuthResponseData({
-        userId,
-        email,
-        name,
-        role: userRole,
-        res,
-      });
-      return;
     }
   );
 
