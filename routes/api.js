@@ -456,6 +456,8 @@ const sendOAuthResponseData = ({ userId, email, name, role, res }) => {
   // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
   // res.cookie("accessToken", accessToken, cookiOpt);
 
+  console.log(`=== 소셜로그인 RES 전송, ROLE: ${role} 처리 완료 ===`);
+
   res.status(200).json({ accessToken, name, role });
 
   // return { accessToken, name, role };
@@ -470,14 +472,11 @@ const saveOAuthUserData = ({ name, email, img, res }) => {
       SELECT _id as user_id from Users WHERE email = "${email}";`,
     function (err, result) {
       if (!err) {
+        console.log("ROLE: GUEST -> 회원가입 진행");
         console.log(
-          "db insert query response - userID",
-          result[1][0]["user_id"]
-        );
-        console.log(
-          "(소셜로그인) User is registered! UserId: " +
+          "User is registered! UserId: " +
             String(result[1][0]["user_id"]) +
-            "name: " +
+            ", name: " +
             name +
             ", email: " +
             email +
@@ -583,19 +582,18 @@ router.get("/oauth/callback", async (req, res) => {
       if (!result[0]) {
         // 결과 존재 X, 회원 정보 없음
         // == ROLE: GUEST ==
-        console.log(`EMAIL ${email}, 회원 정보 없음 => ROLE: GUEST 처리`);
+        console.log("== ROLE: GUEST ==");
+        console.log(`신규 유저! EMAIL ${email}, => 회원가입 진행`);
 
         // DB에 유저 정보 최초 저장 (회원가입)
         saveOAuthUserData({ name, email, img, res });
       } else {
         // 결과 존재 O, 이미 회원임
         // == ROLE: USER ==
-        console.log(
-          `EMAIL: ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
-        );
-
         userId = result[0]?.user_id; // int
-        console.log("기존 유저, 아이디:", result[0]?.user_id);
+
+        console.log("== ROLE: USER ==");
+        console.log(`기존 유저! EMAIL: ${email}, 아이디: ${userId}`);
 
         // ===== ROLE: USER SEND RESPONSE  =====
         // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
