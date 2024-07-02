@@ -456,6 +456,8 @@ const sendOAuthResponse = ({ userId, email, name, role }) => {
 router.get("/oauth/callback", async (req, res) => {
   // OAuth Provider = Kakao | Naver
   let oauthProvider = req.query.provider;
+  console.log(`==== OAUTH LOGIN , Provider: ${oauthProvider} ====`);
+
   // 1. Authorization Code로 naver 서비스 AccessToken 획독
   let token;
   try {
