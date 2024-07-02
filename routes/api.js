@@ -462,7 +462,7 @@ const sendOAuthResponseData = ({ userId, email, name, role, res }) => {
 };
 
 router.get("/oauth/callback", async (req, res) => {
-  // OAuth Provider = Kakao | Naver
+  // OAuth Provider = kakao | naver
   let oauthProvider = req.query.provider;
   console.log(`==== OAUTH LOGIN , Provider: ${oauthProvider} ====`);
 
@@ -499,9 +499,9 @@ router.get("/oauth/callback", async (req, res) => {
     };
     const response = await axios.get(url, Header);
 
-    if (oauthProvider === "NAVER") {
+    if (oauthProvider === "naver") {
       oauthUserInfoRes = response?.data?.response;
-      console.log("NAVER user info response", response?.data?.response);
+      console.log("naver user info response", response?.data?.response);
     } else {
       oauthUserInfoRes = response?.data?.properties;
       console.log("KAKAO user info response", response?.data?.properties);
@@ -513,11 +513,11 @@ router.get("/oauth/callback", async (req, res) => {
   // const { nickname: name, profile_image: img } = oauthUserInfoRes; => 카카오
 
   const name =
-    oauthProvider === "NAVER"
+    oauthProvider === "naver"
       ? oauthUserInfoRes.name
       : oauthUserInfoRes.nickname;
   const email =
-    oauthProvider === "NAVER" ? oauthUserInfoRes.email : name + "@naver.com";
+    oauthProvider === "naver" ? oauthUserInfoRes.email : name + "@naver.com";
   const img = oauthUserInfoRes.profile_image;
 
   // 3. UserRole 체크, 회원가입 필요 여부 확인
