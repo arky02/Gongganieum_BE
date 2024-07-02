@@ -489,6 +489,7 @@ router.get("/oauth/callback", async (req, res) => {
   console.log("token", token);
 
   // 2. AccessToken으로 naver 유저 정보 획득
+  let oauthUserInfoRes;
   try {
     const url = OAUTH_GET_USERINFO_URL[oauthProvider];
     const Header = {
@@ -498,7 +499,6 @@ router.get("/oauth/callback", async (req, res) => {
     };
     const response = await axios.get(url, Header);
 
-    let oauthUserInfoRes;
     if (oauthProvider === "NAVER") {
       oauthUserInfoRes = response?.data?.response;
       console.log("NAVER user info response", response?.data?.response);
@@ -506,38 +506,80 @@ router.get("/oauth/callback", async (req, res) => {
       oauthUserInfoRes = response?.data?.properties;
       console.log("KAKAO user info response", response?.data?.properties);
     }
+  } catch (err) {
+    console.log(err);
+  }
+  // const { name, email, profile_image: img } = oauthUserInfoRes; => 네이버
+  // const { nickname: name, profile_image: img } = oauthUserInfoRes; => 카카오
 
-    // const { name, email, profile_image: img } = oauthUserInfoRes; => 네이버
-    // const { nickname: name, profile_image: img } = oauthUserInfoRes; => 카카오
+  const name =
+    oauthProvider === "NAVER"
+      ? oauthUserInfoRes.name
+      : oauthUserInfoRes.nickname;
+  const email =
+    oauthProvider === "NAVER" ? oauthUserInfoRes.email : name + "@naver.com";
+  const img = oauthUserInfoRes.profile_image;
 
-    const name =
-      oauthProvider === "NAVER"
-        ? oauthUserInfoRes.name
-        : oauthUserInfoRes.nickname;
-    const email =
-      oauthProvider === "NAVER" ? oauthUserInfoRes.email : name + "@naver.com";
-    const img = oauthUserInfoRes.profile_image;
+  // 3. UserRole 체크, 회원가입 필요 여부 확인
+  let userRole = "GUEST",
+    userId = "";
+  maria.query(
+    `SELECT _id as user_id from Users WHERE email = "${email}";`,
+    function (err, result) {
+      if (err) {
+        // 회원 정보 없음 => ROLE: GUEST 처리
+        console.log(`EMAIL ${email}, 회원 정보 없음 => ROLE: GUEST 처리`);
+        console.log(err);
+      } else {
+        // 이미 회원임 => ROLE: USER, 바로 로그인
+        console.log(
+          `EMAIL: ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
+        );
+        userRole = "USER";
+        userId = result[0].user_id; // int
+        console.log("기존 유저, 아이디:", result[0].user_id);
 
-    // 3. UserRole 체크, 회원가입 필요 여부 확인
-    let userRole = "GUEST",
-      userId = "";
+        // ===== ROLE: USER SEND RESPONSE  =====
+        // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
+        sendOAuthResponseData({
+          userId,
+          email,
+          name,
+          role: userRole,
+          res,
+        });
+        return;
+      }
+    }
+  );
+
+  // 4. UserRole이 Guest인 경우 => DB에 Role: Guest로 유저 정보 최초 저장 (회원가입)
+  if (userRole === "GUEST") {
+    console.log("GUEST? ", userRole);
     maria.query(
-      `SELECT _id as user_id from Users WHERE email = "${email}";`,
+      `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
+        img ? '"' + img + '"' : null
+      });
+      SELECT _id as user_id from Users WHERE email = "${email}";`,
       function (err, result) {
-        if (err) {
-          // 회원 정보 없음 => ROLE: GUEST 처리
-          console.log(`EMAIL ${email}, 회원 정보 없음 => ROLE: GUEST 처리`);
-          console.log(err);
-        } else {
-          // 이미 회원임 => ROLE: USER, 바로 로그인
+        if (!err) {
           console.log(
-            `EMAIL: ${email}, 이미 회원임 => ROLE: USER 처리, 바로 로그인`
+            "db insert query response - userID",
+            result[1][0]["user_id"]
           );
-          userRole = "USER";
-          userId = result[0].user_id; // int
-          console.log("기존 유저, 아이디:", result[0].user_id);
+          console.log(
+            "(소셜로그인) User is registered! UserId: " +
+              String(result[1][0]["user_id"]) +
+              "name: " +
+              name +
+              ", email: " +
+              email +
+              ", img: " +
+              img
+          );
+          userId = result[1][0]["user_id"]; // 새롭게 추가된 유저의 아이디 (int)
 
-          // ===== ROLE: USER SEND RESPONSE  =====
+          // ===== ROLE: GUEST SEND RESPONSE  =====
           // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
           sendOAuthResponseData({
             userId,
@@ -546,62 +588,21 @@ router.get("/oauth/callback", async (req, res) => {
             role: userRole,
             res,
           });
-          // res.status(200).json(resJsonData);
+        } else {
+          console.log("ERR (소셜로그인) : " + err);
+          console.log(
+            "Error Query: " +
+              `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
+                img ? '"' + img + '"' : null
+              });
+      SELECT _id as user_id from Users WHERE email = "${email}";`
+          );
+          res.status(409).json({
+            error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+          });
         }
       }
     );
-
-    // 4. UserRole이 Guest인 경우 => DB에 Role: Guest로 유저 정보 최초 저장 (회원가입)
-    if (userRole === "GUEST")
-      maria.query(
-        `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
-          img ? '"' + img + '"' : null
-        });
-      SELECT _id as user_id from Users WHERE email = "${email}";`,
-        function (err, result) {
-          if (!err) {
-            console.log(
-              "db insert query response - userID",
-              result[1][0]["user_id"]
-            );
-            console.log(
-              "(소셜로그인) User is registered! UserId: " +
-                String(result[1][0]["user_id"]) +
-                "name: " +
-                name +
-                ", email: " +
-                email +
-                ", img: " +
-                img
-            );
-            userId = result[1][0]["user_id"]; // 새롭게 추가된 유저의 아이디 (int)
-
-            // ===== ROLE: GUEST SEND RESPONSE  =====
-            // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-            sendOAuthResponseData({
-              userId,
-              email,
-              name,
-              role: userRole,
-              res,
-            });
-          } else {
-            console.log("ERR (소셜로그인) : " + err);
-            console.log(
-              "Error Query: " +
-                `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
-                  img ? '"' + img + '"' : null
-                });
-      SELECT _id as user_id from Users WHERE email = "${email}";`
-            );
-            res.status(409).json({
-              error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
-            });
-          }
-        }
-      );
-  } catch (err) {
-    console.log(err);
   }
 });
 
