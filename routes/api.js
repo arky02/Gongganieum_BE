@@ -550,10 +550,13 @@ router.get("/oauth/callback", async (req, res) => {
 
     if (oauthProvider === "naver") {
       oauthUserInfoRes = response?.data?.response;
-      console.log("naver user info response", response?.data?.response);
+      console.log("== NAVER User Info Response == ", response?.data?.response);
     } else {
       oauthUserInfoRes = response?.data?.properties;
-      console.log("KAKAO user info response", response?.data?.properties);
+      console.log(
+        "== KAKAO == User Info Response ==",
+        response?.data?.properties
+      );
     }
   } catch (err) {
     console.log(err);
