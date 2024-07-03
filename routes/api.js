@@ -214,7 +214,7 @@ router.get("/user/info", function (req, res) {
 });
 
 // TODO: 중복됐을 경우 다른 오류 코드 전송
-router.post("/user/guest/update", function (req, res) {
+router.patch("/user/guest/update", function (req, res) {
   /*
  #swagger.tags = ['User']
   #swagger.summary = '유저 정보 업데이트 (회원가입)'
