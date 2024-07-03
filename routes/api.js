@@ -213,27 +213,21 @@ router.get("/user/info", function (req, res) {
   );
 });
 
-router.get("/testtest", function (req, res) {
-  // decodePayload
-  console.log("testtest");
-  const authHeader = req.headers["authorization"];
-  const authHeader2 = req.headers["Authorization"];
-
-  const token = authHeader && authHeader.split(" ")[1];
-  console.log(token);
-
-  const payload = decodePayload(token);
-  console.log(payload);
-  res.send(200);
-});
-
 // TODO: 중복됐을 경우 다른 오류 코드 전송
-router.post("/user/guest/register", function (req, res) {
+router.post("/user/guest/update", function (req, res) {
   /*
  #swagger.tags = ['User']
-  #swagger.summary = '유저 생성 (회원가입)'
-  #swagger.description = 'Response Datatype: int(생성한 유저의 ID)'
+  #swagger.summary = '유저 정보 업데이트 (회원가입)'
+  #swagger.description = ''
 */
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  console.log("Authorization Header Token: ", token);
+
+  const payload = decodePayload(token);
+  const guestId = payload.userId; // 회원정보를 추가시킬 guest의 id
+  console.log(`== 유저 정보 업데이트(회원가입) 게스트 id:  ${guestId} ==`);
+
   let nickname = null,
     description = null,
     company = null,
@@ -250,26 +244,31 @@ router.post("/user/guest/register", function (req, res) {
     tag = req.body.tag ? '"' + req.body?.tag + '"' : null;
 
     console.log(
-      `INSERT INTO Users(nickname, company, brand, tag, description) VALUES (${nickname}, ${company}, ${brand}, ${tag}, ${description})`
+      `
+    UPDATE Users SET nickname=${nickname}, company=${company}, brand=${brand}, tag=${tag}, description=${description} WHERE _id=${guestId};
+    `
     );
   } catch (e) {
-    console.log("ERR ('/user/register') : " + e);
+    console.log("ERR ('/user/guest/register') : " + e);
     res.status(400).json({
-      error: "ERR_PARAMS : nickname, company, brand, tag는 필수 입력 값입니다.",
+      error:
+        "ERR_PARAMS : 유저 정보 업데이트 - nickname, company, brand, tag는 필수 입력 값입니다.",
     });
   }
 
   // 유저 정보 업데이트
   maria.query(
     `
-    UPDATE Users SET nickname=${nickname}, company=${company}, brand=${brand}, tag=${tag}, description=${description} WHERE _id=${id};
+    UPDATE Users SET nickname=${nickname}, company=${company}, brand=${brand}, tag=${tag}, description=${description} WHERE _id=${guestId};
     `,
     function (err, result) {
       if (!err) {
-        console.log("(User Register) User is saved! name : ");
-        res.status(201).send(result[1][0]);
+        console.log(
+          "(Guest Info Update) 게스트 정보 업데이트 완료 => ROLE: USER로 변경"
+        );
+        res.status(201).send(result);
       } else {
-        console.log("ERR (User Register)  Error content: " + err);
+        console.log("ERR (Guest Info Update)  Error content: " + err);
         res.status(409).json({
           error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
         });
