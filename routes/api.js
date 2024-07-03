@@ -456,7 +456,7 @@ const sendOAuthResponseData = ({ userId, email, name, role, res }) => {
   // return { accessToken, name, role };
 };
 
-const saveOAuthUserData = ({ name, email, img, res }) => {
+const saveOAuthGuestData = ({ name, email, img, res }) => {
   // ROLE: GUEST일 경우 유저데이터 첫 DB저장 처리
   maria.query(
     `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
@@ -566,38 +566,38 @@ router.get("/oauth/callback", async (req, res) => {
   const img = oauthUserInfoRes.profile_image;
 
   // 3. UserRole 체크, 회원가입 필요 여부 확인
-  let userRole = "",
-    userId = "";
+  let userId = "";
   maria.query(
-    `SELECT _id as user_id from Users WHERE email = "${email}";`,
+    `SELECT role, _id from Users WHERE email = "${email}";`,
     function (err, result) {
       if (err) {
         console.log("ERR: User Role Check Query ", err);
         return;
       }
       if (!result[0]) {
-        // 결과 존재 X, 회원 정보 없음
+        // role 존재 X, 회원 정보 없음
         // == ROLE: GUEST ==
         console.log("== ROLE: GUEST ==");
         console.log(`신규 유저! EMAIL ${email}, => 회원가입 진행`);
 
-        // DB에 유저 정보 최초 저장 (회원가입)
-        saveOAuthUserData({ name, email, img, res });
+        // DB에 유저 정보 최초 저장 (게스트 회원가입)
+        saveOAuthGuestData({ name, email, img, res });
       } else {
-        // 결과 존재 O, 이미 회원임
-        // == ROLE: USER ==
-        userId = result[0]?.user_id; // int
+        // role 존재 O, 이미 회원이거나 게스트
+        // == ROLE: USER OR GUEST ==
+        const userRole = result[0]?.role; // int
+        userId = result[0]?._id;
 
-        console.log("== ROLE: USER ==");
-        console.log(`기존 유저! EMAIL: ${email}, 아이디: ${userId}`);
+        console.log(`== ROLE: ${userRole} ==`);
+        console.log(`EMAIL: ${email}, 아이디: ${userId}`);
 
-        // ===== ROLE: USER SEND RESPONSE  =====
+        // ===== ROLE: USER OR GUEST SEND RESPONSE  =====
         // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
         sendOAuthResponseData({
           userId,
           email,
           name,
-          role: "USER",
+          role: userRole,
           res,
         });
         return;
