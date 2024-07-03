@@ -213,14 +213,18 @@ router.get("/user/info", function (req, res) {
   );
 });
 
-router.get("/test/test", function (req, res) {
+router.get("/testtest", function (req, res) {
   // decodePayload
+  console.log("testtest");
   const authHeader = req.headers["authorization"];
+  const authHeader2 = req.headers["Authorization"];
+
   const token = authHeader && authHeader.split(" ")[1];
   console.log(token);
 
   const payload = decodePayload(token);
   console.log(payload);
+  res.send(200);
 });
 
 // TODO: 중복됐을 경우 다른 오류 코드 전송
