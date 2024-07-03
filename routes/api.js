@@ -13,7 +13,7 @@ const {
   OAUTH_CLIENT_ID,
 } = require("../constants.js");
 
-const { makeToken } = require("../utils/jwt.js");
+const { makeToken, decodePayload } = require("../utils/jwt.js");
 const alert_and_move = require("../utils/alert_and_move.js");
 
 // =================================================================================================
@@ -213,69 +213,59 @@ router.get("/user/info", function (req, res) {
   );
 });
 
+router.get("/test/test", function (req, res) {
+  // decodePayload
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  console.log(token);
+
+  const payload = decodePayload(token);
+  console.log(payload);
+});
+
 // TODO: 중복됐을 경우 다른 오류 코드 전송
-router.post("/user/register", function (req, res) {
+router.post("/user/guest/register", function (req, res) {
   /*
  #swagger.tags = ['User']
   #swagger.summary = '유저 생성 (회원가입)'
   #swagger.description = 'Response Datatype: int(생성한 유저의 ID)'
 */
-  let name = null,
-    nickname = null,
-    email = null,
+  let nickname = null,
     description = null,
-    img = null,
     company = null,
     brand = null,
-    product = null,
     tag = null;
 
   try {
-    name = '"' + req.body.name + '"'; // 필수 입력 값
     nickname = req.body.nickname ? '"' + req.body?.nickname + '"' : null;
-    email = '"' + req.body.email + '"'; // 필수 입력 값
     description = req.body?.description
       ? '"' + req.body?.description + '"'
       : null;
-    img = req.body?.img ? '"' + req.body?.img + '"' : null; // 필수 입력 값
     company = req.body?.company ? '"' + req.body?.company + '"' : null;
     brand = req.body.brand ? '"' + req.body?.brand + '"' : null;
-    product = req.body.product ? '"' + req.body?.product + '"' : null;
     tag = req.body.tag ? '"' + req.body?.tag + '"' : null;
 
     console.log(
-      `INSERT INTO Users(name, nickname, email, description, img, company, brand, product, tag) VALUES (${name}, ${nickname}, ${email}, ${description}, ${img}, ${company}, ${brand}, ${product}, ${tag})`
+      `INSERT INTO Users(nickname, company, brand, tag, description) VALUES (${nickname}, ${company}, ${brand}, ${tag}, ${description})`
     );
   } catch (e) {
     console.log("ERR ('/user/register') : " + e);
     res.status(400).json({
-      error: "ERR_PARAMS : name, email, img는 필수 입력 값입니다.",
+      error: "ERR_PARAMS : nickname, company, brand, tag는 필수 입력 값입니다.",
     });
   }
 
+  // 유저 정보 업데이트
   maria.query(
     `
-    INSERT INTO Users(name, nickname, email, description, img, company, brand, product, tag) VALUES (${name}, ${nickname}, ${email}, ${description}, ${img}, ${company}, ${brand}, ${product}, ${tag});
-    SELECT _id as user_id from Users WHERE email = ${email};
+    UPDATE Users SET nickname=${nickname}, company=${company}, brand=${brand}, tag=${tag}, description=${description} WHERE _id=${id};
     `,
     function (err, result) {
       if (!err) {
-        console.log(
-          "(User Register) User is saved! name : " +
-            name +
-            ", user id: " +
-            String(result[1][0])
-        );
+        console.log("(User Register) User is saved! name : ");
         res.status(201).send(result[1][0]);
       } else {
-        console.log(
-          "ERR (User Register) user name : " +
-            name +
-            ", user id: " +
-            String(result) +
-            "/ Error content: " +
-            err
-        );
+        console.log("ERR (User Register)  Error content: " + err);
         res.status(409).json({
           error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
         });
