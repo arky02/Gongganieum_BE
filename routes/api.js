@@ -619,9 +619,9 @@ router.get("/oauth/callback", async (req, res) => {
 
 router.get("/data/address_code", async (req, res) => {
   /*
-  #swagger.tags = ['Popup']
-  #swagger.summary = '전체 팝업 리스트 정보 리턴'
-  #swagger.description = "Response Datatype: Popups[]"
+  #swagger.tags = ['공공데이터']
+  #swagger.summary = '공공데이터 - 주소 코드'
+  #swagger.description = ""
 */
 
   const address = req.query.address;
@@ -629,7 +629,27 @@ router.get("/data/address_code", async (req, res) => {
   const response = await axios.get(
     `https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&size=10&page=1&query=${address}&type=address&category=road&format=json&errorformat=json&key=ACD06AF5-4717-3696-8A0F-13A93EEC7187`
   );
-  console.log("공공데이터 API - ", response?.data ?? "");
+  console.log("공공데이터 API - address code:  ", response?.data ?? "");
+
+  res.send(response?.data ?? "");
+});
+
+router.get("/data/building_info", async (req, res) => {
+  /*
+  #swagger.tags = ['공공데이터']
+  #swagger.summary = '공공데이터 - 건축물대장'
+  #swagger.description = ""
+*/
+
+  const sigunguCd = req.query.sigunguCd;
+  const bjdongCd = req.query.bjdongCd;
+  const bun = req.query.bun;
+  const ji = req.query.ji;
+
+  const response = await axios.get(
+    `http://apis.data.go.kr/1613000/BldRgstService_v2/getBrTitleInfo?sigunguCd=${sigunguCd}&bjdongCd=${bjdongCd}&bun=${bun}&ji=${ji}&ServiceKey=${process.env.PUB_DATA_SERVICE_KEY}`
+  );
+  console.log("공공데이터 API - building info: ", response?.data ?? "");
 
   res.send(response?.data ?? "");
 });
@@ -638,7 +658,7 @@ router.get("/data/address_code", async (req, res) => {
 // TEST API : 테스트 용 API (GET, POST) - 2개
 // =================================================================================================
 
-router.post("/save/user/test", function (req, res) {
+http: router.post("/save/user/test", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
