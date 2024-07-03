@@ -244,7 +244,7 @@ router.patch("/user/guest/update", function (req, res) {
 
     console.log(
       `
-    UPDATE Users SET nickname=${nickname}, company=${company}, brand=${brand}, tag=${tag}, description=${description} WHERE _id=${guestId};
+    UPDATE Users SET nickname=${nickname}, company=${company}, brand=${brand}, tag=${tag}, description=${description}, role="USER" WHERE _id=${guestId};
     `
     );
   } catch (e) {
@@ -258,7 +258,7 @@ router.patch("/user/guest/update", function (req, res) {
   // 유저 정보 업데이트
   maria.query(
     `
-    UPDATE Users SET nickname=${nickname}, company=${company}, brand=${brand}, tag=${tag}, description=${description} WHERE _id=${guestId};
+    UPDATE Users SET nickname=${nickname}, company=${company}, brand=${brand}, tag=${tag}, description=${description}, role="USER" WHERE _id=${guestId};
     `,
     function (err, result) {
       if (!err) {
