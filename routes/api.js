@@ -13,8 +13,7 @@ const {
   OAUTH_CLIENT_ID,
 } = require("../constants.js");
 
-const { makeToken, decodePayload } = require("../utils/jwt.js");
-const alert_and_move = require("../utils/alert_and_move.js");
+const { makeToken } = require("../utils/jwt.js");
 
 // =================================================================================================
 // Popup API : Popup 관련 API (GET) - 1개
@@ -220,11 +219,8 @@ router.patch("/user/guest/update", function (req, res) {
   #swagger.summary = '유저 정보 업데이트 (회원가입)'
   #swagger.description = ''
 */
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  console.log("Authorization Header Token: ", token);
-
-  const payload = decodePayload(token);
+  // Authorization Header Token으로부터 payload 정보 추출
+  const payload = getDecodedTokenPayload(req);
   const guestId = payload.userId; // 회원정보를 추가시킬 guest의 id
   console.log(`== 유저 정보 업데이트(회원가입) 게스트 id:  ${guestId} ==`);
 
@@ -318,6 +314,30 @@ router.get("/user/remove", function (req, res) {
       }
     }
   );
+});
+
+router.get("/user/info/role", function (req, res) {
+  /*
+  #swagger.tags = ['User']
+  #swagger.summary = '유저의 ROLE 상태 확인'
+
+*/
+
+  // Authorization Header Token으로부터 payload 정보 추출
+  const payload = getDecodedTokenPayload(req);
+  const { userId, role } = payload;
+
+  console.log(`유저 ROLE 체크 => userId: ${userId}, Role: ${role}`);
+
+  if (role) {
+    res.status(200).json({
+      user_role: role,
+    });
+  } else {
+    res.status(400).json({
+      error: `에러가 발생했습니다!`,
+    });
+  }
 });
 
 // =================================================================================================
@@ -440,9 +460,13 @@ router.get("/building/likes/count", function (req, res) {
   );
 });
 
+// =================================================================================================
+// 소셜로그인 API : OAuth 소셜로그인 관련 API
+// =================================================================================================
+
 // Response로 JWT AccessToken(_id, email), Role 정보 보내기
 const sendOAuthResponseData = ({ userId, email, name, role, res }) => {
-  const payload = { userId, email, name };
+  const payload = { userId, email, name, role };
   console.log("payload", payload);
   const accessToken = makeToken(payload);
   console.log("accessToken", accessToken);
