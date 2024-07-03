@@ -14,6 +14,9 @@ const {
 } = require("../constants.js");
 
 const { makeToken } = require("../utils/jwt.js");
+const {
+  getDecodedTokenPayload,
+} = require("../utils/get_decoded_token_payload.js");
 
 // =================================================================================================
 // Popup API : Popup 관련 API (GET) - 1개
