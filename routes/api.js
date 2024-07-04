@@ -284,7 +284,7 @@ router.patch("/user/guest/update", function (req, res) {
 
         //회원가입 완료 -> send api response with JWT AccessToken
         sendOAuthResDataWithToken({
-          userId,
+          userId: guestId,
           name: "",
           role: "USER",
           res: result,
