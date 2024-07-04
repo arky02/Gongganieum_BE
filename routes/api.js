@@ -287,7 +287,7 @@ router.patch("/user/guest/update", function (req, res) {
           userId: guestId,
           name: "",
           role: "USER",
-          res: result,
+          res,
         });
       } else {
         console.log("ERR (Guest Info Update)  Error content: " + err);
