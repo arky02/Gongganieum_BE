@@ -215,6 +215,22 @@ router.get("/user/info", function (req, res) {
   );
 });
 
+// Response로 JWT AccessToken(_id, role), Role 정보 보내기
+const sendOAuthResDataWithToken = ({ userId, name, role, res }) => {
+  const payload = { userId, role };
+  console.log("payload", payload);
+  const accessToken = makeToken(payload);
+  console.log("accessToken", accessToken);
+  // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
+  // res.cookie("accessToken", accessToken, cookiOpt);
+
+  console.log(`=== 소셜로그인 RES 전송, ROLE: ${role} 처리 완료 ===`);
+
+  res.status(200).json({ accessToken, name, role });
+
+  // return { accessToken, name, role };
+};
+
 // TODO: 중복됐을 경우 다른 오류 코드 전송
 router.patch("/user/guest/update", function (req, res) {
   /*
@@ -265,7 +281,14 @@ router.patch("/user/guest/update", function (req, res) {
         console.log(
           "(Guest Info Update) 게스트 정보 업데이트 완료 => ROLE: USER로 변경"
         );
-        res.status(201).send(result);
+
+        //회원가입 완료 -> send api response with JWT AccessToken
+        sendOAuthResDataWithToken({
+          userId,
+          name: "",
+          role: "USER",
+          res: result,
+        });
       } else {
         console.log("ERR (Guest Info Update)  Error content: " + err);
         res.status(409).json({
@@ -467,22 +490,6 @@ router.get("/building/likes/count", function (req, res) {
 // 소셜로그인 API : OAuth 소셜로그인 관련 API
 // =================================================================================================
 
-// Response로 JWT AccessToken(_id, email), Role 정보 보내기
-const sendOAuthResponseData = ({ userId, email, name, role, res }) => {
-  const payload = { userId, email, name, role };
-  console.log("payload", payload);
-  const accessToken = makeToken(payload);
-  console.log("accessToken", accessToken);
-  // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
-  // res.cookie("accessToken", accessToken, cookiOpt);
-
-  console.log(`=== 소셜로그인 RES 전송, ROLE: ${role} 처리 완료 ===`);
-
-  res.status(200).json({ accessToken, name, role });
-
-  // return { accessToken, name, role };
-};
-
 const saveOAuthGuestData = ({ name, email, img, res }) => {
   // ROLE: GUEST일 경우 유저데이터 첫 DB저장 처리
   maria.query(
@@ -507,9 +514,8 @@ const saveOAuthGuestData = ({ name, email, img, res }) => {
 
         // ===== ROLE: GUEST SEND RESPONSE  =====
         // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-        sendOAuthResponseData({
+        sendOAuthResDataWithToken({
           userId,
-          email,
           name,
           role: "GUEST",
           res,
@@ -620,9 +626,8 @@ router.get("/oauth/callback", async (req, res) => {
 
         // ===== ROLE: USER OR GUEST SEND RESPONSE  =====
         // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-        sendOAuthResponseData({
+        sendOAuthResDataWithToken({
           userId,
-          email,
           name,
           role: userRole,
           res,
