@@ -18,6 +18,27 @@ const {
   getDecodedTokenPayload,
 } = require("../utils/get_decoded_token_payload.js");
 
+// const { S3Client } = require("@aws-sdk/client-s3");
+// const multer = require("multer");
+// const multerS3 = require("multer-s3");
+// const s3 = new S3Client({
+//   region: "ap-northeast-2", // 서울로 기입했으면 이거 기입
+//   credentials: {
+//     accessKeyId: "AWS IAM에서 발급받은 액세스키",
+//     secretAccessKey: "AWS IAM에서 발급받은 시크릿키",
+//   },
+// });
+
+// const upload = multer({
+//   storage: multerS3({
+//     s3: s3,
+//     bucket: "사용할버킷이름",
+//     key: function (요청, file, cb) {
+//       cb(null, Date.now().toString()); //업로드시 파일명 변경가능
+//     },
+//   }),
+// });
+
 // =================================================================================================
 // Popup API : Popup 관련 API (GET) - 1개
 // =================================================================================================
@@ -687,11 +708,29 @@ router.get("/data/building_info", async (req, res) => {
   res.send(response?.data ?? "");
 });
 
+router.get("/data/area_info", async (req, res) => {
+  /*
+  #swagger.tags = ['공공데이터']
+  #swagger.summary = '공공데이터 - 지역데이터'
+  #swagger.description = ""
+*/
+
+  const area = req.query.area;
+
+  const response = await axios.get(
+    `http://openapi.seoul.go.kr:8088/4c5458685467776c37364e7a734d58/xml/citydata_ppltn/1/5/${area}`
+  );
+  console.log("공공데이터 API - area info: ", response?.data ?? "");
+  console.log("공공데이터 API - area info: ", response ?? "");
+
+  res.send(response?.data ?? "");
+});
+
 // =================================================================================================
 // TEST API : 테스트 용 API (GET, POST) - 2개
 // =================================================================================================
 
-http: router.post("/save/user/test", function (req, res) {
+router.post("/save/user/test", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
