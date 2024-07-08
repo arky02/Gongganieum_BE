@@ -680,7 +680,7 @@ router.get("/data/building_info", async (req, res) => {
   const ji = req.query.ji;
 
   const response = await axios.get(
-    `http://apis.data.go.kr/1613000/BldRgstService_v2/getBrTitleInfo?sigunguCd=${sigunguCd}&bjdongCd=${bjdongCd}&bun=${bun}&ji=${ji}&ServiceKey=${process.env.PUB_DATA_SERVICE_KEY}`
+    `https://apis.data.go.kr/1613000/BldRgstService_v2/getBrTitleInfo?sigunguCd=${sigunguCd}&bjdongCd=${bjdongCd}&bun=${bun}&ji=${ji}&ServiceKey=${process.env.PUB_DATA_SERVICE_KEY}`
   );
   console.log("공공데이터 API - building info: ", response?.data ?? "");
 
