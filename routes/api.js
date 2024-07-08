@@ -352,7 +352,7 @@ router.get("/user/info/role", function (req, res) {
   // Authorization Header Token으로부터 payload 정보 추출
   const payload = getDecodedTokenPayload(req);
   if (!payload) {
-    res.res.status(200).json({
+    res.status(200).json({
       user_role: "SIGNED_OUT",
     });
     console.log("유저 ROLE 체크 => AccessToken 없음, USER_SIGNED_OUT!");
