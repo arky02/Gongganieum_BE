@@ -28,6 +28,7 @@ var allowlist = [
 ];
 
 app.use((req, res, next) => {
+  console.log("\n");
   console.log("====================== NEW REQ START =====================");
   console.log("Received request:", req.method, req.url);
   next();
