@@ -120,42 +120,16 @@
         }
       }
     },
-    "/user/register": {
-      "post": {
+    "/user/guest/update": {
+      "patch": {
         "tags": [
           "User"
         ],
-        "summary": "유저 생성 (회원가입)",
-        "description": "Response Datatype: int(생성한 유저의 ID)",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "nickname": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
+        "summary": "유저 정보 업데이트 (회원가입)",
+        "description": "",
         "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "409": {
-            "description": "Conflict"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -176,6 +150,20 @@
           },
           "404": {
             "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/user/info/role": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "유저의 ROLE 상태 확인",
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }
@@ -225,6 +213,85 @@
           },
           "404": {
             "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/oauth/callback": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/data/address_code": {
+      "get": {
+        "tags": [
+          "공공데이터"
+        ],
+        "summary": "공공데이터 - 주소 코드",
+        "description": "",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/data/building_info": {
+      "get": {
+        "tags": [
+          "공공데이터"
+        ],
+        "summary": "공공데이터 - 건축물대장",
+        "description": "",
+        "parameters": [
+          {
+            "name": "sigunguCd",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "bjdongCd",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "bun",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ji",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
