@@ -18,26 +18,30 @@ const {
   getDecodedTokenPayload,
 } = require("../utils/get_decoded_token_payload.js");
 
-// const { S3Client } = require("@aws-sdk/client-s3");
-// const multer = require("multer");
-// const multerS3 = require("multer-s3");
-// const s3 = new S3Client({
-//   region: "ap-northeast-2", // 서울로 기입했으면 이거 기입
-//   credentials: {
-//     accessKeyId: "AWS IAM에서 발급받은 액세스키",
-//     secretAccessKey: "AWS IAM에서 발급받은 시크릿키",
-//   },
-// });
+const { S3Client } = require("@aws-sdk/client-s3");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const s3 = new S3Client({
+  region: "ap-northeast-2", // 서울
+  credentials: {
+    accessKeyId: process.env.S3_KEY,
+    secretAccessKey: process.env.S3_SECRET,
+  },
+});
 
-// const upload = multer({
-//   storage: multerS3({
-//     s3: s3,
-//     bucket: "사용할버킷이름",
-//     key: function (요청, file, cb) {
-//       cb(null, Date.now().toString()); //업로드시 파일명 변경가능
-//     },
-//   }),
-// });
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: "poppop-bucket",
+    key: function (요청, file, cb) {
+      cb(null, Date.now().toString()); //업로드시 파일명 변경가능
+    },
+  }),
+});
+
+router.post("/add", upload.single("img_input"), async (req, res) => {
+  console.log(req.file);
+});
 
 // =================================================================================================
 // Popup API : Popup 관련 API (GET) - 1개
