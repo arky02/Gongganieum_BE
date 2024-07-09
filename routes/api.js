@@ -39,7 +39,7 @@ const upload = multer({
   }),
 });
 
-router.post("/add", upload.single("img_input"), async (req, res) => {
+router.post("/add", upload.single("file"), async (req, res) => {
   console.log(req.file);
 });
 
