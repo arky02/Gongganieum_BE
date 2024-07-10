@@ -48,7 +48,7 @@ router.post(
   async (req, res) => {
     const type = req.query?.type ?? null; // type = img | popup | building
     const buildingId = req.query?.id ?? null; // 빌딩 id
-    console.log(req.files);
+
     if (req.files === undefined) {
       console.log("Request에 이미지 없음 ! => req.files === undefined");
       res.status(400).send("ERR: No Imgs Given!");
@@ -59,6 +59,10 @@ router.post(
         console.log("ERR: imgUrlsList ERROR");
         return;
       }
+      console.log(
+        "AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrlsList: ",
+        imgUrlsList
+      ); // imgUrlsList 존재!
 
       maria.query(
         `UPDATE Buildings SET img="${imgUrlsList.join(
@@ -69,7 +73,7 @@ router.post(
         function (err, result) {
           if (!err) {
             console.log(
-              `빌딩 ID: ${buildingId}의 건물정보 DB에 이미지 추가 성공! \n이미지 ${imgUrlsList.length}개 추가됨`
+              `빌딩 ID ${buildingId}의 건물정보 DB에 이미지 추가 성공! \nAWS S3 이미지 DB, Mysql DB에 이미지 ${imgUrlsList.length}개 추가됨`
             );
             res.status(200).send(result[1][0]);
           } else {
@@ -80,8 +84,6 @@ router.post(
           }
         }
       );
-
-      res.status(200).send(imgUrlsResults);
     } catch (e) {
       console.log(e);
       if (e === "LIMIT_UNEXPECTED_FILE") {
