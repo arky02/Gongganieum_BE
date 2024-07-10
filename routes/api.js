@@ -39,8 +39,20 @@ const upload = multer({
   }),
 });
 
-router.post("/add", upload.single("file"), async (req, res) => {
+router.post("/add", upload.array("file", 20), async (req, res) => {
   console.log(req.file);
+  try {
+    const imgUrlsResults = req.file.map((fileEl) => fileEl.location);
+    res.status(200).send(imgUrlsResults);
+  } catch (e) {
+    console.log(e);
+    if (e === "LIMIT_UNEXPECTED_FILE") {
+      res.status(500).send("이미지 크기가 초과되었습니다.");
+      return;
+    } else {
+      res.status(500).send("SERVER ERROR");
+    }
+  }
 });
 
 // =================================================================================================
