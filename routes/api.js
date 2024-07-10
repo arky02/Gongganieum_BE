@@ -39,21 +39,60 @@ const upload = multer({
   }),
 });
 
-router.post("/add", upload.array("file", 20), async (req, res) => {
-  console.log(req.files);
-  try {
-    const imgUrlsResults = req.files.map((fileEl) => fileEl.location);
-    res.status(200).send(imgUrlsResults);
-  } catch (e) {
-    console.log(e);
-    if (e === "LIMIT_UNEXPECTED_FILE") {
-      res.status(500).send("이미지 크기가 초과되었습니다.");
-      return;
-    } else {
-      res.status(500).send("SERVER ERROR");
+// /admin/add/building
+// /admin/edit/building?type=(img|popup|building)&id=int
+
+router.post(
+  "/admin/edit/building",
+  upload.array("file", 20),
+  async (req, res) => {
+    const type = req.query?.type ?? null; // type = img | popup | building
+    const buildingId = req.query?.id ?? null; // 빌딩 id
+    console.log(req.files);
+    if (req.files === undefined) {
+      console.log("Request에 이미지 없음 ! => req.files === undefined");
+      res.status(400).send("ERR: No Imgs Given!");
+    }
+    try {
+      const imgUrlsList = req.files.map((fileEl) => fileEl.location);
+      if (!imgUrlsList || !imgUrlsList.length > 0) {
+        console.log("ERR: imgUrlsList ERROR");
+        return;
+      }
+
+      maria.query(
+        `UPDATE Buildings SET img="${imgUrlsList.join(
+          ","
+        )}" WHERE _id=${buildingId};
+        SELECT * FROM Buildings WHERE _id=${buildingId};
+        `,
+        function (err, result) {
+          if (!err) {
+            console.log(
+              `빌딩 ID: ${buildingId}의 건물정보 DB에 이미지 추가 성공! \n이미지 ${imgUrlsList.length}개 추가됨`
+            );
+            res.status(200).send(result[1][0]);
+          } else {
+            console.log("ERR : " + err);
+            res.status(500).json({
+              error: "Error",
+            });
+          }
+        }
+      );
+
+      res.status(200).send(imgUrlsResults);
+    } catch (e) {
+      console.log(e);
+      if (e === "LIMIT_UNEXPECTED_FILE") {
+        res.status(500).send("이미지 크기가 초과되었습니다.");
+        return;
+      } else {
+        res.status(500).send("SERVER ERROR");
+      }
     }
   }
-});
+);
 
 // =================================================================================================
 // Popup API : Popup 관련 API (GET) - 1개
@@ -470,7 +509,7 @@ router.post("/user/building/likes", function (req, res) {
   maria.query(
     `
     CALL ToggleLikes(${userId}, ${buildingId});
-    select count(buildingId) as count from BuildingLikes where userId=${userId} and buildingId=${buildingId};
+    SELECT count(buildingId) as count from BuildingLikes where userId=${userId} and buildingId=${buildingId};
     `,
     function (err, result) {
       if (!err) {
