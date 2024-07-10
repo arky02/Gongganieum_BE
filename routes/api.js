@@ -40,9 +40,9 @@ const upload = multer({
 });
 
 router.post("/add", upload.array("file", 20), async (req, res) => {
-  console.log(req.file);
+  console.log(req.files);
   try {
-    const imgUrlsResults = req.file.map((fileEl) => fileEl.location);
+    const imgUrlsResults = req.files.map((fileEl) => fileEl.location);
     res.status(200).send(imgUrlsResults);
   } catch (e) {
     console.log(e);
