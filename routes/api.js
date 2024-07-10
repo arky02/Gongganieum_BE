@@ -512,6 +512,7 @@ router.post("/user/building/likes", function (req, res) {
     `
     CALL ToggleLikes(${userId}, ${buildingId});
     SELECT count(buildingId) as count from BuildingLikes where userId=${userId} and buildingId=${buildingId};
+    SELECT JSON_ARRAYAGG(buildingId) AS buildingIdList FROM BuildingLikes WHERE userId = ${userId};
     `,
     function (err, result) {
       if (!err) {
@@ -521,9 +522,11 @@ router.post("/user/building/likes", function (req, res) {
             String(userId) +
             ", 건물 id: " +
             String(buildingId) +
-            ", => 결과: " +
-            result[1][0]
+            ", => 결과: "
         );
+        console.log(result[1][0]);
+        console.log(`해당 유저의 찜하기 목록 출력 - userId: ${userId}`);
+        console.log(result[2][0]);
         res.status(200).send(result[1][0]);
       } else {
         console.log(
