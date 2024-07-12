@@ -14,9 +14,7 @@ const {
 } = require("../constants.js");
 
 const { makeToken } = require("../utils/jwt.js");
-const {
-  getDecodedTokenPayload,
-} = require("../utils/get_decoded_token_payload.js");
+const { getUserInfoFromToken } = require("../utils/decode_token.js");
 
 const { S3Client } = require("@aws-sdk/client-s3");
 const multer = require("multer");
@@ -268,25 +266,25 @@ router.get("/user/info", function (req, res) {
   #swagger.description = 'Response Datatype: Users'
 */
 
-  const id = req.query?.id ?? 1; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+  const { userId, role } = getUserInfoFromToken(req, res);
 
   maria.query(
     `
-    SELECT * from Users WHERE _id = ${id};
+    SELECT * from Users WHERE _id = ${userId};
     `,
     function (err, result) {
       if (!err) {
         console.log(
-          "(Search User Info) 유저 정보 리턴, user id: " + String(id)
+          "(Search User Info) 유저 정보 리턴, user id: " + String(userId)
         );
         res.send(result[0]);
       } else {
         console.log(
           "ERR (Search User Info) 해당 아이디의 유저가 없습니다! user id: " +
-            String(id)
+            String(userId)
         );
         res.status(404).json({
-          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
+          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(userId)}`,
         });
       }
     }
@@ -317,8 +315,8 @@ router.patch("/user/guest/update", function (req, res) {
   #swagger.description = ''
 */
   // Authorization Header Token으로부터 payload 정보 추출
-  const payload = getDecodedTokenPayload(req);
-  const guestId = payload.userId; // 회원정보를 추가시킬 guest의 id
+  const { userId } = getUserInfoFromToken(req);
+  const guestId = userId; // 회원정보를 추가시킬 guest의 id
   console.log(`== 유저 정보 업데이트(회원가입) 게스트 id:  ${guestId} ==`);
 
   let nickname = null,
@@ -424,20 +422,10 @@ router.get("/user/info/role", function (req, res) {
   /*
   #swagger.tags = ['User']
   #swagger.summary = '유저의 ROLE 상태 확인'
-
 */
 
-  // Authorization Header Token으로부터 payload 정보 추출
-  const payload = getDecodedTokenPayload(req);
-  if (!payload) {
-    res.status(200).json({
-      user_role: "SIGNED_OUT",
-    });
-    console.log("유저 ROLE 체크 => AccessToken 없음, USER_SIGNED_OUT!");
-    console.log('user_role => "SIGNED_OUT"');
-    return;
-  }
-  const { userId, role } = payload;
+  // Authorization Header Token으로부터 유저 정보 추출
+  const { userId, role } = getUserInfoFromToken(req, res);
 
   console.log(`유저 ROLE 체크 => userId: ${userId}, user_role: ${role}`);
 
