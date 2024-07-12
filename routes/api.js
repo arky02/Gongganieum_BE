@@ -192,6 +192,7 @@ router.get("/building/search", (req, res) => {
 // USER API : User 관련 API (GET, GET Authorize, POST, POST Authorize, PATCH Authorize) - 5개
 // ======================================================================================================================================
 
+// 유저 정보 GET
 router.get("/user/info", function (req, res) {
   /*
   #swagger.tags = ['User']
@@ -201,7 +202,7 @@ router.get("/user/info", function (req, res) {
 
   const payload = getUserInfoFromToken(req, res, true);
   if (!payload) return;
-  const { userId, role } = payload;
+  const { userId } = payload;
 
   maria.query(
     `
@@ -210,12 +211,63 @@ router.get("/user/info", function (req, res) {
     function (err, result) {
       if (!err) {
         console.log(
-          "(Search User Info) 유저 정보 리턴, user id: " + String(userId)
+          "(GET User Info) 유저 정보 리턴 성공, user id: " + String(userId)
         );
         res.send(result[0]);
       } else {
         console.log(
-          "ERR (Search User Info) 해당 아이디의 유저가 없습니다! user id: " +
+          "ERR (GET User Info) 해당 아이디의 유저가 없습니다! user id: " +
+            String(userId)
+        );
+        res.status(404).json({
+          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(userId)}`,
+        });
+      }
+    }
+  );
+});
+
+// 유저 정보 PATCH (수정)
+router.patch("/user/info", function (req, res) {
+  /*
+  #swagger.tags = ['User']
+  #swagger.summary = '특정 id의 유저 정보 리턴'
+  #swagger.description = 'Response Datatype: Users'
+*/
+
+  // 유저 정보 추출
+  const payload = getUserInfoFromToken(req, res, true);
+  if (!payload) return;
+  const { userId } = payload;
+
+  // Body 정보 추출
+  let nickname, company, brand, tag, description;
+  try {
+    nickname = req.body.name;
+    company = req.body.company;
+    brand = req.body.brand;
+    tag = req.body?.tag ?? "";
+    description = req.body?.description ?? "";
+  } catch (e) {
+    console.log("ERR (get request) : " + e);
+    res.status(400).json({
+      error: "ERR_PARAMS : nickname, company, brand는 필수 입력 필드입니다.",
+    });
+  }
+
+  maria.query(
+    `
+    UPDATE Users SET nickname="${nickname}", company="${company}", brand="${brand}", tag="${tag}", description="${description}" WHERE _id = ${userId};
+    `,
+    function (err, result) {
+      if (!err) {
+        console.log(
+          "(PATCH User Info) 유저 정보 수정 성공, user id: " + String(userId)
+        );
+        res.send(result[0]);
+      } else {
+        console.log(
+          "ERR (PATCH User Info) 해당 아이디의 유저가 없습니다! user id: " +
             String(userId)
         );
         res.status(404).json({
