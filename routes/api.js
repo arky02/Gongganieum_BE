@@ -266,7 +266,7 @@ router.get("/user/info", function (req, res) {
   #swagger.description = 'Response Datatype: Users'
 */
 
-  const { userId, role } = getUserInfoFromToken(req, res);
+  const { userId, role } = getUserInfoFromToken(req, res, true);
 
   maria.query(
     `
@@ -315,7 +315,7 @@ router.patch("/user/guest/update", function (req, res) {
   #swagger.description = ''
 */
   // Authorization Header Token으로부터 payload 정보 추출
-  const { userId } = getUserInfoFromToken(req);
+  const { userId } = getUserInfoFromToken(req, res, true);
   const guestId = userId; // 회원정보를 추가시킬 guest의 id
   console.log(`== 유저 정보 업데이트(회원가입) 게스트 id:  ${guestId} ==`);
 
@@ -425,7 +425,7 @@ router.get("/user/info/role", function (req, res) {
 */
 
   // Authorization Header Token으로부터 유저 정보 추출
-  const { userId, role } = getUserInfoFromToken(req, res);
+  const { userId, role } = getUserInfoFromToken(req, res, false);
 
   console.log(`유저 ROLE 체크 => userId: ${userId}, user_role: ${role}`);
 
