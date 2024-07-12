@@ -155,8 +155,8 @@ router.get("/building/search", (req, res) => {
                 b.popups, 
                 '$[*]' 
                 COLUMNS (
-                    popup_name 5) PATH '$.name',
-                    popup_date 2) PATH '$.date'
+                    popup_name VARCHAR(255) PATH '$.name',
+                    popup_date VARCHAR(512) PATH '$.date'
                 )
             ) AS popup
         ${where_query.length > 0 ? `WHERE ${where_query.join(" AND ")}` : ""}
