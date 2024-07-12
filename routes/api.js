@@ -669,10 +669,12 @@ router.post("/contact", function (req, res) {
     reason,
     enterpath,
     requests,
-    buildingId = 0;
+    buildingId,
+    userId;
 
   try {
     buildingId = req.body.buildingId; // 필수 입력 field
+    userId = req.body.userId; // 필수 입력 field
     name = req.body?.name ?? "";
     phone = req.body?.phone ?? "";
     email = req.body?.email ?? "";
@@ -690,11 +692,11 @@ router.post("/contact", function (req, res) {
     });
   }
 
-  const contactPostQuery = `${buildingId}, "${name}", "${phone}", "${email}", "${company}", "${date1}", "${date2}", "${budget}", "${reason}", "${enterpath}", "${requests}"`;
+  const contactPostQuery = `${buildingId}, ${userId}, "${name}", "${phone}", "${email}", "${company}", "${date1}", "${date2}", "${budget}", "${reason}", "${enterpath}", "${requests}"`;
   console.log("문의 내용: ", contactPostQuery);
 
   maria.query(
-    `INSERT INTO ContactMsg(buildingId, name, phone, email, company, date1, date2, budget, reason, enterpath, requests) VALUES (${contactPostQuery});`,
+    `INSERT INTO ContactMsg(buildingId, userId, name, phone, email, company, date1, date2, budget, reason, enterpath, requests) VALUES (${contactPostQuery});`,
     function (err) {
       if (!err) {
         console.log("(문의하기) 문의가 작성되었습니다!");
