@@ -155,8 +155,8 @@ router.get("/building/search", (req, res) => {
                 b.popups, 
                 '$[*]' 
                 COLUMNS (
-                    popup_name VARCHAR(255) PATH '$.name',
-                    popup_date VARCHAR(512) PATH '$.date'
+                    popup_name 5) PATH '$.name',
+                    popup_date 2) PATH '$.date'
                 )
             ) AS popup
         ${where_query.length > 0 ? `WHERE ${where_query.join(" AND ")}` : ""}
@@ -546,6 +546,7 @@ const saveOAuthGuestData = ({ name, email, img, res }) => {
     }
   );
 };
+
 router.get("/oauth/callback", async (req, res) => {
   // OAuth Provider = kakao | naver
   let oauthProvider = req.query.provider;
@@ -643,6 +644,68 @@ router.get("/oauth/callback", async (req, res) => {
           res,
         });
         return;
+      }
+    }
+  );
+});
+
+// =================================================================================================
+//  문의하기 페이지 API
+// =================================================================================================
+
+router.post("/contact", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+  let name,
+    phone,
+    email,
+    company,
+    date1,
+    date2,
+    budget,
+    reason,
+    enterpath,
+    requests,
+    buildingId = 0;
+
+  try {
+    buildingId = req.body.buildingId; // 필수 입력 field
+    name = req.body?.name ?? "";
+    phone = req.body?.phone ?? "";
+    email = req.body?.email ?? "";
+    company = req.body?.company ?? "";
+    date1 = req.body?.date1 ?? "";
+    date2 = req.body?.date2 ?? "";
+    budget = req.body?.budget ?? "";
+    reason = req.body?.reason ?? "";
+    enterpath = req.body?.enterpath ?? "";
+    requests = req.body?.requests ?? "";
+  } catch (e) {
+    console.log("ERR (get request) : " + e);
+    res.status(400).json({
+      error: "ERR_PARAMS : buildingId is required",
+    });
+  }
+
+  const contactPostQuery = `${buildingId}, "${name}", "${phone}", "${email}", "${company}", "${date1}", "${date2}", "${budget}", "${reason}", "${enterpath}", "${requests}"`;
+
+  maria.query(
+    `INSERT INTO TABLE ContactMsg(buildingId, name, phone, email, company, date1, date2, budget, reason, enterpath, requests) VALUES (${contactPostQuery})`,
+    function (err) {
+      if (!err) {
+        console.log("(문의하기) 문의가 작성되었습니다!");
+        console.log("문의 내용: ", contactPostQuery);
+        res.status(201).json({
+          message: "문의가 작성되었습니다!",
+        });
+      } else {
+        console.log("ERR (문의하기) : " + err);
+        res.status(409).json({
+          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+        });
       }
     }
   );
