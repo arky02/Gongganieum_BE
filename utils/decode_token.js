@@ -14,11 +14,11 @@ const getDecodedTokenPayload = (req) => {
   return payload;
 };
 
-const getUserInfoFromToken = (req, res) => {
+const getUserInfoFromToken = (req, res, is로그인_검증_필요) => {
   // Authorization Header Token으로부터 payload 정보 추출
   const payload = getDecodedTokenPayload(req);
   if (!payload) {
-    res.status(400).json({
+    res.status(is로그인_검증_필요 ? 400 : 200).json({
       user_role: "SIGNED_OUT",
     });
     console.log("유저 ROLE 체크 => AccessToken 없음, USER_SIGNED_OUT!");
