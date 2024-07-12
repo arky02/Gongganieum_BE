@@ -243,7 +243,7 @@ router.patch("/user/info", function (req, res) {
   // Body 정보 추출
   let nickname, company, brand, tag, description;
   try {
-    nickname = req.body.name;
+    nickname = req.body.nickname;
     company = req.body.company;
     brand = req.body.brand;
     tag = req.body?.tag ?? "";
