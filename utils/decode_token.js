@@ -16,7 +16,16 @@ const getDecodedTokenPayload = (req) => {
 
 const getUserInfoFromToken = (req, res, is로그인_검증_필요) => {
   // Authorization Header Token으로부터 payload 정보 추출
-  const payload = getDecodedTokenPayload(req);
+
+  let payload = null;
+  try {
+    payload = getDecodedTokenPayload(req);
+  } catch (e) {
+    res.status(401).send("error: access token expired!");
+    return false;
+  }
+
+  // payload = { userId, role }
   if (!payload) {
     res.status(is로그인_검증_필요 ? 400 : 200).json({
       user_role: "SIGNED_OUT",
@@ -25,9 +34,8 @@ const getUserInfoFromToken = (req, res, is로그인_검증_필요) => {
     console.log('user_role => "SIGNED_OUT"');
     return;
   }
-  const { userId, role } = payload;
 
-  return { userId, role };
+  return payload;
 };
 
 module.exports = { getDecodedTokenPayload, getUserInfoFromToken };
