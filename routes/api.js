@@ -691,13 +691,13 @@ router.post("/contact", function (req, res) {
   }
 
   const contactPostQuery = `${buildingId}, "${name}", "${phone}", "${email}", "${company}", "${date1}", "${date2}", "${budget}", "${reason}", "${enterpath}", "${requests}"`;
+  console.log("문의 내용: ", contactPostQuery);
 
   maria.query(
     `INSERT INTO TABLE ContactMsg(buildingId, name, phone, email, company, date1, date2, budget, reason, enterpath, requests) VALUES (${contactPostQuery})`,
     function (err) {
       if (!err) {
         console.log("(문의하기) 문의가 작성되었습니다!");
-        console.log("문의 내용: ", contactPostQuery);
         res.status(201).json({
           message: "문의가 작성되었습니다!",
         });
