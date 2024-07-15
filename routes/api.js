@@ -505,6 +505,11 @@ router.post("/user/building/likes", function (req, res) {
     });
   }
 
+  console.log(userId);
+  console.log("userId");
+  console.log(buildingId);
+  console.log("buildingId");
+
   maria.query(
     `
     CALL ToggleLikes(${userId}, ${buildingId});
@@ -528,9 +533,9 @@ router.post("/user/building/likes", function (req, res) {
       } else {
         console.log(
           "ERR (찜하기) 빌딩 찜하기 실패! user id: " +
-            String(userId) +
+            userId +
             ", 건물 id: " +
-            String(buildingId)
+            buildingId
         );
         res.status(400).json({
           error: `에러가 발생했습니다!`,
