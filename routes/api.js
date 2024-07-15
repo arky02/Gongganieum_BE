@@ -527,7 +527,7 @@ router.post("/user/building/likes", function (req, res) {
             ", => 결과: "
         );
         console.log(result[1][0]);
-        console.log(`해당 유저의 찜하기 목록 출력 - userId: ${userId}`);
+        console.log(`해당 유저가 찜한 건물 id 리스트 출력 (userId: ${userId})`);
         console.log(result[2][0]);
         res.status(200).send(result[1][0]);
       } else {
