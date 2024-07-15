@@ -371,9 +371,12 @@ router.get("/user/remove", function (req, res) {
   #swagger.description = 'Response Datatype: int(삭제한 유저의 id)'
 */
 
-  const id = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+  // Authorization Header Token으로부터 유저 정보 추출
+  const payload = getUserInfoFromToken(req, res, true);
+  if (!payload) return;
+  const { userId } = payload;
 
-  if (id === 1) {
+  if (userId === 1) {
     console.log(
       "ERR ('/user/remove') : Test 계정(id = 1) 정보는 삭제할 수 없습니다."
     );
@@ -384,23 +387,23 @@ router.get("/user/remove", function (req, res) {
 
   maria.query(
     `
-    DELETE from Users WHERE _id = ${id};
+    DELETE from Users WHERE _id = ${userId};
     `,
     function (err, result) {
       if (!err) {
         // 성공
-        console.log("(Delete User) 유저 삭제 성공, user id: " + String(id));
+        console.log("(Delete User) 유저 삭제 성공, user id: " + String(userId));
         res.status(200).json({
           message: "유저 삭제 성공",
-          user_id: id,
+          user_id: userId,
         });
       } else {
         console.log(
           "ERR (Delete User) 해당 아이디의 유저가 없습니다! user id: " +
-            String(id)
+            String(userId)
         );
         res.status(404).json({
-          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(id)}`,
+          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(userId)}`,
         });
       }
     }
@@ -442,7 +445,10 @@ router.get("/user/building/likes", function (req, res) {
   #swagger.description = 'Response Datatype: int(건물의 찜하기 개수)'
 */
 
-  const id = req.query?.user; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+  // Authorization Header Token으로부터 유저 정보 추출
+  const payload = getUserInfoFromToken(req, res, true);
+  if (!payload) return;
+  const { userId } = payload;
 
   maria.query(
     `
@@ -452,14 +458,14 @@ router.get("/user/building/likes", function (req, res) {
     FROM 
         BuildingLikes
     WHERE 
-        userId = ${id};
+        userId = ${userId};
     `,
     function (err, result) {
       if (!err) {
         // 성공
         console.log(
           "(찜하기) 유저가 찜한 빌딩 id 리스트 출력, user id: " +
-            String(id) +
+            String(userId) +
             ", => 결과: " +
             String(result[0])
         );
@@ -467,7 +473,7 @@ router.get("/user/building/likes", function (req, res) {
       } else {
         console.log(
           "ERR (찜하기) 유저 찜한 빌딩 id 리스트 리턴 실패! user id: " +
-            String(id)
+            String(userId)
         );
         res.status(400).json({
           error: `에러가 발생했습니다!`,
@@ -484,8 +490,20 @@ router.post("/user/building/likes", function (req, res) {
   #swagger.description = 'Response Datatype: null'
 */
 
-  const userId = req.query?.user; // id 안적으면 Test 유저(_id = 1) 정보 리턴
-  const buildingId = req.query?.id; // id 안적으면 Test 유저(_id = 1) 정보 리턴
+  // Authorization Header Token으로부터 유저 정보 추출
+  const payload = getUserInfoFromToken(req, res, true);
+  if (!payload) return;
+  const { userId } = payload;
+
+  let buildingId;
+  try {
+    buildingId = req.body.buildingId;
+  } catch (e) {
+    console.log("ERR (get request) : " + e);
+    res.status(400).json({
+      error: "ERR_PARAMS : 빌딩 id는 필수 입력 값입니다.",
+    });
+  }
 
   maria.query(
     `
