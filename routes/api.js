@@ -95,7 +95,8 @@ router.get("/building/search", (req, res) => {
   let q = req.query?.q ?? null; // -> where
   const as = req.query?.as ?? "address"; // address(default), building, popup -> where
   const cate = req.query?.cate ?? null; // str -> where
-  const isours = req.query?.isours ?? null; // true, false -> where
+  const is_ours = req.query?.is_ours ?? false; // true, false(default) -> where
+  const is_current = req.query?.is_current ?? false; // true, false(default) -> where
   const order = req.query?.order ?? "new"; // new(default), popular, (likes)
   const page = req.query?.page ?? null; // 페이지네이션 페이지 번호
   const limit = req.query?.limit ?? null; // 페이지네이션으로 가져올 요소의 개수
@@ -109,7 +110,7 @@ router.get("/building/search", (req, res) => {
   if (as === "popup") q_filter = "popup.popup_name";
   if (as === "building") q_filter = "b.name";
 
-  // 1. as 필터로 q 검색어 검색 (공백제거, 일부로 검색)
+  // 1. where절 - as 필터로 q 검색어 검색 (공백제거, 일부로 검색)
   if (q)
     where_query.push(
       `REPLACE(${q_filter}, ' ', '') LIKE '${
@@ -117,23 +118,28 @@ router.get("/building/search", (req, res) => {
       }'`
     );
 
-  // 2. cate 필터 적용
+  // 2. where절 - cate 필터 적용
   if (cate && cate !== "전체") where_query.push(`b.cate = '${cate}'`);
 
-  // 3. isours 필터 적용
-  if (isours !== null) where_query.push(`b.isours = ${isours}`);
+  // 3. where절 - is_ours 필터 적용
+  if (is_ours) where_query.push(`b.is_ours = 1`);
 
-  // 4. order 적용
+  // 4. where절 - is_current 필터 적용
+  if (is_current) {
+    where_query.push("DATE(latest_end_date) > CURDATE()");
+  }
+
+  // 5. order 적용
   let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
   if (order === "popular") order_filter = "popups_count DESC";
 
-  // 5. order에 따라 추출해야하는 select 쿼리 적용
+  // 6. order에 따라 추출해야하는 select 쿼리 적용
   let select_query =
     "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"; // order = new (default) 적용
   if (order === "popular")
     select_query = "JSON_LENGTH(b.popups) AS popups_count";
 
-  // 6. 페이지네이션 적용 (page, limit)
+  // 7. 페이지네이션 적용 (page, limit)
   const page_filter =
     page && limit
       ? "LIMIT " + String(limit) + " OFFSET " + String((page - 1) * limit)
@@ -174,7 +180,7 @@ router.get("/building/search", (req, res) => {
         `Return Building with Building Search Condition: ${
           q ? `q: ${q}` : ""
         }, ${as ? `as: ${as}` : ""}, ${cate ? `cate: ${cate}` : ""}, ${
-          isours ? `isours: ${isours}` : ""
+          is_ours ? `is_ours: ${is_ours}` : ""
         }, ${order ? `order: ${order}` : ""}`
       );
       if (page_filter) console.log(page_filter);
@@ -809,7 +815,7 @@ router.get("/carousel/building/:pageType", (req, res) => {
   const pageType = req.params.pageType;
   const carouselTypeQuery = req.query?.type
     ? 'carouselType="' + req.query?.type + '"'
-    : "carouselType is NULL";
+    : "carouselType IS NULL";
 
   maria.query(
     `SELECT * FROM CarouselContents WHERE pageType="${pageType}" and ${carouselTypeQuery} and contentType="Buildings";`,
