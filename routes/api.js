@@ -807,10 +807,12 @@ router.get("/carousel/building/:pageType", (req, res) => {
   #swagger.description = ''
 */
   const pageType = req.params.pageType;
-  const carouselType = req.query?.type ? '"' + req.query?.type + '"' : null;
+  const carouselTypeQuery = req.query?.type
+    ? 'carouselType="' + req.query?.type + '"'
+    : "carouselType is NULL";
 
   maria.query(
-    `SELECT * FROM CarouselContents WHERE pageType="${pageType}" and carouselType=${carouselType} and contentType="Buildings";`,
+    `SELECT * FROM CarouselContents WHERE pageType="${pageType}" and ${carouselTypeQuery} and contentType="Buildings";`,
     function (err, result) {
       if (!err) {
         console.log(
