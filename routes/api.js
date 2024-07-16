@@ -795,6 +795,39 @@ router.post("/contact", function (req, res) {
 });
 
 // =================================================================================================
+//  추천 캐러셀 (메인페이지, 지도페이지) API
+// =================================================================================================
+
+// /carousel/building/main_page?type=main_banner|primary|secondary|recommend_banner
+// /carousel/building/map
+router.get("/carousel/building/:pageType", (req, res) => {
+  /*
+  #swagger.tags = ['Carousel']
+  #swagger.summary = '메인 페이지의 추천 건물 캐러셀 리스트 리턴'
+  #swagger.description = ''
+*/
+  const pageType = req.params.pageType;
+  const carouselType = req.query?.type ? '"' + req.query?.type + '"' : null;
+
+  maria.query(
+    `SELECT * FROM CarouselContents WHERE pageType="${pageType}" and carouselType=${carouselType} and contentType="Buildings";`,
+    function (err, result) {
+      if (!err) {
+        console.log(
+          "(캐러셀 빌딩 데이터) 메인 페이지의 추천 건물 캐러셀 리스트 Sent"
+        );
+        res.status(200).json(result);
+      } else {
+        console.log("ERR (캐러셀 빌딩 데이터) : " + err);
+        res.status(400).json({
+          error: err.message ?? err,
+        });
+      }
+    }
+  );
+});
+
+// =================================================================================================
 //  관리자 페이지 API
 // =================================================================================================
 
@@ -973,7 +1006,7 @@ router.get("/get/test", (req, res) => {
   #swagger.description = 'GET Test Api 입니다.'
 */
 
-  res.status(201).send({ test: "hi" });
+  res.status(200).send({ test: "hi" });
 });
 
 module.exports = router;
