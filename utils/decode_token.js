@@ -21,14 +21,18 @@ const getUserInfoFromToken = (req, res, is로그인_검증_필요) => {
   try {
     payload = getDecodedTokenPayload(req);
   } catch (e) {
-    res.status(401).send("error: access token expired!");
+    console.log("유저 ROLE 체크 => AccessToken 만료됨, USER_SESSION_EXPIRED!");
+    console.log("재로그인 필요함");
+    res.status(401).json({
+      error: "USER_SESSION_EXPIRED",
+    });
     return false;
   }
 
   // payload = { userId, role }
   if (!payload) {
-    res.status(is로그인_검증_필요 ? 409 : 200).json({
-      user_role: "SIGNED_OUT",
+    res.status(is로그인_검증_필요 ? 401 : 200).json({
+      error: "USER_SIGNED_OUT",
     });
     console.log("유저 ROLE 체크 => AccessToken 없음, USER_SIGNED_OUT!");
     console.log('user_role => "SIGNED_OUT"');
