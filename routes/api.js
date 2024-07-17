@@ -135,7 +135,7 @@ router.get("/building/search", (req, res) => {
     order_select_query = "JSON_LENGTH(b.popups) AS popups_count";
 
   // 1차 기본 쿼리 생성
-  const primaryQuery = `
+  let primaryQuery = `
         SELECT 
             b.*,
             MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date,
