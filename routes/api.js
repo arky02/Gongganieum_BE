@@ -1,5 +1,3 @@
-// var openAI = require("openai");
-// const openai = new openAI.OpenAI();
 var express = require("express");
 var router = express.Router();
 // var cors = require('cors');
@@ -761,6 +759,11 @@ router.post("/contact", function (req, res) {
   #swagger.summary = 'POST Test Api'
   #swagger.description = 'POST Test Api 입니다.'
 */
+  // Authorization Header Token으로부터 유저 정보 추출
+  const payload = getUserInfoFromToken(req, res, true);
+  if (!payload) return;
+  const { userId } = payload;
+
   let name,
     phone,
     email,
@@ -771,12 +774,10 @@ router.post("/contact", function (req, res) {
     reason,
     enterpath,
     requests,
-    buildingId,
-    userId;
+    buildingId;
 
   try {
     buildingId = req.body.buildingId; // 필수 입력 field
-    userId = req.body.userId; // 필수 입력 field
     name = req.body?.name ?? "";
     phone = req.body?.phone ?? "";
     email = req.body?.email ?? "";
@@ -790,7 +791,7 @@ router.post("/contact", function (req, res) {
   } catch (e) {
     console.log("ERR (get request) : " + e);
     res.status(400).json({
-      error: "ERR_PARAMS : buildingId is required",
+      error: "ERR_PARAMS : buildingId는 필수 입력 필드 값 입니다.",
     });
   }
 
