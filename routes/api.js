@@ -135,7 +135,7 @@ router.get("/building/search", (req, res) => {
     order_select_query = "JSON_LENGTH(b.popups) AS popups_count";
 
   // 1차 기본 쿼리 생성
-  let primaryQuery = `
+  let outerQuery = `
         SELECT 
             b.*,
             MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date,
@@ -157,17 +157,16 @@ router.get("/building/search", (req, res) => {
   // 6. is_current 필터 적용 (outer query의 where절)
   let is_current_where_query = "";
   if (is_current) {
-    const innerQuery = primaryQuery;
-    primaryQuery = `
-        SELECT
-            b.*,
-            latest_end_date,
-            earliest_start_date
-        FROM (
-            ${innerQuery}
-        ) subquery
+    const subQuery = outerQuery;
+    outerQuery = `
+        subquery.*,
+        subquery.latest_end_date,
+        subquery.earliest_start_date
+    FROM (
+        ${subQuery}
+    ) AS subquery
     `;
-    is_current_where_query = "WHERE DATE(latest_end_date) > CURDATE()";
+    is_current_where_query = "WHERE DATE(subquery.latest_end_date) > CURDATE()";
   }
 
   // 7. 페이지네이션 적용 (page, limit)
@@ -180,10 +179,10 @@ router.get("/building/search", (req, res) => {
   console.log("정렬 조건: ", order);
 
   const query = `
-      ${primaryQuery} 
+      ${outerQuery} 
       ${is_current_where_query}
       ORDER BY
-          ${order_filter}
+          ${is_current ? "subquery." + order_filter : order_filter}
           ${page_filter};
       `;
   console.log(query);
