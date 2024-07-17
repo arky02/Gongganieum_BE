@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-// var cors = require('cors');
 const maria = require("../config/maria");
 const axios = require("axios");
 const qs = require("qs");
@@ -23,30 +22,6 @@ const s3 = new S3Client({
     accessKeyId: process.env.S3_KEY,
     secretAccessKey: process.env.S3_SECRET,
   },
-});
-
-// =================================================================================================
-// Popup API : Popup 관련 API (GET) - 1개
-// =================================================================================================
-
-router.get("/popup/infos", (req, res) => {
-  /*
-  #swagger.tags = ['Popup']
-  #swagger.summary = '전체 팝업 리스트 정보 리턴'
-  #swagger.description = "Response Datatype: Popups[]"
-*/
-
-  maria.query(`SELECT * FROM Popups`, function (err, result) {
-    if (!err) {
-      console.log("All Popup's info are sent");
-      res.send(result);
-    } else {
-      console.log("ERR : " + err);
-      res.status(404).json({
-        error: "Error",
-      });
-    }
-  });
 });
 
 // =================================================================================================

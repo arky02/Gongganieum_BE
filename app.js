@@ -4,6 +4,14 @@ const app = express();
 const port = 8080; // port 번호 설정
 const bodyParser = require("body-parser");
 var apiRouter = require("./routes/api");
+var adminRouter = require("./routes/admin");
+var buildingRouter = require("./routes/buildings");
+var etcRouter = require("./routes/etc");
+var magazineRouter = require("./routes/magazines");
+var oauthRouter = require("./routes/oauth");
+var popupRouter = require("./routes/popups");
+var publicDataRouter = require("./routes/public_data");
+var userRouter = require("./routes/users");
 var createError = require("http-errors");
 
 // 서버 접속 기본 엔진 설정
@@ -28,7 +36,7 @@ var allowlist = [
 ];
 
 app.use((req, res, next) => {
-  console.log("\n");
+  console.log("\t");
   console.log("====================== NEW REQ START =====================");
   console.log("Received request:", req.method, req.url);
   next();
@@ -52,6 +60,8 @@ app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(bodyParser.json()); //요청 본문을 json 형태로 파싱
 app.use(bodyParser.urlencoded({ extended: false })); //
 
+// endpoint root 주소 매핑
+app.use("/api/popup", popupRouter);
 app.use("/api", apiRouter);
 
 // catch 404 and forward to error handler
