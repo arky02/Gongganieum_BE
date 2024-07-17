@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const maria = require("/config/maria");
+const maria = require("../config/maria");
 
 // =================================================================================================
 // Building API : Building 관련 API (GET) - 3개

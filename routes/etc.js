@@ -1,8 +1,8 @@
 var express = require("express");
 var router = express.Router();
-const maria = require("/config/maria");
+const maria = require("../config/maria");
 
-const { getUserInfoFromToken } = require("/utils/decode_token.js");
+const { getUserInfoFromToken } = require("../utils/decode_token.js");
 
 // =================================================================================================
 // TEST API : 테스트 용 API (GET, POST) - 2개

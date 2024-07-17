@@ -2,8 +2,8 @@ var express = require("express");
 var router = express.Router();
 const maria = require("../config/maria");
 
-const { makeToken } = require("/utils/jwt");
-const { getUserInfoFromToken } = require("/utils/decode_token.js");
+const { makeToken } = require("../utils/jwt");
+const { getUserInfoFromToken } = require("../utils/decode_token.js");
 
 // ======================================================================================================================================
 // USER API : User 관련 API (GET, GET Authorize, POST, POST Authorize, PATCH Authorize) - 5개
