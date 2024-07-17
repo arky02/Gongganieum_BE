@@ -468,10 +468,14 @@ router.get("/user/nickname_check", function (req, res) {
     `,
     function (err, result) {
       if (!err) {
-        // 성공
-        // console.log("(Delete User) 유저 삭제 성공, user id: " + String(userId));
-        console.log(result);
-        res.status(200).json(result);
+        let isValid = false;
+        if (result[0] === "") {
+          isValid = true;
+        }
+        console.log("닉네임 중복 체크 => is_valid: ", isValid);
+        console.log("해당 닉네임으로 검색된 유저 id");
+        console.log(result[0]);
+        res.status(200).json({ is_valid: isValid });
       } else {
         // console.log(
         //   "ERR (Delete User) 해당 아이디의 유저가 없습니다! user id: " +
