@@ -36,7 +36,7 @@ router.get("/infos", (req, res) => {
   );
 });
 
-router.get("/building/search", (req, res) => {
+router.get("/search", (req, res) => {
   /*
   #swagger.tags = ['Building']
   #swagger.summary = '특정 정렬 조건, 필터 조건으로 건물 검색'
@@ -160,7 +160,7 @@ router.get("/building/search", (req, res) => {
   });
 });
 
-router.get("/building/likes/count", function (req, res) {
+router.get("/likes/count", function (req, res) {
   /*
   #swagger.tags = ['찜하기']
   #swagger.summary = '특정 건물 id의 찜하기 개수 리턴'
