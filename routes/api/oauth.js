@@ -13,6 +13,7 @@ const {
   OAUTH_CLIENT_SECRET,
   OAUTH_CLIENT_ID,
 } = require("../../constants.js");
+const sendOAuthDataWithToken = require("../../utils/send_token");
 
 const saveOAuthGuestData = ({ name, email, img, res }) => {
   // ROLE: GUEST일 경우 유저데이터 첫 DB저장 처리
@@ -38,7 +39,7 @@ const saveOAuthGuestData = ({ name, email, img, res }) => {
 
         // ===== ROLE: GUEST SEND RESPONSE  =====
         // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-        sendOAuthResDataWithToken({
+        sendOAuthDataWithToken({
           userId,
           name,
           role: "GUEST",
@@ -151,7 +152,7 @@ router.get("/callback", async (req, res) => {
 
         // ===== ROLE: USER OR GUEST SEND RESPONSE  =====
         // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-        sendOAuthResDataWithToken({
+        sendOAuthDataWithToken({
           userId,
           name,
           role: userRole,

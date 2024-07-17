@@ -6,8 +6,8 @@ var express = require("express");
 var router = express.Router();
 const maria = require("../../config/maria.js");
 
-const { makeToken } = require("../../utils/jwt.js");
 const { getUserInfoFromToken } = require("../../utils/decode_token.js");
+const sendOAuthDataWithToken = require("../../utils/send_token");
 
 // 유저 정보 GET
 router.get("/info", function (req, res) {
@@ -95,22 +95,6 @@ router.patch("/info", function (req, res) {
   );
 });
 
-// Response로 JWT AccessToken(_id, role), Role 정보 보내기
-const sendOAuthResDataWithToken = ({ userId, name, role, res }) => {
-  const payload = { userId, role };
-  console.log("payload", payload);
-  const accessToken = makeToken(payload);
-  console.log("accessToken", accessToken);
-  // const cookiOpt = { maxAge: 1000 * 60 * 60 * 24 };
-  // res.cookie("accessToken", accessToken, cookiOpt);
-
-  console.log(`=== 소셜로그인 RES 전송, ROLE: ${role} 처리 완료 ===`);
-
-  res.status(200).json({ accessToken, name, role });
-
-  // return { accessToken, name, role };
-};
-
 // TODO: 중복됐을 경우 다른 오류 코드 전송
 router.patch("/guest/update", function (req, res) {
   /*
@@ -165,7 +149,7 @@ router.patch("/guest/update", function (req, res) {
         );
 
         //회원가입 완료 -> send api response with JWT AccessToken
-        sendOAuthResDataWithToken({
+        sendOAuthDataWithToken({
           userId: guestId,
           name: "",
           role: "USER",
