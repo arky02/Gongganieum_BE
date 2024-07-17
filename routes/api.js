@@ -464,7 +464,7 @@ router.get("/user/nickname_check", function (req, res) {
 
   maria.query(
     `
-    SELECT FROM Users WHERE nickname="${nickname}";
+    SELECT _id FROM Users WHERE nickname="${nickname}";
     `,
     function (err, result) {
       if (!err) {
