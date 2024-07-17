@@ -124,6 +124,16 @@ router.get("/building/search", (req, res) => {
   // 3. where절 - is_ours 필터 적용
   if (is_ours) where_query.push(`b.is_ours = 1`);
 
+  // 4. order 적용
+  let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
+  if (order === "popular") order_filter = "popups_count DESC";
+
+  // 5. order에 따라 추출해야하는 select 쿼리 적용
+  let order_select_query =
+    "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"; // order = new (default) 적용
+  if (order === "popular")
+    order_select_query = "JSON_LENGTH(b.popups) AS popups_count";
+
   // 1차 기본 쿼리 생성
   const primaryQuery = `
         SELECT 
@@ -143,16 +153,6 @@ router.get("/building/search", (req, res) => {
         ${where_query.length > 0 ? `WHERE ${where_query.join(" AND ")}` : ""}
         GROUP BY 
             b._id`;
-
-  // 4. order 적용
-  let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
-  if (order === "popular") order_filter = "popups_count DESC";
-
-  // 5. order에 따라 추출해야하는 select 쿼리 적용
-  let order_select_query =
-    "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"; // order = new (default) 적용
-  if (order === "popular")
-    order_select_query = "JSON_LENGTH(b.popups) AS popups_count";
 
   // 6. is_current 필터 적용 (outer query의 where절)
   let is_current_where_query = "";
