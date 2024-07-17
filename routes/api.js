@@ -124,9 +124,41 @@ router.get("/building/search", (req, res) => {
   // 3. where절 - is_ours 필터 적용
   if (is_ours) where_query.push(`b.is_ours = 1`);
 
-  // 4. where절 - is_current 필터 적용
+  // 1차 기본 쿼리 생성
+  const primaryQuery = `
+        SELECT 
+            b.*,
+            MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date,
+            ${order_select_query}
+        FROM 
+            Buildings b
+            JOIN JSON_TABLE(
+                b.popups, 
+                '$[*]' 
+                COLUMNS (
+                    popup_name VARCHAR(255) PATH '$.name',
+                    popup_date VARCHAR(512) PATH '$.date'
+                )
+            ) AS popup
+        ${where_query.length > 0 ? `WHERE ${where_query.join(" AND ")}` : ""}
+        GROUP BY 
+            b._id`;
+
+  // 4. is_current 필터 적용
+
+  let is_current_where_query = "";
   if (is_current) {
-    where_query.push("DATE(latest_end_date) > CURDATE()");
+    const innerQuery = primaryQuery;
+    primaryQuery = `
+        SELECT
+            b.*,
+            latest_end_date,
+            earliest_start_date
+        FROM (
+            ${innerQuery}
+        ) subquery
+    `;
+    is_current_where_query = "WHERE DATE(latest_end_date) > CURDATE()";
   }
 
   // 5. order 적용
@@ -134,10 +166,10 @@ router.get("/building/search", (req, res) => {
   if (order === "popular") order_filter = "popups_count DESC";
 
   // 6. order에 따라 추출해야하는 select 쿼리 적용
-  let select_query =
+  let order_select_query =
     "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"; // order = new (default) 적용
   if (order === "popular")
-    select_query = "JSON_LENGTH(b.popups) AS popups_count";
+    order_select_query = "JSON_LENGTH(b.popups) AS popups_count";
 
   // 7. 페이지네이션 적용 (page, limit)
   const page_filter =
@@ -148,30 +180,13 @@ router.get("/building/search", (req, res) => {
   console.log("빌딩 검색 조건: ", where_query);
   console.log("정렬 조건: ", order);
 
-  // 전체 SQl Query문 생성
   const query = `
-        SELECT 
-            b.*,
-            MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date,
-            ${select_query}
-        FROM 
-            Buildings b
-        JOIN 
-            JSON_TABLE(
-                b.popups, 
-                '$[*]' 
-                COLUMNS (
-                    popup_name VARCHAR(255) PATH '$.name',
-                    popup_date VARCHAR(512) PATH '$.date'
-                )
-            ) AS popup
-        ${where_query.length > 0 ? `WHERE ${where_query.join(" AND ")}` : ""}
-        GROUP BY 
-            b._id
-        ORDER BY
-            ${order_filter}
-        ${page_filter};`;
-
+      ${primaryQuery} 
+      ${is_current_where_query}
+      ORDER BY
+          ${order_filter}
+          ${page_filter};
+      `;
   console.log(query);
 
   maria.query(query, function (err, result) {
@@ -181,7 +196,9 @@ router.get("/building/search", (req, res) => {
           q ? `q: ${q}` : ""
         }, ${as ? `as: ${as}` : ""}, ${cate ? `cate: ${cate}` : ""}, ${
           is_ours ? `is_ours: ${is_ours}` : ""
-        }, ${order ? `order: ${order}` : ""}`
+        },${is_current ? `is_current: ${is_current}` : ""}, ${
+          order ? `order: ${order}` : ""
+        }`
       );
       if (page_filter) console.log(page_filter);
       res.send(result);
