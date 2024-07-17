@@ -469,7 +469,7 @@ router.get("/user/nickname_check", function (req, res) {
     function (err, result) {
       if (!err) {
         let isValid = false;
-        if (result[0] === "") {
+        if (result.length < 1) {
           isValid = true;
         }
         console.log("닉네임 중복 체크 => is_valid: ", isValid);
