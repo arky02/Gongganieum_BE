@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 var createError = require("http-errors");
 
 // router 설정
-var apiRouter = require("./routes/api");
+var apiRouter = require("./routes/api/index");
 var adminRouter = require("./routes/api/admin");
 var buildingRouter = require("./routes/api/buildings");
 var magazineRouter = require("./routes/api/magazines");
@@ -69,7 +69,7 @@ app.use("/api/user", userRouter);
 app.use("/api/oauth", oauthRouter);
 app.use("/api/data", publicDataRouter);
 app.use("/api/admin", adminRouter);
-app.use("/api", apiRouter); // 기타 api들
+app.use("/api/index", apiRouter); // 기타 api들
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
