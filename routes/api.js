@@ -386,7 +386,7 @@ router.patch("/user/guest/update", function (req, res) {
 router.get("/user/remove", function (req, res) {
   /*
   #swagger.tags = ['User']
-  #swagger.summary = '유저 삭제 (탈퇴) - 임시 api'
+  #swagger.summary = '유저 삭제 (탈퇴)'
   #swagger.description = 'Response Datatype: int(삭제한 유저의 id)'
 */
 
@@ -451,6 +451,37 @@ router.get("/user/info/role", function (req, res) {
       error: `에러가 발생했습니다!`,
     });
   }
+});
+
+router.get("/user/nickname_check", function (req, res) {
+  /*
+  #swagger.tags = ['User']
+  #swagger.summary = '유저 닉네임 중복 검사'
+  
+*/
+
+  let nickname = req.query?.nickname ?? null; // -> where
+
+  maria.query(
+    `
+    SELECT FROM Users WHERE nickname="${nickname}";
+    `,
+    function (err, result) {
+      if (!err) {
+        // 성공
+        // console.log("(Delete User) 유저 삭제 성공, user id: " + String(userId));
+        console.log(result);
+        res.status(200).json(result);
+      } else {
+        // console.log(
+        //   "ERR (Delete User) 해당 아이디의 유저가 없습니다! user id: " +
+        //     String(userId)
+        // );
+        console.log(err);
+        res.status(404).json(err);
+      }
+    }
+  );
 });
 
 // =================================================================================================
