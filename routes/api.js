@@ -159,13 +159,13 @@ router.get("/building/search", (req, res) => {
   if (is_current) {
     const subQuery = outerQuery;
     outerQuery = `
-        subquery.*,
-        subquery.latest_end_date,
-        subquery.earliest_start_date
-    FROM (
-        ${subQuery}
-    ) AS subquery
-    `;
+      SELECT
+          subquery.*,
+          subquery.latest_end_date,
+          subquery.earliest_start_date
+      FROM (
+          ${subQuery}
+      ) AS subquery`;
     is_current_where_query = "WHERE DATE(subquery.latest_end_date) > CURDATE()";
   }
 
