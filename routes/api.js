@@ -144,8 +144,17 @@ router.get("/building/search", (req, res) => {
         GROUP BY 
             b._id`;
 
-  // 4. is_current 필터 적용
+  // 4. order 적용
+  let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
+  if (order === "popular") order_filter = "popups_count DESC";
 
+  // 5. order에 따라 추출해야하는 select 쿼리 적용
+  let order_select_query =
+    "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"; // order = new (default) 적용
+  if (order === "popular")
+    order_select_query = "JSON_LENGTH(b.popups) AS popups_count";
+
+  // 6. is_current 필터 적용 (outer query의 where절)
   let is_current_where_query = "";
   if (is_current) {
     const innerQuery = primaryQuery;
@@ -160,16 +169,6 @@ router.get("/building/search", (req, res) => {
     `;
     is_current_where_query = "WHERE DATE(latest_end_date) > CURDATE()";
   }
-
-  // 5. order 적용
-  let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
-  if (order === "popular") order_filter = "popups_count DESC";
-
-  // 6. order에 따라 추출해야하는 select 쿼리 적용
-  let order_select_query =
-    "MIN(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', 1), '%y.%m.%d')) AS earliest_start_date"; // order = new (default) 적용
-  if (order === "popular")
-    order_select_query = "JSON_LENGTH(b.popups) AS popups_count";
 
   // 7. 페이지네이션 적용 (page, limit)
   const page_filter =
