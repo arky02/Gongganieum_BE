@@ -1,72 +1,12 @@
+// =================================================================================================
+//  기타 API들 - Root Endpoint: /api
+// =================================================================================================
+
 var express = require("express");
 var router = express.Router();
-const maria = require("../config/maria");
+const maria = require("../../config/maria.js");
 
-const { getUserInfoFromToken } = require("../utils/decode_token.js");
-
-// =================================================================================================
-// TEST API : 테스트 용 API (GET, POST) - 2개
-// =================================================================================================
-
-router.post("/save/user/test", function (req, res) {
-  /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
-  #swagger.description = 'POST Test Api 입니다.'
-*/
-
-  var name = "";
-  var age = 0;
-  try {
-    name = req.body.name;
-    age = req.body.age;
-  } catch (e) {
-    console.log("ERR (get request) : " + e);
-    res.status(400).json({
-      error: "ERR_PARAMS : email or name is not valid",
-    });
-  }
-
-  maria.query(
-    `INSERT INTO Test(name,age) VALUES ("${name}", ${age})`,
-    function (err) {
-      if (!err) {
-        console.log("(Save User) User is saved : " + name);
-        res.status(200).json({
-          message: "User is saved",
-        });
-      } else {
-        console.log("ERR (Save User) : " + err);
-        res.status(409).json({
-          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
-        });
-      }
-    }
-  );
-});
-
-router.get("/get/test", (req, res) => {
-  /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'GET Test Api'
-  #swagger.description = 'GET Test Api 입니다.'
-*/
-
-  res.status(200).send({ test: "hi" });
-});
-
-// 빌딩 아이디에 해당하는 빌딩의 좋아요 숫자 출력
-
-// SELECT buildingId, COUNT(userId) AS likes_count
-// FROM BuildingLikes
-// WHERE buildingId = 101
-// GROUP BY buildingId;
-
-// 해당 유저가 누른 빌딩 좋아요 id 리스트 -> 빌딩 id 리스트 반환됨
-
-// SELECT buildingId
-// FROM BuildingLikes
-// WHERE userId = @userId;
+const { getUserInfoFromToken } = require("../../utils/decode_token.js");
 
 // =================================================================================================
 //  문의하기 페이지 API
@@ -166,6 +106,57 @@ router.get("/carousel/building/:pageType", (req, res) => {
         console.log("ERR (캐러셀 빌딩 데이터) : " + err);
         res.status(400).json({
           error: err.message ?? err,
+        });
+      }
+    }
+  );
+});
+
+// =================================================================================================
+// TEST API : 테스트 용 API (GET, POST) - 2개
+// =================================================================================================
+
+router.get("/get/test", (req, res) => {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'GET Test Api'
+  #swagger.description = 'GET Test Api 입니다.'
+*/
+
+  res.status(200).send({ test: "hi" });
+});
+
+router.post("/save/user/test", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  var name = "";
+  var age = 0;
+  try {
+    name = req.body.name;
+    age = req.body.age;
+  } catch (e) {
+    console.log("ERR (get request) : " + e);
+    res.status(400).json({
+      error: "ERR_PARAMS : email or name is not valid",
+    });
+  }
+
+  maria.query(
+    `INSERT INTO Test(name,age) VALUES ("${name}", ${age})`,
+    function (err) {
+      if (!err) {
+        console.log("(Save User) User is saved : " + name);
+        res.status(200).json({
+          message: "User is saved",
+        });
+      } else {
+        console.log("ERR (Save User) : " + err);
+        res.status(409).json({
+          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
         });
       }
     }

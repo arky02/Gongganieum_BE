@@ -1,6 +1,10 @@
+// =================================================================================================
+//  관리자 페이지 API - Root Endpoint: /api/admin
+// =================================================================================================
+
 var express = require("express");
 var router = express.Router();
-const maria = require("../config/maria");
+const maria = require("../../config/maria");
 
 const { S3Client } = require("@aws-sdk/client-s3");
 const multer = require("multer");
@@ -13,10 +17,6 @@ const s3 = new S3Client({
   },
 });
 
-// =================================================================================================
-//  관리자 페이지 API
-// =================================================================================================
-
 // aws s3 이미지 업로드 함수
 const upload = multer({
   storage: multerS3({
@@ -27,9 +27,6 @@ const upload = multer({
     },
   }),
 });
-
-// /admin/add/building
-// /admin/edit/building?type=(img|popup|building)&id=int
 
 router.post("/edit/building", upload.array("file", 20), async (req, res) => {
   const type = req.query?.type ?? null; // type = img | popup | building

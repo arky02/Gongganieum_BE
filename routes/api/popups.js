@@ -1,9 +1,9 @@
 var express = require("express");
 var router = express.Router();
-const maria = require("../config/maria.js");
+const maria = require("../../config/maria.js");
 
 // =================================================================================================
-// Popup API : Popup 관련 API (GET) - 1개
+// Popup 관련 API - Root Endpoint: /api/popup
 // =================================================================================================
 
 router.get("/infos", (req, res) => {

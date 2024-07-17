@@ -3,16 +3,17 @@ const cors = require("cors");
 const app = express();
 const port = 8080; // port 번호 설정
 const bodyParser = require("body-parser");
-var apiRouter = require("./routes/api");
-var adminRouter = require("./routes/admin");
-var buildingRouter = require("./routes/buildings");
-var etcRouter = require("./routes/etc");
-var magazineRouter = require("./routes/magazines");
-var oauthRouter = require("./routes/oauth");
-var popupRouter = require("./routes/popups");
-var publicDataRouter = require("./routes/public_data");
-var userRouter = require("./routes/users");
 var createError = require("http-errors");
+
+// router 설정
+var apiRouter = require("./routes/api");
+var adminRouter = require("./routes/api/admin");
+var buildingRouter = require("./routes/api/buildings");
+var magazineRouter = require("./routes/api/magazines");
+var oauthRouter = require("./routes/api/oauth");
+var popupRouter = require("./routes/api/popups");
+var publicDataRouter = require("./routes/api/public_data");
+var userRouter = require("./routes/api/users");
 
 // 서버 접속 기본 엔진 설정
 const path = require("path");
@@ -62,7 +63,13 @@ app.use(bodyParser.urlencoded({ extended: false })); //
 
 // endpoint root 주소 매핑
 app.use("/api/popup", popupRouter);
-app.use("/api", apiRouter);
+app.use("/api/building", buildingRouter);
+app.use("/api/magazine", magazineRouter);
+app.use("/api/user", userRouter);
+app.use("/api/oauth", oauthRouter);
+app.use("/api/data", publicDataRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api", apiRouter); // 기타 api들
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

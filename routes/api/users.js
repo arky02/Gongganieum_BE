@@ -1,13 +1,13 @@
+// ======================================================================================================================================
+// User 관련 API - Root Endpoint: /api/user
+// ======================================================================================================================================
+
 var express = require("express");
 var router = express.Router();
-const maria = require("../config/maria");
+const maria = require("../../config/maria.js");
 
-const { makeToken } = require("../utils/jwt");
-const { getUserInfoFromToken } = require("../utils/decode_token.js");
-
-// ======================================================================================================================================
-// USER API : User 관련 API (GET, GET Authorize, POST, POST Authorize, PATCH Authorize) - 5개
-// ======================================================================================================================================
+const { makeToken } = require("../../utils/jwt.js");
+const { getUserInfoFromToken } = require("../../utils/decode_token.js");
 
 // 유저 정보 GET
 router.get("/info", function (req, res) {

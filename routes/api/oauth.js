@@ -1,6 +1,10 @@
+// =================================================================================================
+// OAuth 소셜로그인 API - Root Endpoint: /api/oauth
+// =================================================================================================
+
 var express = require("express");
 var router = express.Router();
-const maria = require("../config/maria");
+const maria = require("../../config/maria.js");
 const axios = require("axios");
 const qs = require("qs");
 const {
@@ -8,11 +12,7 @@ const {
   OAUTH_GET_USERINFO_URL,
   OAUTH_CLIENT_SECRET,
   OAUTH_CLIENT_ID,
-} = require("../constants.js");
-
-// =================================================================================================
-// 소셜로그인 API : OAuth 소셜로그인 관련 API
-// =================================================================================================
+} = require("../../constants.js");
 
 const saveOAuthGuestData = ({ name, email, img, res }) => {
   // ROLE: GUEST일 경우 유저데이터 첫 DB저장 처리
