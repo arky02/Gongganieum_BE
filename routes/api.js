@@ -818,6 +818,8 @@ router.post("/contact", function (req, res) {
     budget = req.body?.budget ?? "";
     reason = req.body?.reason ?? "";
     enterpath = req.body?.enterpath ?? "";
+    size = req.body?.size ?? "";
+    areaList = req.body?.areaList ?? "";
     requests = req.body?.requests ?? "";
   } catch (e) {
     console.log("ERR (get request) : " + e);
@@ -826,11 +828,11 @@ router.post("/contact", function (req, res) {
     });
   }
 
-  const contactPostQuery = `${buildingId}, ${userId}, "${name}", "${phone}", "${email}", "${company}", "${date1}", "${date2}", "${budget}", "${reason}", "${enterpath}", "${requests}"`;
+  const contactPostQuery = `${buildingId}, ${userId}, "${name}", "${phone}", "${email}", "${company}", "${date1}", "${date2}", "${budget}", "${reason}", "${enterpath}", "${size}", "${areaList}", "${requests}"`;
   console.log("문의 내용: ", contactPostQuery);
 
   maria.query(
-    `INSERT INTO ContactMsg(buildingId, userId, name, phone, email, company, date1, date2, budget, reason, enterpath, requests) VALUES (${contactPostQuery});`,
+    `INSERT INTO ContactMsg(buildingId, userId, name, phone, email, company, date1, date2, budget, reason, enterpath, size, areaList, requests) VALUES (${contactPostQuery});`,
     function (err) {
       if (!err) {
         console.log("(문의하기) 문의가 작성되었습니다!");
