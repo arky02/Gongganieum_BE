@@ -113,7 +113,7 @@ router.get("/search", (req, res) => {
       SELECT
           subquery.*,
           subquery.latest_end_date,
-          subquery.earliest_start_date
+          subquery.earliest_start_date,
       FROM (
           ${subQuery}
       ) AS subquery`;
@@ -150,6 +150,7 @@ router.get("/search", (req, res) => {
         }`
       );
       if (page_filter) console.log(page_filter);
+      console.log(result.length);
       res.send(result);
     } else {
       console.log("ERR : " + err);
