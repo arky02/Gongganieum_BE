@@ -125,7 +125,7 @@ router.get("/search", (req, res) => {
   ${outerQuery} 
   ${is_current_where_query}
   ORDER BY
-      ${is_current ? "subquery." + order_filter : order_filter};
+      ${is_current ? "subquery." + order_filter : order_filter}
   `;
 
   // 7. 페이지네이션 적용 (page, limit)
@@ -145,7 +145,7 @@ router.get("/search", (req, res) => {
   console.log(query);
 
   maria.query(
-    `${page_filter ? query_without_page_filter : ""} 
+    `${page_filter ? query_without_page_filter + ";" : ""} 
     ${query}`,
     function (err, result) {
       if (!err) {
