@@ -54,6 +54,16 @@ router.get("/search", (req, res) => {
 
   let where_query = [];
 
+  if (is_ours) {
+    console.log("is_ours true");
+    console.log(is_ours);
+    console.log(is_ours === true);
+  } else {
+    console.log("is_ours false");
+    console.log(is_ours);
+    console.log(is_ours === true);
+  }
+
   // Where 절 생성
   // popup.popup_name like '${"%" + q + "%"}'
 
