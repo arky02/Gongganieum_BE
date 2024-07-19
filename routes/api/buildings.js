@@ -125,8 +125,7 @@ router.get("/search", (req, res) => {
   ${outerQuery} 
   ${is_current_where_query}
   ORDER BY
-      ${is_current ? "subquery." + order_filter : order_filter}
-  `;
+      ${is_current ? "subquery." + order_filter : order_filter}`;
 
   // 7. 페이지네이션 적용 (page, limit)
   const page_filter =
