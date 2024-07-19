@@ -113,7 +113,7 @@ router.get("/search", (req, res) => {
       SELECT
           subquery.*,
           subquery.latest_end_date,
-          subquery.earliest_start_date,
+          subquery.earliest_start_date
       FROM (
           ${subQuery}
       ) AS subquery`;
