@@ -120,45 +120,55 @@ router.get("/search", (req, res) => {
     is_current_where_query = "WHERE DATE(subquery.latest_end_date) > CURDATE()";
   }
 
+  // 전체 개수 출력용 쿼리 (페이지네이션 적용 X)
+  const query_without_page_filter = `
+  ${outerQuery} 
+  ${is_current_where_query}
+  ORDER BY
+      ${is_current ? "subquery." + order_filter : order_filter};
+  `;
+
   // 7. 페이지네이션 적용 (page, limit)
   const page_filter =
     page && limit
       ? "LIMIT " + String(limit) + " OFFSET " + String((page - 1) * limit)
       : "";
 
+  // 페이지네이션 적용한 전체 쿼리
+  const query = `
+      ${query_without_page_filter}
+      ${page_filter};
+      `;
+
   console.log("빌딩 검색 조건: ", where_query);
   console.log("정렬 조건: ", order);
-
-  const query = `
-      ${outerQuery} 
-      ${is_current_where_query}
-      ORDER BY
-          ${is_current ? "subquery." + order_filter : order_filter}
-          ${page_filter};
-      `;
   console.log(query);
 
-  maria.query(query, function (err, result) {
-    if (!err) {
-      console.log(
-        `Return Building with Building Search Condition: ${
-          q ? `q: ${q}` : ""
-        }, ${as ? `as: ${as}` : ""}, ${cate ? `cate: ${cate}` : ""}, ${
-          is_ours ? `is_ours: ${is_ours}` : ""
-        },${is_current ? `is_current: ${is_current}` : ""}, ${
-          order ? `order: ${order}` : ""
-        }`
-      );
-      if (page_filter) console.log(page_filter);
-      console.log(result.length);
-      res.send(result);
-    } else {
-      console.log("ERR : " + err);
-      res.status(404).json({
-        error: "Error",
-      });
+  maria.query(
+    `${page_filter ? query_without_page_filter : ""} 
+    ${query}`,
+    function (err, result) {
+      if (!err) {
+        console.log(
+          `Return Building with Building Search Condition: ${
+            q ? `q: ${q}` : ""
+          }, ${as ? `as: ${as}` : ""}, ${cate ? `cate: ${cate}` : ""}, ${
+            is_ours ? `is_ours: ${is_ours}` : ""
+          },${is_current ? `is_current: ${is_current}` : ""}, ${
+            order ? `order: ${order}` : ""
+          }`
+        );
+        if (page_filter) console.log(page_filter);
+        console.log(result.length);
+        res.send({ count: result[0], result: result[1] });
+      } else {
+        console.log("ERR : " + err);
+        res.status(404).json({
+          error: "Error",
+        });
+      }
     }
-  });
+  );
 });
 
 router.get("/likes/count", function (req, res) {
