@@ -46,23 +46,13 @@ router.get("/search", (req, res) => {
   let q = req.query?.q ?? null; // -> where
   const as = req.query?.as ?? "address"; // address(default), building, popup -> where
   const cate = req.query?.cate ?? null; // str -> where
-  const is_ours = Boolean(req.query?.is_ours) ?? false; // true, false(default) -> where
-  const is_current = Boolean(req.query?.is_current) ?? false; // true, false(default) -> where
+  const is_ours = req.query?.is_ours === "true" ? true : false; // true, false(default) -> where
+  const is_current = req.query?.is_current === "true" ? true : false; // true, false(default) -> where
   const order = req.query?.order ?? "new"; // new(default), popular, (likes)
   const page = req.query?.page ?? null; // 페이지네이션 페이지 번호
   const limit = req.query?.limit ?? null; // 페이지네이션으로 가져올 요소의 개수
 
   let where_query = [];
-
-  if (is_ours) {
-    console.log("is_ours true");
-    console.log(is_ours);
-    console.log(is_ours === true);
-  } else {
-    console.log("is_ours false");
-    console.log(is_ours);
-    console.log(is_ours === true);
-  }
 
   // Where 절 생성
   // popup.popup_name like '${"%" + q + "%"}'
