@@ -160,7 +160,7 @@ router.get("/search", (req, res) => {
         );
         if (page_filter) console.log(page_filter);
         console.log(result.length);
-        res.send({ count: result[0], result: result[1] });
+        res.send({ count: result[0].length, result: result[1] });
       } else {
         console.log("ERR : " + err);
         res.status(404).json({
