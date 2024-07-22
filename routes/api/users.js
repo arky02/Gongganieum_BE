@@ -8,7 +8,29 @@ const maria = require("../../config/maria.js");
 
 const { getUserInfoFromToken } = require("../../utils/decode_token.js");
 const sendOAuthDataWithToken = require("../../utils/send_token");
-const { uploadImgToS3 } = require("./admin.js");
+
+const { S3Client } = require("@aws-sdk/client-s3");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const s3 = new S3Client({
+  region: "ap-northeast-2", // 서울
+  credentials: {
+    accessKeyId: process.env.S3_KEY,
+    secretAccessKey: process.env.S3_SECRET,
+  },
+});
+
+// aws s3 이미지 업로드 함수
+export const uploadImgToS3 = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: "poppop-bucket",
+    key: function (요청, file, cb) {
+      cb(null, Date.now().toString()); //업로드시 파일명 변경가능
+    },
+  }),
+});
+
 // 유저 정보 GET
 router.get("/info", function (req, res) {
   /*
