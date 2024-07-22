@@ -78,7 +78,7 @@ router.post("/edit/building", upload.array("file", 20), async (req, res) => {
   }
 });
 
-router.post("/save/buildings", function (req, res) {
+router.post("/save/building", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
@@ -90,33 +90,79 @@ router.post("/save/buildings", function (req, res) {
     name = req.body.name;
     address = req.body.address;
     coord = req.body.coord;
-    tag = req.body.tag;
+    tag = req.body?.tag ?? "";
     is_ours = req.body.is_ours;
     cate = req.body.cate;
     img = req.body.img;
   } catch (e) {
-    console.log("ERR (get request) : " + e);
+    console.log("ERR_PARAMS : " + e);
     res.status(400).json({
-      error: "ERR_PARAMS : email or name is not valid",
+      error:
+        "ERR_PARAMS : 건물 이름, 건물 주소, 건물 좌표, 직영 건물 여부, 카테고리, 건물 이미지는 필수 입력 필드입니다.",
     });
   }
 
-  maria.query(
-    `INSERT INTO Test(name,age) VALUES ("${name}", ${age})`,
-    function (err) {
-      if (!err) {
-        console.log("(Save User) User is saved : " + name);
-        res.status(200).json({
-          message: "User is saved",
-        });
-      } else {
-        console.log("ERR (Save User) : " + err);
-        res.status(409).json({
-          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
-        });
-      }
-    }
-  );
+  console.log(name, address, coord, tag, is_ours, cate, img);
+
+  // maria.query(
+  //   `INSERT INTO Buildings(name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${is_ours}, "${cate}", "${img}")`,
+  //   function (err) {
+  //     if (!err) {
+  //       console.log("(Save User) User is saved : " + name);
+  //       res.status(200).json({
+  //         message: "User is saved",
+  //       });
+  //     } else {
+  //       console.log("ERR (Save User) : " + err);
+  //       res.status(409).json({
+  //         error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+  //       });
+  //     }
+  //   }
+  // );
+});
+
+router.post("/save/popup", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  let name, address, coord, type, keyword, building;
+  try {
+    name = req.body.name;
+    address = req.body.address;
+    coord = req.body.date;
+    type = req.body.type;
+    keyword = req.body.keyword;
+    building = req.body.building;
+  } catch (e) {
+    console.log("ERR_PARAMS : " + e);
+    res.status(400).json({
+      error:
+        "ERR_PARAMS : 팝업 이름, 팝업 주소, 팝업 좌표, 팝업 종류, 키워드, 팝업 건물은 필수 입력 필드입니다.",
+    });
+  }
+
+  console.log(name, address, date, type, keyword, building);
+
+  // maria.query(
+  //   `INSERT INTO Buildings(name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${is_ours}, "${cate}", "${img}")`,
+  //   function (err) {
+  //     if (!err) {
+  //       console.log("(Save User) User is saved : " + name);
+  //       res.status(200).json({
+  //         message: "User is saved",
+  //       });
+  //     } else {
+  //       console.log("ERR (Save User) : " + err);
+  //       res.status(409).json({
+  //         error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+  //       });
+  //     }
+  //   }
+  // );
 });
 
 module.exports = router;
