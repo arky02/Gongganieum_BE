@@ -8,7 +8,7 @@ const maria = require("../../config/maria.js");
 
 const { getUserInfoFromToken } = require("../../utils/decode_token.js");
 const sendOAuthDataWithToken = require("../../utils/send_token");
-
+const { uploadImgToS3 } = require("./admin.js");
 // 유저 정보 GET
 router.get("/info", function (req, res) {
   /*
@@ -45,12 +45,24 @@ router.get("/info", function (req, res) {
 });
 
 // 유저 정보 PATCH (수정)
-router.patch("/info", function (req, res) {
+router.patch("/info", uploadImgToS3.single("file"), function (req, res) {
   /*
   #swagger.tags = ['User']
   #swagger.summary = '특정 id의 유저 정보 리턴'
   #swagger.description = 'Response Datatype: Users'
 */
+
+  let imgUrl = null;
+  if (req.file === undefined) {
+    console.log("Request에 이미지 없음, 프로필 이미지 수정 X");
+  } else {
+    imgUrl = req.file.location;
+    if (!imgUrl || !imgUrl.length > 0) {
+      console.log("ERR: imgUrlsList ERROR");
+      return;
+    }
+    console.log("AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrl: ", imgUrl);
+  }
 
   // 유저 정보 추출
   const payload = getUserInfoFromToken(req, res, true);
@@ -74,7 +86,7 @@ router.patch("/info", function (req, res) {
 
   maria.query(
     `
-    UPDATE Users SET nickname="${nickname}", company="${company}", brand="${brand}", tag="${tag}", description="${description}" WHERE _id = ${userId};
+    UPDATE Users SET nickname="${nickname}", company="${company}", brand="${brand}", tag="${tag}", description="${description}", img="${imgUrl}" WHERE _id = ${userId};
     `,
     function (err, result) {
       if (!err) {
