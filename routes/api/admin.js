@@ -78,4 +78,45 @@ router.post("/edit/building", upload.array("file", 20), async (req, res) => {
   }
 });
 
+router.post("/save/buildings", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  let name, address, coord, tag, is_ours, cate, img;
+  try {
+    name = req.body.name;
+    address = req.body.address;
+    coord = req.body.coord;
+    tag = req.body.tag;
+    is_ours = req.body.is_ours;
+    cate = req.body.cate;
+    img = req.body.img;
+  } catch (e) {
+    console.log("ERR (get request) : " + e);
+    res.status(400).json({
+      error: "ERR_PARAMS : email or name is not valid",
+    });
+  }
+
+  maria.query(
+    `INSERT INTO Test(name,age) VALUES ("${name}", ${age})`,
+    function (err) {
+      if (!err) {
+        console.log("(Save User) User is saved : " + name);
+        res.status(200).json({
+          message: "User is saved",
+        });
+      } else {
+        console.log("ERR (Save User) : " + err);
+        res.status(409).json({
+          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+        });
+      }
+    }
+  );
+});
+
 module.exports = router;

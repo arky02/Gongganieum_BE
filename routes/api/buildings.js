@@ -159,7 +159,10 @@ router.get("/search", (req, res) => {
         );
         if (page_filter) console.log(page_filter);
         console.log(result.length);
-        res.send({ count: result[0].length, result: result[1] });
+        const responseData = page_filter
+          ? { count: result[0].length, result: result[1] }
+          : { result: result };
+        res.send(responseData);
       } else {
         console.log("ERR : " + err);
         res.status(404).json({
