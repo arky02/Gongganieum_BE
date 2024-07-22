@@ -129,11 +129,9 @@ router.post("/save/popup", function (req, res) {
   #swagger.description = 'POST Test Api 입니다.'
 */
 
-  let name, address, coord, type, keyword, building;
+  let name, address, type, keyword, building;
   try {
     name = req.body.name;
-    address = req.body.address;
-    coord = req.body.date;
     type = req.body.type;
     keyword = req.body.keyword;
     building = req.body.building;
