@@ -27,60 +27,109 @@ const uploadImgToS3 = multer({
     },
   }),
 });
+router.post("/edit/building", upload.array("file", 20), async (req, res) => {
+  const type = req.query?.type ?? null; // type = img | popup | building
+  const buildingId = req.query?.id ?? null; // 빌딩 id
 
-router.post(
-  "/edit/building",
-  uploadImgToS3.array("file", 20),
-  async (req, res) => {
-    const type = req.query?.type ?? null; // type = img | popup | building
-    const buildingId = req.query?.id ?? null; // 빌딩 id
-
-    if (req.files === undefined) {
-      console.log("Request에 이미지 없음 ! => req.files === undefined");
-      res.status(400).send("ERR: No Imgs Given!");
+  if (req.files === undefined) {
+    console.log("Request에 이미지 없음 ! => req.files === undefined");
+    res.status(400).send("ERR: No Imgs Given!");
+  }
+  try {
+    const imgUrlsList = req.files.map((fileEl) => fileEl.location);
+    if (!imgUrlsList || !imgUrlsList.length > 0) {
+      console.log("ERR: imgUrlsList ERROR");
+      return;
     }
-    try {
-      const imgUrlsList = req.files.map((fileEl) => fileEl.location);
-      if (!imgUrlsList || !imgUrlsList.length > 0) {
-        console.log("ERR: imgUrlsList ERROR");
-        return;
-      }
-      console.log(
-        "AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrlsList: ",
-        imgUrlsList
-      ); // imgUrlsList 존재!
+    console.log(
+      "AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrlsList: ",
+      imgUrlsList
+    ); // imgUrlsList 존재!
 
-      maria.query(
-        `UPDATE Buildings SET img="${imgUrlsList.join(
-          ","
-        )}" WHERE _id=${buildingId};
+    maria.query(
+      `UPDATE Buildings SET img="${imgUrlsList.join(
+        ","
+      )}" WHERE _id=${buildingId};
         SELECT * FROM Buildings WHERE _id=${buildingId};
         `,
-        function (err, result) {
-          if (!err) {
-            console.log(
-              `빌딩 ID ${buildingId}의 건물정보 DB에 이미지 추가 성공! \nAWS S3 이미지 DB, Mysql DB에 이미지 ${imgUrlsList.length}개 추가됨`
-            );
-            res.status(200).send(result[1][0]);
-          } else {
-            console.log("ERR : " + err);
-            res.status(500).json({
-              error: "Error",
-            });
-          }
+      function (err, result) {
+        if (!err) {
+          console.log(
+            `빌딩 ID ${buildingId}의 건물정보 DB에 이미지 추가 성공! \nAWS S3 이미지 DB, Mysql DB에 이미지 ${imgUrlsList.length}개 추가됨`
+          );
+          res.status(200).send(result[1][0]);
+        } else {
+          console.log("ERR : " + err);
+          res.status(500).json({
+            error: "Error",
+          });
         }
-      );
-    } catch (e) {
-      console.log(e);
-      if (e === "LIMIT_UNEXPECTED_FILE") {
-        res.status(500).send("이미지 크기가 초과되었습니다.");
-        return;
-      } else {
-        res.status(500).send("SERVER ERROR");
       }
+    );
+  } catch (e) {
+    console.log(e);
+    if (e === "LIMIT_UNEXPECTED_FILE") {
+      res.status(500).send("이미지 크기가 초과되었습니다.");
+      return;
+    } else {
+      res.status(500).send("SERVER ERROR");
     }
   }
-);
+});
+
+// router.post(
+//   "/edit/building",
+//   uploadImgToS3.array("file", 20),
+//   async (req, res) => {
+//     const type = req.query?.type ?? null; // type = img | popup | building
+//     const buildingId = req.query?.id ?? null; // 빌딩 id
+
+//     if (req.files === undefined) {
+//       console.log("Request에 이미지 없음 ! => req.files === undefined");
+//       res.status(400).send("ERR: No Imgs Given!");
+//     }
+//     try {
+//       const imgUrlsList = req.files.map((fileEl) => fileEl.location);
+//       if (!imgUrlsList || !imgUrlsList.length > 0) {
+//         console.log("ERR: imgUrlsList ERROR");
+//         return;
+//       }
+//       console.log(
+//         "AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrlsList: ",
+//         imgUrlsList
+//       ); // imgUrlsList 존재!
+
+//       maria.query(
+//         `UPDATE Buildings SET img="${imgUrlsList.join(
+//           ","
+//         )}" WHERE _id=${buildingId};
+//         SELECT * FROM Buildings WHERE _id=${buildingId};
+//         `,
+//         function (err, result) {
+//           if (!err) {
+//             console.log(
+//               `빌딩 ID ${buildingId}의 건물정보 DB에 이미지 추가 성공! \nAWS S3 이미지 DB, Mysql DB에 이미지 ${imgUrlsList.length}개 추가됨`
+//             );
+//             res.status(200).send(result[1][0]);
+//           } else {
+//             console.log("ERR : " + err);
+//             res.status(500).json({
+//               error: "Error",
+//             });
+//           }
+//         }
+//       );
+//     } catch (e) {
+//       console.log(e);
+//       if (e === "LIMIT_UNEXPECTED_FILE") {
+//         res.status(500).send("이미지 크기가 초과되었습니다.");
+//         return;
+//       } else {
+//         res.status(500).send("SERVER ERROR");
+//       }
+//     }
+//   }
+// );
 
 router.post(
   "/save/building",
