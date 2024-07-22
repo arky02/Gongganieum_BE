@@ -18,7 +18,7 @@ const s3 = new S3Client({
 });
 
 // aws s3 이미지 업로드 함수
-export const uploadImgToS3 = multer({
+const uploadImgToS3 = multer({
   storage: multerS3({
     s3: s3,
     bucket: "poppop-bucket",
