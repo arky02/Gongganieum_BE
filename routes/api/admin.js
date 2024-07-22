@@ -30,7 +30,7 @@ const uploadImgToS3 = multer({
 
 router.post(
   "/edit/building",
-  uploadImgToS3.array("files", 20),
+  uploadImgToS3.array("file", 20),
   async (req, res) => {
     const type = req.query?.type ?? null; // type = img | popup | building
     const buildingId = req.query?.id ?? null; // 빌딩 id
