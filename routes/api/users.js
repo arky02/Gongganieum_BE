@@ -66,8 +66,8 @@ router.get("/info", function (req, res) {
   );
 });
 
-// 유저 정보 PATCH (수정)
-router.patch("/info", uploadImgToS3.single("file"), function (req, res) {
+// 유저 정보 PUT (수정)
+router.put("/info", uploadImgToS3.single("file"), function (req, res) {
   /*
   #swagger.tags = ['User']
   #swagger.summary = '특정 id의 유저 정보 리턴'
@@ -113,12 +113,12 @@ router.patch("/info", uploadImgToS3.single("file"), function (req, res) {
     function (err, result) {
       if (!err) {
         console.log(
-          "(PATCH User Info) 유저 정보 수정 성공, user id: " + String(userId)
+          "(PUT User Info) 유저 정보 수정 성공, user id: " + String(userId)
         );
         res.send(result[0]);
       } else {
         console.log(
-          "ERR (PATCH User Info) 해당 아이디의 유저가 없습니다! user id: " +
+          "ERR (PUT User Info) 해당 아이디의 유저가 없습니다! user id: " +
             String(userId)
         );
         res.status(404).json({
@@ -130,7 +130,7 @@ router.patch("/info", uploadImgToS3.single("file"), function (req, res) {
 });
 
 // TODO: 중복됐을 경우 다른 오류 코드 전송
-router.patch("/guest/update", function (req, res) {
+router.put("/guest/update", function (req, res) {
   /*
  #swagger.tags = ['User']
   #swagger.summary = '유저 정보 업데이트 (회원가입)'
