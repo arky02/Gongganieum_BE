@@ -90,10 +90,6 @@ router.post(
   "/save/building",
   uploadImgToS3.array("file", 20),
   async (req, res) => {
-    console.log(req);
-    console.log(String(req));
-    const type = req.query?.type ?? null; // type = img | popup | building
-
     if (req.files === undefined) {
       console.log("Request에 이미지 없음 ! => req.files === undefined");
       res.status(400).send("ERR: No Imgs Given!");
@@ -111,32 +107,33 @@ router.post(
         imgUrlsList
       ); // imgUrlsList 존재!
 
-      let name, address, coord, tag, is_ours, cate, img;
-      try {
-        name = req.body.name;
-        address = req.body.address;
-        coord = req.body.coord;
-        tag = req.body?.tag ?? "";
-        is_ours = req.body.is_ours;
-        cate = req.body.cate;
-        img = req.body.img;
-      } catch (e) {
-        console.log("ERR_PARAMS : " + e);
-        res.status(400).json({
-          error:
-            "ERR_PARAMS : 건물 이름, 건물 주소, 건물 좌표, 직영 건물 여부, 카테고리, 건물 이미지는 필수 입력 필드입니다.",
-        });
-      }
+      console.log(req.body);
+      console.log(req.body.bodyFormData);
+      res.send({ good: "good" });
 
-      console.log(name, address, coord, tag, is_ours, cate, img);
+      // let name, address, coord, tag, is_ours, cate, img;
+      // try {
+      //   name = req.body.name;
+      //   address = req.body.address;
+      //   coord = req.body.coord;
+      //   tag = req.body?.tag ?? "";
+      //   is_ours = req.body.is_ours;
+      //   cate = req.body.cate;
+      //   img = req.body.img;
+      // } catch (e) {
+      //   console.log("ERR_PARAMS : " + e);
+      //   res.status(400).json({
+      //     error:
+      //       "ERR_PARAMS : 건물 이름, 건물 주소, 건물 좌표, 직영 건물 여부, 카테고리, 건물 이미지는 필수 입력 필드입니다.",
+      //   });
+      // }
 
-      res.status(200).json({ message: "good" });
+      // console.log(name, address, coord, tag, is_ours, cate, img);
 
       // maria.query(
-      //   `UPDATE Buildings SET img="${imgUrlsList.join(
-      //     ","
-      //   )}" WHERE _id=${buildingId};
-      //   SELECT * FROM Buildings WHERE _id=${buildingId};
+      //   `INSERT INTO Buildings (name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
+      //     is_ours === "true" ? 1 : 0
+      //   }, "${cate}", "${imgUrlsList.join(",")}");
       //   `,
       //   function (err, result) {
       //     if (!err) {
