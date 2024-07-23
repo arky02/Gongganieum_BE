@@ -108,9 +108,13 @@ router.post(
       ); // imgUrlsList 존재!
 
       const bodyData = req.body?.bodyFormData;
-      const { name, address, coord, tag, is_ours, cate } = bodyData;
+      console.log(bodyData.name);
+      console.log(req.body.bodyFormData.name);
+      console.log(bodyData.json().name);
+      console.log(JSON.parse(bodyData).name);
+      // const { name, address, coord, tag, is_ours, cate } = bodyData;
       //{"name":"ewr","address":"wr","coord":"wer","tag":"","is_ours":"false","cate":"F&B"}
-      console.log(name, address, coord, tag, is_ours, cate);
+      // console.log(name, address, coord, tag, is_ours, cate);
       res.send({ good: "good" });
 
       // let name, address, coord, tag, is_ours, cate, img;
