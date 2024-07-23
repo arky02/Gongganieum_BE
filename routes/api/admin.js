@@ -107,8 +107,10 @@ router.post(
         imgUrlsList
       ); // imgUrlsList 존재!
 
-      console.log(req.body);
-      console.log(req.body.bodyFormData);
+      const bodyData = req.body?.bodyFormData;
+      const { name, address, coord, tag, is_ours, cate } = bodyData;
+      //{"name":"ewr","address":"wr","coord":"wer","tag":"","is_ours":"false","cate":"F&B"}
+      console.log(name, address, coord, tag, is_ours, cate);
       res.send({ good: "good" });
 
       // let name, address, coord, tag, is_ours, cate, img;
@@ -127,8 +129,6 @@ router.post(
       //       "ERR_PARAMS : 건물 이름, 건물 주소, 건물 좌표, 직영 건물 여부, 카테고리, 건물 이미지는 필수 입력 필드입니다.",
       //   });
       // }
-
-      // console.log(name, address, coord, tag, is_ours, cate, img);
 
       // maria.query(
       //   `INSERT INTO Buildings (name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
