@@ -140,70 +140,45 @@ router.post(
   }
 );
 
-// router.post(
-//   "/save/building",
-//   uploadImgToS3.array("file", 20),
-//   async (req, res) => {
-//     /*
-//   #swagger.tags = ['Test']
-//   #swagger.summary = 'POST Test Api'
-//   #swagger.description = 'POST Test Api 입니다.'
-// */
+router.put("/update/carousel", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
 
-//     let imgUrlsList = null;
-//     if (req.files === undefined) {
-//       console.log("Request에 이미지 없음 ! => req.files === undefined");
-//     } else {
-//       imgUrlsList = req.file.location;
-//       if (!imgUrlsList || !imgUrlsList.length > 0) {
-//         console.log("ERR: imgUrlsLists ERROR");
-//         return;
-//       }
-//       console.log(
-//         "AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrlsList: ",
-//         imgUrlsList
-//       );
-//     }
+  let pageType, carouselType, contentType, contentId;
 
-//     let name, address, coord, tag, is_ours, cate, img;
-//     try {
-//       name = req.body.name;
-//       address = req.body.address;
-//       coord = req.body.coord;
-//       tag = req.body?.tag ?? "";
-//       is_ours = req.body.is_ours;
-//       cate = req.body.cate;
-//       img = req.body.img;
-//     } catch (e) {
-//       console.log("ERR_PARAMS : " + e);
-//       res.status(400).json({
-//         error:
-//           "ERR_PARAMS : 건물 이름, 건물 주소, 건물 좌표, 직영 건물 여부, 카테고리, 건물 이미지는 필수 입력 필드입니다.",
-//       });
-//     }
+  try {
+    pageType = req.body?.pageType ?? "";
+    carouselType = req.body?.carouselType
+      ? `"${req.body?.carouselType}"`
+      : "null";
+    contentType = req.body?.contentType ?? "";
+    contentId = req.body?.contentId ?? "";
+  } catch (e) {
+    console.log("ERR_PARAMS : " + e);
+    res.status(400).json({
+      error:
+        "ERR_PARAMS : 팝업 이름, 팝업 주소, 팝업 좌표, 팝업 종류, 키워드, 팝업 건물은 필수 입력 필드입니다.",
+    });
+  }
 
-//     console.log(name, address, coord, tag, is_ours, cate, img);
-
-//     res.status(200).json({ message: "good" });
-
-//     // maria.query(
-//     //   `INSERT INTO Buildings(name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${is_ours}, "${cate}", "${img}")`,
-//     //   function (err) {
-//     //     if (!err) {
-//     //       console.log("(Save User) User is saved : " + name);
-//     //       res.status(200).json({
-//     //         message: "User is saved",
-//     //       });
-//     //     } else {
-//     //       console.log("ERR (Save User) : " + err);
-//     //       res.status(409).json({
-//     //         error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
-//     //       });
-//     //     }
-//     //   }
-//     // );
-//   }
-// );
+  maria.query(
+    `INSERT INTO CarouselContents (pageType, carouselType, contentType, contentId) VALUES ("${pageType}", ${carouselType}, "${contentType}", ${contentId})`,
+    function (err) {
+      if (!err) {
+        console.log(`CarouselContents DB에 캐러셀 정보 추가 성공!`);
+        res.status(200).send({ message: "캐러셀 정보 등록에 성공하였습니다." });
+      } else {
+        console.log("ERR : " + err);
+        res.status(500).json({
+          error: "Error",
+        });
+      }
+    }
+  );
+});
 
 router.post("/save/popup", function (req, res) {
   /*
@@ -212,9 +187,10 @@ router.post("/save/popup", function (req, res) {
   #swagger.description = 'POST Test Api 입니다.'
 */
 
-  let name, address, type, keyword, building;
+  let name, date, type, keyword, building;
   try {
     name = req.body.name;
+    date = req.body.date;
     type = req.body.type;
     keyword = req.body.keyword;
     building = req.body.building;
@@ -226,24 +202,22 @@ router.post("/save/popup", function (req, res) {
     });
   }
 
-  console.log(name, address, date, type, keyword, building);
+  console.log(name, date, type, keyword, building);
 
-  // maria.query(
-  //   `INSERT INTO Buildings(name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${is_ours}, "${cate}", "${img}")`,
-  //   function (err) {
-  //     if (!err) {
-  //       console.log("(Save User) User is saved : " + name);
-  //       res.status(200).json({
-  //         message: "User is saved",
-  //       });
-  //     } else {
-  //       console.log("ERR (Save User) : " + err);
-  //       res.status(409).json({
-  //         error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
-  //       });
-  //     }
-  //   }
-  // );
+  maria.query(
+    `INSERT INTO Popups (name, date, type, keyword, building) VALUES ("${name}", "${date}", "${type}", "${keyword}", "${building}")`,
+    function (err) {
+      if (!err) {
+        console.log(`Popups DB에 팝업 정보 추가 성공!`);
+        res.status(200).send({ message: "팝업 정보 등록에 성공하였습니다." });
+      } else {
+        console.log("ERR : " + err);
+        res.status(500).json({
+          error: "Error",
+        });
+      }
+    }
+  );
 });
 
 module.exports = router;
