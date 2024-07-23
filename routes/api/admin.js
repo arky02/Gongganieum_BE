@@ -110,7 +110,6 @@ router.post(
       const bodyData = req.body?.bodyFormData;
       console.log(bodyData.name);
       console.log(req.body.bodyFormData.name);
-      console.log(bodyData.json().name);
       console.log(JSON.parse(bodyData).name);
       // const { name, address, coord, tag, is_ours, cate } = bodyData;
       //{"name":"ewr","address":"wr","coord":"wer","tag":"","is_ours":"false","cate":"F&B"}
