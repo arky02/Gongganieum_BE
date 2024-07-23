@@ -23,10 +23,11 @@ const uploadImgToS3 = multer({
     s3: s3,
     bucket: "poppop-bucket",
     key: function (요청, file, cb) {
-      cb(null, Date.now().toString()); //업로드시 파일명 변경가능
+      cb(null, `${Date.now()}_${file.originalname}`); //업로드시 파일명 변경가능
     },
   }),
 });
+
 router.post(
   "/edit/building",
   uploadImgToS3.array("file", 20),
@@ -41,7 +42,9 @@ router.post(
       res.status(400).send("ERR: No Imgs Given!");
     }
     try {
-      const imgUrlsList = req.files.map((fileEl) => fileEl.location);
+      const imgUrlsList = req.files.map(
+        (fileEl) => fileEl.location.split(".com/")[1]
+      );
       if (!imgUrlsList || !imgUrlsList.length > 0) {
         console.log("ERR: imgUrlsList ERROR");
         return;
@@ -96,7 +99,9 @@ router.post(
       res.status(400).send("ERR: No Imgs Given!");
     }
     try {
-      const imgUrlsList = req.files.map((fileEl) => fileEl.location);
+      const imgUrlsList = req.files.map(
+        (fileEl) => fileEl.location.split(".com/")[1]
+      );
       if (!imgUrlsList || !imgUrlsList.length > 0) {
         console.log("ERR: imgUrlsList ERROR");
         return;
