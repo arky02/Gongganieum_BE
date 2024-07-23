@@ -95,63 +95,39 @@ router.post(
       res.status(400).send("ERR: No Imgs Given!");
     }
     try {
-      const imgUrlsList = req.files.map(
+      const imgNameList = req.files.map(
         (fileEl) => fileEl.location.split(".com/")[1]
       );
-      if (!imgUrlsList || !imgUrlsList.length > 0) {
-        console.log("ERR: imgUrlsList ERROR");
+      if (!imgNameList || !imgNameList.length > 0) {
+        console.log("ERR: img Url ERROR");
         return;
       }
       console.log(
-        "AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrlsList: ",
-        imgUrlsList
-      ); // imgUrlsList 존재!
+        "AWS S3에 이미지 업로드 완료 \nAWS S3 imgNameList: ",
+        imgNameList
+      ); // imgNameList 존재!
 
-      const bodyData = req.body?.bodyFormData;
-      console.log(bodyData.name);
-      console.log(req.body.bodyFormData.name);
-      console.log(JSON.parse(bodyData).name);
-      // const { name, address, coord, tag, is_ours, cate } = bodyData;
-      //{"name":"ewr","address":"wr","coord":"wer","tag":"","is_ours":"false","cate":"F&B"}
-      // console.log(name, address, coord, tag, is_ours, cate);
-      res.send({ good: "good" });
+      const parsedBodyData = JSON.parse(req.body?.bodyFormData);
+      const { name, address, coord, tag, is_ours, cate } = parsedBodyData;
+      //{"name":"ewr","address":"wr","coord":"wer","tag":"","is_ours":"false","cate":"F&B"
 
-      // let name, address, coord, tag, is_ours, cate, img;
-      // try {
-      //   name = req.body.name;
-      //   address = req.body.address;
-      //   coord = req.body.coord;
-      //   tag = req.body?.tag ?? "";
-      //   is_ours = req.body.is_ours;
-      //   cate = req.body.cate;
-      //   img = req.body.img;
-      // } catch (e) {
-      //   console.log("ERR_PARAMS : " + e);
-      //   res.status(400).json({
-      //     error:
-      //       "ERR_PARAMS : 건물 이름, 건물 주소, 건물 좌표, 직영 건물 여부, 카테고리, 건물 이미지는 필수 입력 필드입니다.",
-      //   });
-      // }
-
-      // maria.query(
-      //   `INSERT INTO Buildings (name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
-      //     is_ours === "true" ? 1 : 0
-      //   }, "${cate}", "${imgUrlsList.join(",")}");
-      //   `,
-      //   function (err, result) {
-      //     if (!err) {
-      //       console.log(
-      //         `빌딩 ID ${buildingId}의 건물정보 DB에 이미지 추가 성공! \nAWS S3 이미지 DB, Mysql DB에 이미지 ${imgUrlsList.length}개 추가됨`
-      //       );
-      //       res.status(200).send(result[1][0]);
-      //     } else {
-      //       console.log("ERR : " + err);
-      //       res.status(500).json({
-      //         error: "Error",
-      //       });
-      //     }
-      //   }
-      // );
+      maria.query(
+        `INSERT INTO Buildings (name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
+          is_ours === "true" ? 1 : 0
+        }, "${cate}", "${imgNameList.join(",")}");
+        `,
+        function (err, result) {
+          if (!err) {
+            console.log(`Buildings DB에 건물 추가 성공!`);
+            res.status(200).send({ message: "건물 등록에 성공하였습니다." });
+          } else {
+            console.log("ERR : " + err);
+            res.status(500).json({
+              error: "Error",
+            });
+          }
+        }
+      );
     } catch (e) {
       console.log(e);
       if (e === "LIMIT_UNEXPECTED_FILE") {
