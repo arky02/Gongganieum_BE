@@ -31,6 +31,27 @@ const uploadImgToS3 = multer({
   }),
 });
 
+// 유저 전체 정보 리스트 GET
+router.get("/infos", (req, res) => {
+  /*
+  #swagger.tags = ['User']
+  #swagger.summary = '전체 유저 정보 리스트 리턴
+  #swagger.description = "Response Datatype: Users[]"
+*/
+
+  maria.query(`SELECT * FROM Users`, function (err, result) {
+    if (!err) {
+      console.log("All User's info are sent");
+      res.send(result);
+    } else {
+      console.log("ERR : " + err);
+      res.status(404).json({
+        error: "Error",
+      });
+    }
+  });
+});
+
 // 유저 정보 GET
 router.get("/info", function (req, res) {
   /*
