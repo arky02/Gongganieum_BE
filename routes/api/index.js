@@ -12,10 +12,31 @@ const { getUserInfoFromToken } = require("../../utils/decode_token.js");
 //  문의하기 페이지 API
 // =================================================================================================
 
+// 문의하기 전체 정보 리스트 GET
+router.get("/contact/infos", (req, res) => {
+  /*
+  #swagger.tags = ['Contact']
+  #swagger.summary = '전체 문의하기 정보 리스트 리턴
+  #swagger.description = "Response Datatype: ContactMsg[]"
+*/
+
+  maria.query(`SELECT * FROM ContactMsg`, function (err, result) {
+    if (!err) {
+      console.log("All ContactMsg's info are sent");
+      res.send(result);
+    } else {
+      console.log("ERR : " + err);
+      res.status(404).json({
+        error: "Error",
+      });
+    }
+  });
+});
+
 router.post("/contact", function (req, res) {
   /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
+  #swagger.tags = ['Contact']
+  #swagger.summary = '문의하기 Post'
   #swagger.description = 'POST Test Api 입니다.'
 */
   // Authorization Header Token으로부터 유저 정보 추출
@@ -81,7 +102,7 @@ router.post("/contact", function (req, res) {
 //  추천 캐러셀 (메인페이지, 지도페이지) API
 // =================================================================================================
 
-// 캐러실 전체 정보 리스트 GET
+// 캐러셀 전체 정보 리스트 GET
 router.get("/carousel/infos", (req, res) => {
   /*
   #swagger.tags = ['Carousel']
