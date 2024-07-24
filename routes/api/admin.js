@@ -206,22 +206,23 @@ router.post("/save/popup", function (req, res) {
 
   maria.query(
     `INSERT INTO Popups (name, date, type, keyword, building) VALUES ("${name}", "${date}", "${type}", "${keyword}", "${building}");
-    SET @recent_buildingId = (
+
+    SET @recent_popup_buildingId = (
         SELECT buildingId
         FROM Popups
-        WHERE _id = LAST_INSERT_ID();
+        WHERE _id = LAST_INSERT_ID()
+    );
+
     UPDATE Buildings
-        SET popups = (
+    SET popups = (
         SELECT JSON_ARRAYAGG(JSON_OBJECT('name', popup_val.name, 'date', popup_val.date, 'type', popup_val.type, 'keyword', popup_val.keyword))
         FROM (
             SELECT Popups.name, Popups.date, Popups.type, Popups.keyword
             FROM Popups
-            WHERE Popups.buildingId = @recent_buildingId
+            WHERE Popups.buildingId = @recent_popup_buildingId
             ) AS popup_val
         )
-    WHERE Buildings._id = @recent_buildingId;
-    );
-    
+    WHERE Buildings._id = @recent_popup_buildingId;
     `,
     function (err) {
       if (!err) {
