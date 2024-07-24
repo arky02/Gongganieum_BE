@@ -205,7 +205,24 @@ router.post("/save/popup", function (req, res) {
   console.log(name, date, type, keyword, building);
 
   maria.query(
-    `INSERT INTO Popups (name, date, type, keyword, building) VALUES ("${name}", "${date}", "${type}", "${keyword}", "${building}")`,
+    `INSERT INTO Popups (name, date, type, keyword, building) VALUES ("${name}", "${date}", "${type}", "${keyword}", "${building}");
+    SET @recent_buildingId = (
+        SELECT buildingId
+        FROM Popups
+        WHERE _id = LAST_INSERT_ID();
+    UPDATE Buildings
+        SET popups = (
+        SELECT JSON_ARRAYAGG(JSON_OBJECT('name', popup_val.name, 'date', popup_val.date, 'type', popup_val.type, 'keyword', popup_val.keyword))
+        FROM (
+            SELECT Popups.name, Popups.date, Popups.type, Popups.keyword
+            FROM Popups
+            WHERE Popups.buildingId = @recent_buildingId
+            ) AS popup_val
+        )
+    WHERE Buildings._id = @recent_buildingId;
+    );
+    
+    `,
     function (err) {
       if (!err) {
         console.log(`Popups DB에 팝업 정보 추가 성공!`);
