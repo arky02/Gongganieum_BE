@@ -187,13 +187,13 @@ router.post("/save/popup", function (req, res) {
   #swagger.description = 'POST Test Api 입니다.'
 */
 
-  let name, date, type, keyword, building;
+  let name, date, type, keyword, buildingId;
   try {
     name = req.body.name;
     date = req.body.date;
     type = req.body.type;
     keyword = req.body.keyword;
-    building = req.body.building;
+    buildingId = req.body.buildingId;
   } catch (e) {
     console.log("ERR_PARAMS : " + e);
     res.status(400).json({
@@ -202,10 +202,13 @@ router.post("/save/popup", function (req, res) {
     });
   }
 
-  console.log(name, date, type, keyword, building);
+  console.log("추가할 팝업 정보");
+  console.log(
+    `name: ${name}, date: ${date}, type: ${type}, keyword: ${keyword}, buildingId: ${buildingId}`
+  );
 
   maria.query(
-    `INSERT INTO Popups (name, date, type, keyword, building) VALUES ("${name}", "${date}", "${type}", "${keyword}", "${building}");
+    `INSERT INTO Popups (name, date, type, keyword, buildingId) VALUES ("${name}", "${date}", "${type}", "${keyword}", "${buildingId}");
 
     SET @recent_popup_buildingId = (
         SELECT buildingId
