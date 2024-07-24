@@ -81,6 +81,27 @@ router.post("/contact", function (req, res) {
 //  추천 캐러셀 (메인페이지, 지도페이지) API
 // =================================================================================================
 
+// 캐러실 전체 정보 리스트 GET
+router.get("/carousel/infos", (req, res) => {
+  /*
+  #swagger.tags = ['Carousel']
+  #swagger.summary = '전체 캐러셀 정보 리스트 리턴
+  #swagger.description = "Response Datatype: CarouselContents[]"
+*/
+
+  maria.query(`SELECT * FROM CarouselContents`, function (err, result) {
+    if (!err) {
+      console.log("All Carousel's info are sent");
+      res.send(result);
+    } else {
+      console.log("ERR : " + err);
+      res.status(404).json({
+        error: "Error",
+      });
+    }
+  });
+});
+
 // /carousel/building/main_page?type=main_banner|primary|secondary|recommend_banner
 // /carousel/building/map
 router.get("/carousel/building/:pageType", (req, res) => {
