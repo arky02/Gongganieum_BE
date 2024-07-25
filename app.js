@@ -34,6 +34,8 @@ var allowlist = [
   "http://ec2-3-23-49-89.us-east-2.compute.amazonaws.com",
   "http://ec2-3-34-222-145.ap-northeast-2.compute.amazonaws.com",
   "https://neul-pum.vercel.app",
+  "https://neul-pum.vercel.app",
+  "https://www.gongganieum.com",
 ];
 
 app.use((req, res, next) => {
