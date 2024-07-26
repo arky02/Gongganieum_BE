@@ -116,29 +116,29 @@ router.put("/info", uploadImgToS3.single("file"), async (req, res) => {
   const parsedBodyData = JSON.parse(req.body?.bodyData);
   const { nickname, company, brand, tag, description } = parsedBodyData;
 
-  maria.query(
-    `
-    UPDATE Users SET nickname="${nickname}", company="${company}", brand="${brand}", tag="${tag}", description="${description}" ${
-      imgUrl ? ", img='" + imgUrl + "'" : ""
-    } WHERE _id = ${userId};
-    `,
-    function (err, result) {
-      if (!err) {
-        console.log(
-          "(PUT User Info) 유저 정보 수정 성공, user id: " + String(userId)
-        );
-        res.send(result[0]);
-      } else {
-        console.log(
-          "ERR (PUT User Info) 해당 아이디의 유저가 없습니다! user id: " +
-            String(userId)
-        );
-        res.status(404).json({
-          error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(userId)}`,
-        });
-      }
+  const query = `
+  UPDATE Users SET nickname="${nickname}", company="${company}", brand="${brand}", tag="${tag}", description="${description}" ${
+    imgUrl ? ", img='" + imgUrl + "'" : ""
+  } WHERE _id = ${userId};
+  `;
+  console.log(query);
+
+  maria.query(query, function (err, result) {
+    if (!err) {
+      console.log(
+        "(PUT User Info) 유저 정보 수정 성공, user id: " + String(userId)
+      );
+      res.send(result[0]);
+    } else {
+      console.log(
+        "ERR (PUT User Info) 해당 아이디의 유저가 없습니다! user id: " +
+          String(userId)
+      );
+      res.status(404).json({
+        error: `해당 아이디의 유저가 없습니다! user id: "+ ${String(userId)}`,
+      });
     }
-  );
+  });
 });
 
 router.post(
