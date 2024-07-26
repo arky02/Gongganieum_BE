@@ -88,7 +88,7 @@ router.get("/info", function (req, res) {
 });
 
 // 유저 정보 PUT (수정)
-router.put("/info", uploadImgToS3.single("file"), function (req, res) {
+router.put("/info", uploadImgToS3.single("file"), async (req, res) => {
   /*
   #swagger.tags = ['User']
   #swagger.summary = '특정 id의 유저 정보 리턴'
@@ -113,23 +113,14 @@ router.put("/info", uploadImgToS3.single("file"), function (req, res) {
   const { userId } = payload;
 
   // Body 정보 추출
-  let nickname, company, brand, tag, description;
-  try {
-    nickname = req.body.nickname;
-    company = req.body.company;
-    brand = req.body.brand;
-    tag = req.body?.tag ?? "";
-    description = req.body?.description ?? "";
-  } catch (e) {
-    console.log("ERR (get request) : " + e);
-    res.status(400).json({
-      error: "ERR_PARAMS : nickname, company, brand는 필수 입력 필드입니다.",
-    });
-  }
+  const parsedBodyData = JSON.parse(req.body?.bodyData);
+  const { nickname, company, brand, tag, description } = parsedBodyData;
 
   maria.query(
     `
-    UPDATE Users SET nickname="${nickname}", company="${company}", brand="${brand}", tag="${tag}", description="${description}", img="${imgUrl}" WHERE _id = ${userId};
+    UPDATE Users SET nickname="${nickname}", company="${company}", brand="${brand}", tag="${tag}", description="${description}" ${
+      imgUrl ? ", img='" + imgUrl + "'" : ""
+    } WHERE _id = ${userId};
     `,
     function (err, result) {
       if (!err) {
@@ -149,6 +140,60 @@ router.put("/info", uploadImgToS3.single("file"), function (req, res) {
     }
   );
 });
+
+router.post(
+  "/save/building",
+  uploadImgToS3.array("file", 20),
+  async (req, res) => {
+    if (req.files === undefined) {
+      console.log("Request에 이미지 없음 ! => req.files === undefined");
+      res.status(400).send("ERR: No Imgs Given!");
+    }
+    try {
+      const imgNameList = req.files.map(
+        (fileEl) => fileEl.location.split(".com/")[1]
+      );
+      if (!imgNameList || !imgNameList.length > 0) {
+        console.log("ERR: img Url ERROR");
+        return;
+      }
+      console.log(
+        "AWS S3에 이미지 업로드 완료 \nAWS S3 imgNameList: ",
+        imgNameList
+      ); // imgNameList 존재!
+
+      const parsedBodyData = JSON.parse(req.body?.bodyFormData);
+      const { name, address, coord, tag, is_ours, cate } = parsedBodyData;
+      //{"name":"ewr","address":"wr","coord":"wer","tag":"","is_ours":"false","cate":"F&B"
+
+      maria.query(
+        `INSERT INTO Buildings (name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
+          is_ours === "true" ? 1 : 0
+        }, "${cate}", "${imgNameList.join(",")}");
+        `,
+        function (err, result) {
+          if (!err) {
+            console.log(`Buildings DB에 건물 추가 성공!`);
+            res.status(200).send({ message: "건물 등록에 성공하였습니다." });
+          } else {
+            console.log("ERR : " + err);
+            res.status(500).json({
+              error: "Error",
+            });
+          }
+        }
+      );
+    } catch (e) {
+      console.log(e);
+      if (e === "LIMIT_UNEXPECTED_FILE") {
+        res.status(500).send("이미지 크기가 초과되었습니다.");
+        return;
+      } else {
+        res.status(500).send("SERVER ERROR");
+      }
+    }
+  }
+);
 
 // TODO: 중복됐을 경우 다른 오류 코드 전송
 router.put("/guest/update", function (req, res) {
