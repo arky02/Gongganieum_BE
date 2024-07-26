@@ -75,7 +75,7 @@ router.get("/callback", async (req, res) => {
       grant_type: "authorization_code",
       client_id: OAUTH_CLIENT_ID[oauthProvider],
       client_secret: OAUTH_CLIENT_SECRET[oauthProvider],
-      redirectUri: `http://localhost:3000/oauth/${oauthProvider}`,
+      redirectUri: `http://www.gongganieum.com/oauth/${oauthProvider}`,
       code: req.query.code, // 프론트로부터 받은 Authorization Code
       state: null, // state는 네이버만
     });
