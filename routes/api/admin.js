@@ -58,9 +58,11 @@ router.post("/authorize", function (req, res) {
         });
         return;
       }
-      const authorizationResult = result[0]?.content;
+      const correctPwd = result[0]?.content;
+      console.log(correctPwd);
+      console.log(pwd);
       // no error, check authorization
-      if (authorizationResult === pwd) {
+      if (correctPwd === pwd) {
         console.log("(Get PWD) 관리자 인증 완료!");
         res.status(200).json({
           isAuthorized: true,
