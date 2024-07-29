@@ -14,6 +14,7 @@ var oauthRouter = require("./routes/api/oauth");
 var popupRouter = require("./routes/api/popups");
 var publicDataRouter = require("./routes/api/public_data");
 var userRouter = require("./routes/api/users");
+var contactRouter = require("./routes/api/contact");
 
 // 서버 접속 기본 엔진 설정
 const path = require("path");
@@ -71,6 +72,7 @@ app.use("/api/user", userRouter);
 app.use("/api/oauth", oauthRouter);
 app.use("/api/data", publicDataRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/contact", contactRouter);
 app.use("/api", apiRouter); // 기타 api들
 
 // catch 404 and forward to error handler
