@@ -47,7 +47,7 @@ router.post("/upload_image", uploadImgToS3.single("file"), async (req, res) => {
     }
     console.log("AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrl: ", imgUrl);
   }
-  res.send({ message: "이미지 업로드 완료" });
+  res.send({ image_url: imgUrl });
 });
 
 module.exports = router;
