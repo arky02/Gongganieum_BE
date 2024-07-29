@@ -28,6 +28,57 @@ const uploadImgToS3 = multer({
   }),
 });
 
+// =================================================================================================
+// Auth API : 에디터 / 관리자 비밀번호 GET
+// =================================================================================================
+router.post("/authorize", function (req, res) {
+  /*
+  #swagger.tags = ['Admin']
+  #swagger.summary = '에디터 / 관리자 권한 Authorize'
+  #swagger.description = ''
+*/
+
+  var pwd = "";
+  try {
+    pwd = req.body.pwd;
+  } catch (e) {
+    console.log("ERR (get request) : " + e);
+    res.status(400).json({
+      error: "ERR_PARAMS : 비밀번호 값을 Body로 보내야 합니다.",
+    });
+  }
+
+  maria.query(
+    `SELECT content FROM Auth WHERE name="password";`,
+    function (err, result) {
+      if (err) {
+        console.log("ERR (Get PWD) : " + err);
+        res.status(409).json({
+          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+        });
+        return;
+      }
+      console.log(result);
+      // no error, check authorization
+      if (result === pwd) {
+        console.log("(Get PWD) 관리자 인증 완료!");
+        res.status(200).json({
+          isAuthorized: true,
+        });
+      } else {
+        console.log("(Get PWD) 관리자 인증 실패 - 비밀번호 오류");
+        res.status(400).json({
+          isAuthorized: false,
+        });
+      }
+    }
+  );
+});
+
+// =================================================================================================
+// Editor API : 에디터 관련 API
+// =================================================================================================
+
 router.post(
   "/edit/building",
   uploadImgToS3.array("file", 20),
