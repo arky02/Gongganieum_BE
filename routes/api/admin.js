@@ -161,12 +161,12 @@ router.post(
       ); // imgNameList 존재!
 
       const parsedBodyData = JSON.parse(req.body?.bodyFormData);
-      const { name, address, coord, tag, is_ours, cate } = parsedBodyData;
-      //{"name":"ewr","address":"wr","coord":"wer","tag":"","is_ours":"false","cate":"F&B"
+      const { name, address, coord, tag, isours, cate } = parsedBodyData;
+      //{"name":"ewr","address":"wr","coord":"wer","tag":"","isours":"false","cate":"F&B"
 
       maria.query(
-        `INSERT INTO Buildings (name, address, coord, tag, is_ours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
-          is_ours === "true" ? 1 : 0
+        `INSERT INTO Buildings (name, address, coord, tag, isours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
+          isours === "true" ? 1 : 0
         }, "${cate}", "${imgNameList.join(",")}");
         `,
         function (err, result) {

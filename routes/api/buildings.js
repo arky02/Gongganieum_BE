@@ -46,8 +46,8 @@ router.get("/search", (req, res) => {
   let q = req.query?.q ?? null; // -> where
   const as = req.query?.as ?? "address"; // address(default), building, popup -> where
   const cate = req.query?.cate ?? null; // str -> where
-  const is_ours = req.query?.is_ours === "true" ? true : false; // true, false(default) -> where
-  const is_current = req.query?.is_current === "true" ? true : false; // true, false(default) -> where
+  const isours = req.query?.isours === "true" ? true : false; // true, false(default) -> where
+  const iscurrent = req.query?.iscurrent === "true" ? true : false; // true, false(default) -> where
   const order = req.query?.order ?? "new"; // new(default), popular, (likes)
   const page = req.query?.page ?? null; // 페이지네이션 페이지 번호
   const limit = req.query?.limit ?? null; // 페이지네이션으로 가져올 요소의 개수
@@ -72,8 +72,8 @@ router.get("/search", (req, res) => {
   // 2. where절 - cate 필터 적용
   if (cate && cate !== "전체") where_query.push(`b.cate = '${cate}'`);
 
-  // 3. where절 - is_ours 필터 적용
-  if (is_ours) where_query.push(`b.is_ours = 1`);
+  // 3. where절 - isours 필터 적용
+  if (isours) where_query.push(`b.isours = 1`);
 
   // 4. order 적용
   let order_filter = "earliest_start_date DESC"; // order - new 적용(default)
@@ -105,9 +105,9 @@ router.get("/search", (req, res) => {
         GROUP BY 
             b._id`;
 
-  // 6. is_current 필터 적용 (outer query의 where절)
-  let is_current_where_query = "";
-  if (is_current) {
+  // 6. iscurrent 필터 적용 (outer query의 where절)
+  let iscurrent_where_query = "";
+  if (iscurrent) {
     const subQuery = outerQuery;
     outerQuery = `
       SELECT
@@ -117,15 +117,15 @@ router.get("/search", (req, res) => {
       FROM (
           ${subQuery}
       ) AS subquery`;
-    is_current_where_query = "WHERE DATE(subquery.latest_end_date) > CURDATE()";
+    iscurrent_where_query = "WHERE DATE(subquery.latest_end_date) > CURDATE()";
   }
 
   // 전체 개수 출력용 쿼리 (페이지네이션 적용 X)
   const query_without_page_filter = `
   ${outerQuery} 
-  ${is_current_where_query}
+  ${iscurrent_where_query}
   ORDER BY
-      ${is_current ? "subquery." + order_filter : order_filter}`;
+      ${iscurrent ? "subquery." + order_filter : order_filter}`;
 
   // 7. 페이지네이션 적용 (page, limit)
   const page_filter =
@@ -152,8 +152,8 @@ router.get("/search", (req, res) => {
           `Return Building with Building Search Condition: ${
             q ? `q: ${q}` : ""
           }, ${as ? `as: ${as}` : ""}, ${cate ? `cate: ${cate}` : ""}, ${
-            is_ours ? `is_ours: ${is_ours}` : ""
-          },${is_current ? `is_current: ${is_current}` : ""}, ${
+            isours ? `isours: ${isours}` : ""
+          },${iscurrent ? `iscurrent: ${iscurrent}` : ""}, ${
             order ? `order: ${order}` : ""
           }`
         );
