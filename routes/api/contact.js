@@ -107,7 +107,7 @@ router.post("/", function (req, res) {
   console.log("문의 내용: ", contactPostQuery);
 
   maria.query(
-    `INSERT INTO ContactMsg(buildingId, userId, name, phone, email, company, date1, date2, budget, reason, enterpath, size, areaList, requests) VALUES (${contactPostQuery});`,
+    `INSERT INTO ContactMsg(buildingId, userId, name, phone, email, company, date1, date2, budget, reason, enterpath, size, areaList, requests, added_date) VALUES (${contactPostQuery} , NOW());`,
     function (err) {
       if (!err) {
         console.log("(문의하기 작성) 문의가 작성되었습니다!");
