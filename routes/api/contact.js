@@ -103,11 +103,11 @@ router.post("/", function (req, res) {
     });
   }
 
-  const contactPostQuery = `${buildingId}, ${userId}, "${name}", "${phone}", "${email}", "${company}", "${date1}", "${date2}", "${budget}", "${reason}", "${enterpath}", "${size}", "${areaList}", "${requests}"`;
-  console.log("문의 내용: ", contactPostQuery);
+  const contactInsertContent = `${buildingId}, ${userId}, "${name}", "${phone}", "${email}", "${company}", "${date1}", "${date2}", "${budget}", "${reason}", "${enterpath}", "${size}", "${areaList}", "${requests}"`;
+  console.log("문의 내용: ", contactInsertContent);
 
   maria.query(
-    `INSERT INTO ContactMsg(buildingId, userId, name, phone, email, company, date1, date2, budget, reason, enterpath, size, areaList, requests, addedDate) VALUES (${contactPostQuery} , NOW());`,
+    `INSERT INTO ContactMsg(buildingId, userId, name, phone, email, company, date1, date2, budget, reason, enterpath, size, areaList, requests, addedDate) VALUES (${contactInsertContent} , NOW());`,
     function (err) {
       if (!err) {
         console.log("(문의하기 작성) 문의가 작성되었습니다!");
