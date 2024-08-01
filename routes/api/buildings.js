@@ -10,8 +10,6 @@ router.get("/infos", (req, res) => {
   /*
   #swagger.tags = ['Building']
   #swagger.summary = '건물 정보 리턴 (전체 조회, id로 특정 건물 조회)'
-  #swagger.description = "Response Datatype: Buildings[]"
-  #swagger.parameters['id'] = { description: 검색하고싶은 건물 id 입력 (id 없으면 전체 목록 리턴) }
 */
 
   const id = req.query?.id ?? null;

@@ -63,6 +63,10 @@ const saveOAuthGuestData = ({ name, email, img, res }) => {
 };
 
 router.get("/callback", async (req, res) => {
+  /*
+  #swagger.tags = ['OAuth 소셜 로그인']
+  #swagger.summary = 'OAuth 카카오, 네이버 소셜 로그인을 위한 api 입니다.'
+*/
   // OAuth Provider = kakao | naver
   let oauthProvider = req.query.provider;
   console.log(`==== OAUTH LOGIN , Provider: ${oauthProvider} ====`);
