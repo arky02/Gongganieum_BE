@@ -139,6 +139,12 @@ router.post("/", function (req, res) {
   const magazineInsertContent = `"${title}", "${cate}", "${date}", "${writer}", "${img}"`;
   console.log("새 매거진 추가: ", magazineInsertContent);
 
+  console.log("log test");
+
+  console.log(`INSERT INTO Magazines (title, cate, date, writer, img) VALUES (${magazineInsertContent});
+    INSERT INTO MagazineDetails (magazineId, contentHTML) VALUES (LAST_INSERT_ID(), "${contentHTML}")
+    `);
+
   maria.query(
     `INSERT INTO Magazines (title, cate, date, writer, img) VALUES (${magazineInsertContent});
     INSERT INTO MagazineDetails (magazineId, contentHTML) VALUES (LAST_INSERT_ID(), "${contentHTML}")
