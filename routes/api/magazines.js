@@ -147,7 +147,7 @@ router.post("/", function (req, res) {
 
   maria.query(
     `INSERT INTO Magazines (title, cate, date, writer, img) VALUES (${magazineInsertContent});
-    INSERT INTO MagazineDetails (magazineId, contentHTML) VALUES (LAST_INSERT_ID(), "${contentHTML}")
+    INSERT INTO MagazineDetails (magazineId, contentHTML) VALUES (LAST_INSERT_ID(), "${contentHTML}");
     `,
     function (err) {
       if (!err) {
