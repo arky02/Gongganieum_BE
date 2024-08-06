@@ -108,7 +108,7 @@ router.get("/search", (req, res) => {
         SELECT 
             b.*,
             IFNULL( MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')), NULL) AS latest_end_date,
-            IFNULL ( ${order_select_query}, NULL )
+            ${order_select_query}
         FROM 
             Buildings b
             JOIN JSON_TABLE(
