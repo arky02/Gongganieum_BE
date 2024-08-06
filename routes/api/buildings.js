@@ -15,10 +15,29 @@ router.get("/infos", (req, res) => {
   const id = req.query?.id ?? null;
 
   maria.query(
-    `SELECT b.*, MAX(STR_TO_DATE(SUBSTRING_INDEX(JSON_UNQUOTE(JSON_EXTRACT(popup.value, '$.date')), ' - ', -1), '%y.%m.%d')) AS latest_end_date FROM Buildings b JOIN JSON_TABLE(b.popups, 
-      '$[*]' COLUMNS (value JSON PATH '$')) AS popup ${
-        id ? `where _id=${id}` : ""
-      } GROUP BY b._id;`,
+    `SELECT b.*, 
+      IFNULL(
+          MAX(
+              STR_TO_DATE(
+                  SUBSTRING_INDEX(
+                      JSON_UNQUOTE(
+                          JSON_EXTRACT(popup.value, '$.date')
+                      ), ' - ', -1
+                  ), '%y.%m.%d'
+              )
+          ), 
+          NULL
+      ) AS latest_end_date
+    FROM Buildings b
+    LEFT JOIN JSON_TABLE(
+        b.popups, 
+        '$[*]' COLUMNS (value JSON PATH '$')
+    ) AS popup 
+    ON b.popups IS NOT NULL
+    ${id ? `where _id=${id}` : ""}
+    GROUP BY b._id;
+`,
+
     function (err, result) {
       if (!err) {
         id
