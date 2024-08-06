@@ -107,8 +107,8 @@ router.get("/search", (req, res) => {
   let outerQuery = `
         SELECT 
             b.*,
-            MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')) AS latest_end_date,
-            ${order_select_query}
+            IFNULL( MAX(STR_TO_DATE(SUBSTRING_INDEX(popup_date, ' - ', -1), '%y.%m.%d')), NULL) AS latest_end_date,
+            IFNULL ( ${order_select_query}, NULL )
         FROM 
             Buildings b
             JOIN JSON_TABLE(
