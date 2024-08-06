@@ -119,6 +119,7 @@ router.get("/search", (req, res) => {
                     popup_date VARCHAR(512) PATH '$.date'
                 )
             ) AS popup
+        ON b.popups IS NOT NULL
         ${where_query.length > 0 ? `WHERE ${where_query.join(" AND ")}` : ""}
         GROUP BY 
             b._id`;
