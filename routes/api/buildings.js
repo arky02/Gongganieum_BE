@@ -111,7 +111,7 @@ router.get("/search", (req, res) => {
             ${order_select_query}
         FROM 
             Buildings b
-            JOIN JSON_TABLE(
+            LEFT JOIN JSON_TABLE(
                 b.popups, 
                 '$[*]' 
                 COLUMNS (
