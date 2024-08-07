@@ -53,7 +53,7 @@ router.post("/authorize", function (req, res) {
   }
 
   maria.query(
-    `SELECT pwd FROM Auth WHERE user=${user};`,
+    `SELECT pwd FROM Auth WHERE user="${user}";`,
     function (err, result) {
       if (err) {
         console.log("ERR (Get PWD) : " + err);
