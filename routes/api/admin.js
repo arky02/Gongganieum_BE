@@ -38,18 +38,22 @@ router.post("/authorize", function (req, res) {
   #swagger.description = ''
 */
 
-  var pwd = "";
+  var pwd = "",
+    user = "";
+
   try {
     pwd = req.body.pwd;
+    user = req.body.user;
   } catch (e) {
     console.log("ERR (get request) : " + e);
     res.status(400).json({
-      error: "ERR_PARAMS : 비밀번호 값을 Body로 보내야 합니다.",
+      error:
+        "ERR_PARAMS : 검증할 관리자의 이름과 비밀번호 값을 Body로 보내야 합니다.",
     });
   }
 
   maria.query(
-    `SELECT content FROM Auth WHERE name="password";`,
+    `SELECT pwd FROM Auth WHERE user=${user};`,
     function (err, result) {
       if (err) {
         console.log("ERR (Get PWD) : " + err);
@@ -58,9 +62,12 @@ router.post("/authorize", function (req, res) {
         });
         return;
       }
-      const correctPwd = result[0]?.content;
-      console.log(correctPwd);
-      console.log(pwd);
+      const correctPwd = result[0]?.pwd;
+
+      console.log("검증 요청 관리자: ", user);
+      console.log("입력한 비밀번호: ", pwd);
+      console.log("비밀번호: ", correctPwd);
+
       // no error, check authorization
       if (correctPwd === pwd) {
         console.log("(Get PWD) 관리자 인증 완료!");
