@@ -131,10 +131,10 @@ router.post(
       } = parsedBodyData;
 
       const updatedImgList =
-        initialBuildingImgList + getBuildingNameStrList(req);
+        initialBuildingImgList ?? "" + getBuildingNameStrList(req);
 
       console.log("initialBuildingImgList", initialBuildingImgList);
-      console.log("getBuildingNameStrList(req);", getBuildingNameStrList(req));
+      console.log("updatedImgList;", updatedImgList);
 
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
