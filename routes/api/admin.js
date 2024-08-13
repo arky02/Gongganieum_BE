@@ -88,52 +88,74 @@ router.post("/authorize", function (req, res) {
 // Editor API : 에디터 관련 API
 // =================================================================================================
 
+const getBuildingNameStrList = (req) => {
+  if (req?.files === undefined) {
+    console.log("Request에 이미지 없음 ! => req.files === undefined");
+    console.log("AWS S3 이미지 업로드 PASS");
+    return "";
+  }
+
+  // img 목록 존재!
+  const imgNameList = req.files.map(
+    (fileEl) => fileEl.location.split(".com/")[1]
+  );
+
+  if (imgNameList && imgNameList.length > 0) {
+    console.log(
+      "AWS S3에 이미지 업로드 완료 \nAWS S3 imgNameList: ",
+      imgNameList
+    );
+    const imgNameListToStr = imgNameList ? imgNameList.join(",") : "";
+    return imgNameListToStr;
+  }
+
+  console.log("ERR: img URL ERROR");
+  return "";
+};
+
 router.post(
   "/edit/building",
   uploadImgToS3.array("file", 20),
   async (req, res) => {
-    const type = req.query?.type ?? null; // type = img | popup | building
-    const buildingId = req.query?.id ?? null; // 빌딩 id
-
-    console.log(req);
-    console.log(String(req));
-    if (req.files === undefined) {
-      console.log("Request에 이미지 없음 ! => req.files === undefined");
-      res.status(400).send("ERR: No Imgs Given!");
-    }
     try {
-      const imgUrlsList = req.files.map(
-        (fileEl) => fileEl.location.split(".com/")[1]
-      );
-      if (!imgUrlsList || !imgUrlsList.length > 0) {
-        console.log("ERR: imgUrlsList ERROR");
-        return;
-      }
-      console.log(
-        "AWS S3에 이미지 업로드 완료 \nAWS S3 imgUrlsList: ",
-        imgUrlsList
-      ); // imgUrlsList 존재!
+      const parsedBodyData = JSON.parse(req.body?.bodyFormData);
+      const {
+        _id,
+        name,
+        address,
+        coord,
+        tag,
+        isours,
+        cate,
+        img: initialBuildingImgList,
+      } = parsedBodyData;
 
-      maria.query(
-        `UPDATE Buildings SET img="${imgUrlsList.join(
-          ","
-        )}" WHERE _id=${buildingId};
-        SELECT * FROM Buildings WHERE _id=${buildingId};
-        `,
-        function (err, result) {
-          if (!err) {
-            console.log(
-              `빌딩 ID ${buildingId}의 건물정보 DB에 이미지 추가 성공! \nAWS S3 이미지 DB, Mysql DB에 이미지 ${imgUrlsList.length}개 추가됨`
-            );
-            res.status(200).send(result[1][0]);
-          } else {
-            console.log("ERR : " + err);
-            res.status(500).json({
-              error: "Error",
-            });
-          }
+      const updatedImgList =
+        initialBuildingImgList + getBuildingNameStrList(req);
+
+      const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
+        " ",
+        ""
+      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}" where _id=${_id};`;
+
+      console.log(queryString);
+      res
+        .status(200)
+        .send({ message: `ID: ${_id}의 건물 수정에 성공하였습니다.` });
+
+      maria.query(";", function (err, result) {
+        if (!err) {
+          console.log(`ID: ${_id}의 건물 정보 수정 완료!`);
+          res
+            .status(200)
+            .send({ message: `ID: ${_id}의 건물 수정에 성공하였습니다.` });
+        } else {
+          console.log("MYSQL_QUERY_ERR : " + err);
+          res.status(500).json({
+            error: "Error",
+          });
         }
-      );
+      });
     } catch (e) {
       console.log(e);
       if (e === "LIMIT_UNEXPECTED_FILE") {
@@ -150,31 +172,16 @@ router.post(
   "/save/building",
   uploadImgToS3.array("file", 20),
   async (req, res) => {
-    if (req.files === undefined) {
-      console.log("Request에 이미지 없음 ! => req.files === undefined");
-      res.status(400).send("ERR: No Imgs Given!");
-    }
     try {
-      const imgNameList = req.files.map(
-        (fileEl) => fileEl.location.split(".com/")[1]
-      );
-      if (!imgNameList || !imgNameList.length > 0) {
-        console.log("ERR: img Url ERROR");
-        return;
-      }
-      console.log(
-        "AWS S3에 이미지 업로드 완료 \nAWS S3 imgNameList: ",
-        imgNameList
-      ); // imgNameList 존재!
+      const addedBuildingImgList = getBuildingNameStrList(req);
 
       const parsedBodyData = JSON.parse(req.body?.bodyFormData);
       const { name, address, coord, tag, isours, cate } = parsedBodyData;
-      //{"name":"ewr","address":"wr","coord":"wer","tag":"","isours":"false","cate":"F&B"
 
       maria.query(
         `INSERT INTO Buildings (name, address, coord, tag, isours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
           isours === "true" ? 1 : 0
-        }, "${cate}", "${imgNameList.join(",")}");
+        }, "${cate}", "${addedBuildingImgList}");
         `,
         function (err, result) {
           if (!err) {
