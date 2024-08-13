@@ -89,7 +89,7 @@ router.post("/authorize", function (req, res) {
 // =================================================================================================
 
 const getBuildingNameStrList = (req) => {
-  if (req?.files === undefined) {
+  if (req.files === undefined) {
     console.log("Request에 이미지 없음 ! => req.files === undefined");
     console.log("AWS S3 이미지 업로드 PASS");
     return "";
@@ -132,6 +132,9 @@ router.post(
 
       const updatedImgList =
         initialBuildingImgList + getBuildingNameStrList(req);
+
+      console.log("initialBuildingImgList", initialBuildingImgList);
+      console.log("getBuildingNameStrList(req);", getBuildingNameStrList(req));
 
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
