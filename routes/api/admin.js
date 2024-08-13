@@ -118,7 +118,7 @@ router.post(
   uploadImgToS3.array("file", 20),
   async (req, res) => {
     try {
-      const parsedBodyData = JSON.parse(req.body?.bodyFormData);
+      const parsedBodyData = JSON.parse(req.body?.buildingFormData);
       const {
         _id,
         name,
@@ -175,7 +175,7 @@ router.post(
     try {
       const addedBuildingImgList = getBuildingNameStrList(req);
 
-      const parsedBodyData = JSON.parse(req.body?.bodyFormData);
+      const parsedBodyData = JSON.parse(req.body?.buildingFormData);
       const { name, address, coord, tag, isours, cate } = parsedBodyData;
 
       maria.query(
