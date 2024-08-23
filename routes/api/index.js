@@ -31,8 +31,6 @@ router.get("/carousel/infos", (req, res) => {
   });
 });
 
-// /carousel/building/main_page?type=main_banner|primary|secondary|recommend_banner
-// /carousel/building/map
 router.get("/carousel/building/:pageType", (req, res) => {
   /*
   #swagger.tags = ['Carousel']
