@@ -113,7 +113,49 @@ const getBuildingNameStrList = (req) => {
   return "";
 };
 
+// Buildings 관련 API (save, edit)
+// 건물 정보 추가
 router.post(
+  "/save/building",
+  uploadImgToS3.array("file", 20),
+  async (req, res) => {
+    try {
+      const addedBuildingImgList = getBuildingNameStrList(req);
+
+      const parsedBodyData = JSON.parse(req.body?.buildingFormData);
+      const { name, address, coord, tag, isours, cate } = parsedBodyData;
+
+      maria.query(
+        `INSERT INTO Buildings (name, address, coord, tag, isours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
+          isours === "true" ? 1 : 0
+        }, "${cate}", "${addedBuildingImgList}");
+        `,
+        function (err, result) {
+          if (!err) {
+            console.log(`Buildings DB에 건물 추가 성공!`);
+            res.status(200).send({ message: "건물 등록에 성공하였습니다." });
+          } else {
+            console.log("ERR : " + err);
+            res.status(500).json({
+              error: "Error",
+            });
+          }
+        }
+      );
+    } catch (e) {
+      console.log(e);
+      if (e === "LIMIT_UNEXPECTED_FILE") {
+        res.status(500).send("이미지 크기가 초과되었습니다.");
+        return;
+      } else {
+        res.status(500).send("SERVER ERROR");
+      }
+    }
+  }
+);
+
+// 건물 정보 수정
+router.put(
   "/edit/building",
   uploadImgToS3.array("file", 20),
   async (req, res) => {
@@ -171,45 +213,71 @@ router.post(
   }
 );
 
-router.post(
-  "/save/building",
-  uploadImgToS3.array("file", 20),
-  async (req, res) => {
-    try {
-      const addedBuildingImgList = getBuildingNameStrList(req);
+// Popup 관련 API (save, edit)
+// 팝업 데이터 추가
+router.post("/save/popup", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
 
-      const parsedBodyData = JSON.parse(req.body?.buildingFormData);
-      const { name, address, coord, tag, isours, cate } = parsedBodyData;
+  let name, date, type, keyword, buildingId;
+  try {
+    name = req.body.name;
+    date = req.body.date;
+    type = req.body.type;
+    keyword = req.body.keyword;
+    buildingId = req.body.buildingId;
+  } catch (e) {
+    console.log("ERR_PARAMS : " + e);
+    res.status(400).json({
+      error:
+        "ERR_PARAMS : 팝업 이름, 팝업 주소, 팝업 좌표, 팝업 종류, 키워드, 팝업 건물은 필수 입력 필드입니다.",
+    });
+  }
 
-      maria.query(
-        `INSERT INTO Buildings (name, address, coord, tag, isours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
-          isours === "true" ? 1 : 0
-        }, "${cate}", "${addedBuildingImgList}");
-        `,
-        function (err, result) {
-          if (!err) {
-            console.log(`Buildings DB에 건물 추가 성공!`);
-            res.status(200).send({ message: "건물 등록에 성공하였습니다." });
-          } else {
-            console.log("ERR : " + err);
-            res.status(500).json({
-              error: "Error",
-            });
-          }
-        }
-      );
-    } catch (e) {
-      console.log(e);
-      if (e === "LIMIT_UNEXPECTED_FILE") {
-        res.status(500).send("이미지 크기가 초과되었습니다.");
-        return;
+  console.log("추가할 팝업 정보");
+  console.log(
+    `name: ${name}, date: ${date}, type: ${type}, keyword: ${keyword}, buildingId: ${buildingId}`
+  );
+
+  maria.query(
+    `INSERT INTO Popups (name, date, type, keyword, buildingId) VALUES ("${name}", "${date}", "${type}", "${keyword}", "${buildingId}");
+
+    SET @recent_popup_buildingId = (
+        SELECT buildingId
+        FROM Popups
+        WHERE _id = LAST_INSERT_ID()
+    );
+
+    UPDATE Buildings
+    SET popups = (
+        SELECT JSON_ARRAYAGG(JSON_OBJECT('name', popup_val.name, 'date', popup_val.date, 'type', popup_val.type, 'keyword', popup_val.keyword))
+        FROM (
+            SELECT Popups.name, Popups.date, Popups.type, Popups.keyword
+            FROM Popups
+            WHERE Popups.buildingId = @recent_popup_buildingId
+            ) AS popup_val
+        )
+    WHERE Buildings._id = @recent_popup_buildingId;
+    `,
+    function (err) {
+      if (!err) {
+        console.log(`Popups DB에 팝업 정보 추가 성공!`);
+        res.status(200).send({ message: "팝업 정보 등록에 성공하였습니다." });
       } else {
-        res.status(500).send("SERVER ERROR");
+        console.log("ERR : " + err);
+        res.status(500).json({
+          error: "Error",
+        });
       }
     }
-  }
-);
+  );
+});
 
+// Carousel 관련 API (save, edit)
+// 캐러셀 데이터 추가
 router.put("/save/carousel", function (req, res) {
   /*
   #swagger.tags = ['Test']
@@ -273,88 +341,26 @@ router.put("/edit/carousel", function (req, res) {
     });
   }
 
-  maria.query(
-    `UPDATE CarouselContents SET contentId = ${contentId}, pageType="${pageType}", carouselType="${carouselType}", contentType="${contentType}" WHERE _id = ${id};
-    CALL update_Carousel_content_data(${id}, "Buildings", ${contentId});`,
-    function (err) {
-      if (!err) {
-        console.log(`캐러셀 컨텐츠 정보 수정 성공!`);
-        res
-          .status(200)
-          .send({ message: "캐러셀 컨텐츠 정보 수정 성공하였습니다." });
-      } else {
-        console.log("ERR : " + err);
-        res.status(500).json({
-          error: "Error",
-        });
-      }
+  const query = `UPDATE CarouselContents SET contentId = ${contentId}, pageType="${pageType}", carouselType="${carouselType}", contentType="${contentType}" WHERE _id = ${id};
+    CALL update_Carousel_content_data(${id}, "Buildings", ${contentId});`;
+
+  maria.query(query, function (err) {
+    if (!err) {
+      console.log(`캐러셀 컨텐츠 정보 수정 성공!`);
+      res
+        .status(200)
+        .send({ message: "캐러셀 컨텐츠 정보 수정 성공하였습니다." });
+    } else {
+      console.log("ERR : " + err);
+      res.status(500).json({
+        error: "Error",
+      });
     }
-  );
-});
-
-router.post("/save/popup", function (req, res) {
-  /*
-  #swagger.tags = ['Test']
-  #swagger.summary = 'POST Test Api'
-  #swagger.description = 'POST Test Api 입니다.'
-*/
-
-  let name, date, type, keyword, buildingId;
-  try {
-    name = req.body.name;
-    date = req.body.date;
-    type = req.body.type;
-    keyword = req.body.keyword;
-    buildingId = req.body.buildingId;
-  } catch (e) {
-    console.log("ERR_PARAMS : " + e);
-    res.status(400).json({
-      error:
-        "ERR_PARAMS : 팝업 이름, 팝업 주소, 팝업 좌표, 팝업 종류, 키워드, 팝업 건물은 필수 입력 필드입니다.",
-    });
-  }
-
-  console.log("추가할 팝업 정보");
-  console.log(
-    `name: ${name}, date: ${date}, type: ${type}, keyword: ${keyword}, buildingId: ${buildingId}`
-  );
-
-  maria.query(
-    `INSERT INTO Popups (name, date, type, keyword, buildingId) VALUES ("${name}", "${date}", "${type}", "${keyword}", "${buildingId}");
-
-    SET @recent_popup_buildingId = (
-        SELECT buildingId
-        FROM Popups
-        WHERE _id = LAST_INSERT_ID()
-    );
-
-    UPDATE Buildings
-    SET popups = (
-        SELECT JSON_ARRAYAGG(JSON_OBJECT('name', popup_val.name, 'date', popup_val.date, 'type', popup_val.type, 'keyword', popup_val.keyword))
-        FROM (
-            SELECT Popups.name, Popups.date, Popups.type, Popups.keyword
-            FROM Popups
-            WHERE Popups.buildingId = @recent_popup_buildingId
-            ) AS popup_val
-        )
-    WHERE Buildings._id = @recent_popup_buildingId;
-    `,
-    function (err) {
-      if (!err) {
-        console.log(`Popups DB에 팝업 정보 추가 성공!`);
-        res.status(200).send({ message: "팝업 정보 등록에 성공하였습니다." });
-      } else {
-        console.log("ERR : " + err);
-        res.status(500).json({
-          error: "Error",
-        });
-      }
-    }
-  );
+  });
 });
 
 // 정보 삭제
-router.put("/delete/:tableType", function (req, res) {
+router.post("/delete/:tableType", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
