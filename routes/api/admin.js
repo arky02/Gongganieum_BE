@@ -128,6 +128,7 @@ router.post(
         isours,
         cate,
         img: initialBuildingImgList,
+        popups,
       } = parsedBodyData;
 
       const updatedImgList =
@@ -139,14 +140,13 @@ router.post(
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
         ""
-      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}" where _id=${_id};`;
+      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups=${JSON.parse(
+        popups
+      )} where _id=${_id};`;
 
       console.log(queryString);
-      res
-        .status(200)
-        .send({ message: `ID: ${_id}의 건물 수정에 성공하였습니다.` });
 
-      maria.query(";", function (err, result) {
+      maria.query(queryString, function (err, result) {
         if (!err) {
           console.log(`ID: ${_id}의 건물 정보 수정 완료!`);
           res
@@ -210,7 +210,7 @@ router.post(
   }
 );
 
-router.put("/update/carousel", function (req, res) {
+router.put("/save/carousel", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
@@ -220,17 +220,17 @@ router.put("/update/carousel", function (req, res) {
   let pageType, carouselType, contentType, contentId;
 
   try {
-    pageType = req.body?.pageType ?? "";
+    pageType = req.body?.pageType;
     carouselType = req.body?.carouselType
       ? `"${req.body?.carouselType}"`
       : "null";
-    contentType = req.body?.contentType ?? "";
-    contentId = req.body?.contentId ?? "";
+    contentType = req.body?.contentType;
+    contentId = req.body?.contentId;
   } catch (e) {
     console.log("ERR_PARAMS : " + e);
     res.status(400).json({
       error:
-        "ERR_PARAMS : 팝업 이름, 팝업 주소, 팝업 좌표, 팝업 종류, 키워드, 팝업 건물은 필수 입력 필드입니다.",
+        "ERR_PARAMS : pageType, carouselType, contentType, contentId는 필수 입력 필드입니다.",
     });
   }
 
@@ -240,6 +240,48 @@ router.put("/update/carousel", function (req, res) {
       if (!err) {
         console.log(`CarouselContents DB에 캐러셀 정보 추가 성공!`);
         res.status(200).send({ message: "캐러셀 정보 등록에 성공하였습니다." });
+      } else {
+        console.log("ERR : " + err);
+        res.status(500).json({
+          error: "Error",
+        });
+      }
+    }
+  );
+});
+
+// 캐러셀 데이터 수정
+router.put("/edit/carousel", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  let id, contentId, pageType, carouselType, contentType;
+
+  try {
+    id = req.body.id;
+    contentId = req.body.contentId;
+    pageType = req.body.pageType;
+    carouselType = req.body.carouselType;
+    contentType = req.body.contentType;
+  } catch (e) {
+    console.log("ERR_PARAMS : " + e);
+    res.status(400).json({
+      error: "ERR_PARAMS : id, contentId는 필수 입력 쿼리입니다.",
+    });
+  }
+
+  maria.query(
+    `UPDATE CarouselContents SET contentId = ${contentId}, pageType="${pageType}", carouselType="${carouselType}", contentType="${contentType}" WHERE _id = ${id};
+    CALL update_Carousel_content_data(${id}, "Buildings", ${contentId});`,
+    function (err) {
+      if (!err) {
+        console.log(`캐러셀 컨텐츠 정보 수정 성공!`);
+        res
+          .status(200)
+          .send({ message: "캐러셀 컨텐츠 정보 수정 성공하였습니다." });
       } else {
         console.log("ERR : " + err);
         res.status(500).json({
@@ -309,6 +351,70 @@ router.post("/save/popup", function (req, res) {
       }
     }
   );
+});
+
+// 정보 삭제
+router.put("/delete/:tableType", function (req, res) {
+  /*
+  #swagger.tags = ['Test']
+  #swagger.summary = 'POST Test Api'
+  #swagger.description = 'POST Test Api 입니다.'
+*/
+
+  const tableType = req.params.tableType;
+  let id, tableName;
+
+  try {
+    id = req.query.id ?? null;
+
+    switch (tableType) {
+      case "carousel":
+        tableName = "CarouselContents";
+        break;
+      case "building":
+        tableName = "Buildings";
+        break;
+      case "user":
+        tableName = "Users";
+        break;
+      case "popup":
+        tableName = "Popups";
+        break;
+      case "contact":
+        tableName = "ContactMsg";
+        break;
+      case "magazine":
+        tableName = "Magazines";
+        break;
+      default:
+        console.log("tableType에 맞는 DB table 없음");
+        console.log("tableType: ", tableType);
+        tableName = "none";
+        throw new Error();
+    }
+  } catch (e) {
+    console.log("ERR_PARAMS : " + e);
+    res.status(400).json({
+      error:
+        tableName === "none"
+          ? `ERR_PARAMS: tableType에 맞는 DB table 없음, 입력 tableType: ${tableType}`
+          : "ERR_PARAMS : id는 필수 입력 쿼리입니다.",
+    });
+  }
+
+  maria.query(`DELETE FROM ${tableName} WHERE _id=${id};`, function (err) {
+    if (!err) {
+      console.log(`${tableName}테이블의 id ${id} 정보 삭제 성공`);
+      res
+        .status(200)
+        .send({ message: `${tableName}테이블의 id ${id} 정보 삭제 성공` });
+    } else {
+      console.log("ERR : " + err);
+      res.status(500).json({
+        error: "Error",
+      });
+    }
+  });
 });
 
 module.exports = router;
