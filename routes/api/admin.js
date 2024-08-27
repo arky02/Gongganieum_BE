@@ -359,7 +359,7 @@ router.put("/edit/carousel", function (req, res) {
 });
 
 // 정보 삭제
-router.post("/delete/:tableType", function (req, res) {
+router.delete("/delete/:tableType", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
