@@ -171,7 +171,6 @@ router.put(
         isours,
         cate,
         img: initialBuildingImgList,
-        popups = "[]",
       } = parsedBodyData;
 
       const updatedImgList =
@@ -180,38 +179,14 @@ router.put(
       console.log("initialBuildingImgList", initialBuildingImgList);
       console.log("updatedImgList;", updatedImgList);
 
-      // const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
-      //   " ",
-      //   ""
-      // )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups=JSON_ARRAY(${popupsArrayString}) where _id=${_id};`;
+      const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
+        " ",
+        ""
+      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}" where _id=${_id};`;
 
-      const queryString = `
-      UPDATE Buildings 
-      SET 
-        name = ?, 
-        address = ?, 
-        coord = REPLACE(?, ' ', ''), 
-        tag = ?, 
-        isours = ?, 
-        cate = ?, 
-        img = ?, 
-        popups = REPLACE(JSON_ARRAY(?), '\', '')
-      WHERE _id = ?;
-    `;
+      console.log(queryString);
 
-      const values = [
-        name,
-        address,
-        coord,
-        tag,
-        isours,
-        cate,
-        updatedImgList,
-        popups,
-        _id,
-      ];
-
-      maria.query(queryString, values, function (err, result) {
+      maria.query(queryString, function (err, result) {
         if (!err) {
           console.log(`ID: ${_id}의 건물 정보 수정 완료!`);
           res
@@ -301,7 +276,7 @@ router.post("/save/popup", function (req, res) {
 
 // Carousel 관련 API (save, edit)
 // 캐러셀 데이터 추가
-router.post("/save/carousel", function (req, res) {
+router.put("/save/carousel", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
@@ -326,8 +301,7 @@ router.post("/save/carousel", function (req, res) {
   }
 
   maria.query(
-    `INSERT INTO CarouselContents (pageType, carouselType, contentType, contentId) VALUES ("${pageType}", ${carouselType}, "${contentType}", ${contentId});
-    CALL update_Carousel_content_data(LAST_INSERT_ID(), "Buildings", ${contentId});`,
+    `INSERT INTO CarouselContents (pageType, carouselType, contentType, contentId) VALUES ("${pageType}", ${carouselType}, "${contentType}", ${contentId})`,
     function (err) {
       if (!err) {
         console.log(`CarouselContents DB에 캐러셀 정보 추가 성공!`);
