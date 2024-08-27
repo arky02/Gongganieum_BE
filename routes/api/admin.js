@@ -195,7 +195,7 @@ router.put(
         isours = ?, 
         cate = ?, 
         img = ?, 
-        popups = JSON_ARRAY(REPLACE(?, '\"', '"'))
+        popups = REPLACE(JSON_ARRAY(?), '\', '')
       WHERE _id = ?;
     `;
 
