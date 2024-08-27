@@ -18,17 +18,26 @@ router.get("/carousel/infos", (req, res) => {
   #swagger.description = "Response Datatype: CarouselContents[]"
 */
 
-  maria.query(`SELECT * FROM CarouselContents`, function (err, result) {
-    if (!err) {
-      console.log("All Carousel's info are sent");
-      res.send(result);
-    } else {
-      console.log("ERR : " + err);
-      res.status(404).json({
-        error: "Error",
-      });
+  const id = req.query?.id ?? null;
+
+  maria.query(
+    `SELECT * FROM CarouselContents  ${id ? `where _id=${id}` : ""}`,
+    function (err, result) {
+      if (!err) {
+        console.log(
+          id
+            ? `ID: ${id.toString()} Carousel's info are sent`
+            : "All Carousel's info are sent"
+        );
+        res.send(result);
+      } else {
+        console.log("ERR : " + err);
+        res.status(404).json({
+          error: "Error",
+        });
+      }
     }
-  });
+  );
 });
 
 router.get("/carousel/building/:pageType", (req, res) => {
