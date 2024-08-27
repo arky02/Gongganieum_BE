@@ -183,7 +183,7 @@ router.put(
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
         ""
-      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups=JSON_ARRAYAGG(JSON_PARSE(?)) where _id=${_id};`;
+      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups=JSON_ARRAY(JSON_PARSE(?)) where _id=${_id};`;
 
       console.log(queryString);
 
