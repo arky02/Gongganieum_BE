@@ -171,7 +171,7 @@ router.put(
         isours,
         cate,
         img: initialBuildingImgList,
-        popups = "",
+        popups = "[]",
       } = parsedBodyData;
 
       const updatedImgList =
