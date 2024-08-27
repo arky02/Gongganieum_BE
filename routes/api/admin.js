@@ -161,6 +161,7 @@ router.put(
   async (req, res) => {
     try {
       const parsedBodyData = JSON.parse(req.body?.buildingFormData);
+      console.log(parsedBodyData);
       const {
         _id,
         name,
@@ -182,9 +183,7 @@ router.put(
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
         ""
-      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups=${JSON.parse(
-        popups
-      )} where _id=${_id};`;
+      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups="${popups}" where _id=${_id};`;
 
       console.log(queryString);
 
