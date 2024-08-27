@@ -183,11 +183,11 @@ router.put(
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
         ""
-      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups="${popups}" where _id=${_id};`;
+      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups=JSON_ARRAYAGG(JSON_PARSE(?)) where _id=${_id};`;
 
       console.log(queryString);
 
-      maria.query(queryString, function (err, result) {
+      maria.query(queryString, [popups], function (err, result) {
         if (!err) {
           console.log(`ID: ${_id}의 건물 정보 수정 완료!`);
           res
