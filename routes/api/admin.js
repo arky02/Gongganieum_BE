@@ -171,6 +171,7 @@ router.put(
         isours,
         cate,
         img: initialBuildingImgList,
+        scanUrl = "",
       } = parsedBodyData;
 
       const updatedImgList =
@@ -182,7 +183,7 @@ router.put(
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
         ""
-      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}" where _id=${_id};`;
+      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", scanUrl="${scanUrl}"  where _id=${_id};`;
 
       console.log(queryString);
 
