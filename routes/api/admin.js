@@ -195,11 +195,10 @@ router.put(
         isours = ?, 
         cate = ?, 
         img = ?, 
-        popups = JSON_ARRAY(?)
+        popups = JSON_ARRAY(REPLACE(?, '\"', '"'))
       WHERE _id = ?;
     `;
 
-      console.log("popups", popups);
       const values = [
         name,
         address,
