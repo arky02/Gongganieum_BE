@@ -180,10 +180,24 @@ router.put(
       console.log("initialBuildingImgList", initialBuildingImgList);
       console.log("updatedImgList;", updatedImgList);
 
+      // JSON 문자열을 JavaScript 객체로 파싱
+      let parsedPopups;
+      try {
+        parsedPopups = JSON.parse(popups);
+      } catch (e) {
+        console.error("Invalid JSON string for popups:", popups);
+        parsedPopups = [];
+      }
+      console.log("parsedPopups", parsedPopups);
+      // JSON 배열을 SQL 쿼리에 전달할 수 있도록 문자열로 변환
+      const popupsArrayString = parsedPopups
+        .map((popup) => `'${popup}'`)
+        .join(",");
+      console.log("popupsArrayString", popupsArrayString);
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
         ""
-      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups=JSON_ARRAY(JSON_PARSE(?)) where _id=${_id};`;
+      )}", tag="${tag}", isours=${isours}, cate="${cate}", img="${updatedImgList}", popups=JSON_ARRAY(${popupsArrayString}) where _id=${_id};`;
 
       console.log(queryString);
 
