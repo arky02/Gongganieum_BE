@@ -199,6 +199,7 @@ router.put(
       WHERE _id = ?;
     `;
 
+      console.log("popups", popups);
       const values = [
         name,
         address,
