@@ -277,7 +277,7 @@ router.post("/save/popup", function (req, res) {
 
 // Carousel 관련 API (save, edit)
 // 캐러셀 데이터 추가
-router.put("/save/carousel", function (req, res) {
+router.post("/save/carousel", function (req, res) {
   /*
   #swagger.tags = ['Test']
   #swagger.summary = 'POST Test Api'
