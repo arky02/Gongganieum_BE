@@ -155,7 +155,7 @@ router.post(
 );
 
 // 건물 정보 수정
-router.put(
+router.post(
   "/edit/building",
   uploadImgToS3.array("file", 20),
   async (req, res) => {
