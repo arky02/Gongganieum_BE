@@ -23,7 +23,7 @@ const uploadImgToS3 = multer({
     s3: s3,
     bucket: "poppop-bucket",
     key: function (요청, file, cb) {
-      cb(null, `${Date.now()}_${file.originalname}`); //업로드시 파일명 변경가능
+      cb(null, `${file.originalname}`); //업로드시 파일명 변경가능
     },
   }),
 });
@@ -88,7 +88,7 @@ router.post("/authorize", function (req, res) {
 // Editor API : 에디터 관련 API
 // =================================================================================================
 
-const getBuildingNameStrList = (req) => {
+const getImgNameListToStr = (req) => {
   if (req.files === undefined) {
     console.log("Request에 이미지 없음 ! => req.files === undefined");
     console.log("AWS S3 이미지 업로드 PASS");
@@ -120,7 +120,7 @@ router.post(
   uploadImgToS3.array("file", 20),
   async (req, res) => {
     try {
-      const addedBuildingImgList = getBuildingNameStrList(req);
+      const buildingImgList = getImgNameListToStr(req);
 
       const parsedBodyData = JSON.parse(req.body?.buildingFormData);
       const { name, address, coord, tag, isours, cate } = parsedBodyData;
@@ -128,7 +128,7 @@ router.post(
       maria.query(
         `INSERT INTO Buildings (name, address, coord, tag, isours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
           isours === "true" ? 1 : 0
-        }, "${cate}", "${addedBuildingImgList}");
+        }, "${cate}", "${buildingImgList}");
         `,
         function (err, result) {
           if (!err) {
@@ -160,6 +160,9 @@ router.put(
   uploadImgToS3.array("file", 20),
   async (req, res) => {
     try {
+      const addedBuildingImgList = getImgNameListToStr(req);
+      console.log("addedBuildingImgList: ", addedBuildingImgList);
+
       const parsedBodyData = JSON.parse(req.body?.buildingFormData);
       console.log(parsedBodyData);
       const {
@@ -175,10 +178,10 @@ router.put(
       } = parsedBodyData;
 
       const updatedImgList =
-        initialBuildingImgList ?? "" + getBuildingNameStrList(req);
+        initialBuildingImgList ?? "" + addedBuildingImgList;
 
-      console.log("initialBuildingImgList", initialBuildingImgList);
-      console.log("updatedImgList;", updatedImgList);
+      console.log("initialBuildingImgList: ", initialBuildingImgList);
+      console.log("updatedImgList: ", updatedImgList);
 
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
