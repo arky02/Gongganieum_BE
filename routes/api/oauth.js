@@ -15,51 +15,51 @@ const {
 } = require("../../constants.js");
 const sendOAuthDataWithToken = require("../../utils/send_token");
 
-const saveOAuthGuestData = ({ name, email, img, res }) => {
+const saveOAuthGuestData = ({ name, email, img, phone, sex, age, res }) => {
   // ROLE: GUEST일 경우 유저데이터 첫 DB저장 처리
-  maria.query(
-    `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
-      img ? '"' + img + '"' : null
-    });
-      SELECT _id as user_id from Users WHERE email = "${email}";`,
-    function (err, result) {
-      if (!err) {
-        console.log("ROLE: GUEST -> 회원가입 진행");
-        console.log(
-          "User is registered! UserId: " +
-            String(result[1][0]["user_id"]) +
-            ", name: " +
-            name +
-            ", email: " +
-            email +
-            ", img: " +
-            img
-        );
-        userId = result[1][0]["user_id"]; // 새롭게 추가된 유저의 아이디 (int)
 
-        // ===== ROLE: GUEST SEND RESPONSE  =====
-        // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
-        sendOAuthDataWithToken({
-          userId,
-          name,
-          role: "GUEST",
-          res,
-        });
-      } else {
-        console.log("ERR (소셜로그인) : " + err);
-        console.log(
-          "Error Query: " +
-            `INSERT INTO Users(name, email, img) VALUES ("${name}","${email}",${
-              img ? '"' + img + '"' : null
-            });
-      SELECT _id as user_id from Users WHERE email = "${email}";`
-        );
-        res.status(409).json({
-          error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
-        });
-      }
+  const query = `INSERT INTO Users(name, email, img, phone, sex, age) VALUES ("${name}","${email}",${
+    img ? '"' + img + '"' : null
+  }, "${phone}", "${sex}", "${age}");
+      SELECT _id as user_id from Users WHERE email = "${email}";`;
+
+  maria.query(query, function (err, result) {
+    if (!err) {
+      console.log("ROLE: GUEST -> 회원가입 진행");
+      console.log(
+        "User is registered! UserId: " +
+          String(result[1][0]["user_id"]) +
+          ", name: " +
+          name +
+          ", email: " +
+          email +
+          ", img: " +
+          img +
+          ", phone: " +
+          phone +
+          ", sex: " +
+          sex +
+          ", age: " +
+          age
+      );
+      userId = result[1][0]["user_id"]; // 새롭게 추가된 유저의 아이디 (int)
+
+      // ===== ROLE: GUEST SEND RESPONSE  =====
+      // 5. Response로 JWT AccessToken(_id, email), Role 정보 보내기
+      sendOAuthDataWithToken({
+        userId,
+        name,
+        role: "GUEST",
+        res,
+      });
+    } else {
+      console.log("ERR (소셜로그인) : " + err);
+      console.log("Error Query: " + query);
+      res.status(409).json({
+        error: "body 형식이 틀리거나 데이터베이스에 문제가 발생했습니다.",
+      });
     }
-  );
+  });
 };
 
 router.get("/callback", async (req, res) => {
@@ -127,6 +127,12 @@ router.get("/callback", async (req, res) => {
   const email =
     oauthProvider === "naver" ? oauthUserInfoRes.email : name + "@naver.com";
   const img = oauthUserInfoRes.profile_image;
+  const phone =
+    oauthProvider === "naver" ? oauthUserInfoRes.email : "카카오 지원 X";
+  const sex =
+    oauthProvider === "naver" ? oauthUserInfoRes.email : "카카오 지원 X";
+  const age =
+    oauthProvider === "naver" ? oauthUserInfoRes.email : "카카오 지원 X";
 
   // 3. UserRole 체크, 회원가입 필요 여부 확인
   let userId = "";
@@ -144,7 +150,7 @@ router.get("/callback", async (req, res) => {
         console.log(`신규 유저! EMAIL ${email}, => 회원가입 진행`);
 
         // DB에 유저 정보 최초 저장 (게스트 회원가입)
-        saveOAuthGuestData({ name, email, img, res });
+        saveOAuthGuestData({ name, email, img, phone, sex, age, res });
       } else {
         // role 존재 O, 이미 회원이거나 게스트
         // == ROLE: USER OR GUEST ==
