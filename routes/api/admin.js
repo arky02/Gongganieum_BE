@@ -311,7 +311,8 @@ router.post("/save/carousel", function (req, res) {
   }
 
   maria.query(
-    `INSERT INTO CarouselContents (pageType, carouselType, contentType, contentId) VALUES ("${pageType}", ${carouselType}, "${contentType}", ${contentId})`,
+    `INSERT INTO CarouselContents (pageType, carouselType, contentType, contentId) VALUES ("${pageType}", ${carouselType}, "${contentType}", ${contentId});
+    CALL update_Carousel_content_data(LAST_INSERT_ID(), "Buildings", ${contentId});`,
     function (err) {
       if (!err) {
         console.log(`CarouselContents DB에 캐러셀 정보 추가 성공!`);
