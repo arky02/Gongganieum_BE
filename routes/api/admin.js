@@ -23,7 +23,8 @@ const uploadImgToS3 = multer({
     s3: s3,
     bucket: "poppop-bucket",
     key: function (요청, file, cb) {
-      cb(null, `${file.originalname}`); //업로드시 파일명 변경가능
+      // cb(null, `${Date.now()}_${file.originalname}`);
+      cb(null, `${Date.now()}`); //업로드시 파일명 변경가능
     },
   }),
 });
@@ -155,6 +156,7 @@ router.post(
 );
 
 // 건물 정보 수정
+// img s3에 업로드 하기 위해선 put 말고 post로 해야함
 router.post(
   "/edit/building",
   uploadImgToS3.array("file", 20),
