@@ -173,15 +173,18 @@ router.post(
         tag,
         isours,
         cate,
-        img: initialBuildingImgList,
+        img: initialBuildingImgList = "",
         scanUrl = "",
       } = parsedBodyData;
 
-      const updatedImgList =
-        initialBuildingImgList ?? "" + addedBuildingImgList;
-
       console.log("initialBuildingImgList: ", initialBuildingImgList);
-      console.log("updatedImgList: ", updatedImgList);
+
+      const updatedImgList =
+        initialBuildingImgList.toString() +
+        "," +
+        addedBuildingImgList.toString();
+
+      console.log("updatedImgList ", updatedImgList);
 
       const queryString = `UPDATE Buildings SET name = "${name}", address="${address}", coord="${coord.replaceAll(
         " ",
