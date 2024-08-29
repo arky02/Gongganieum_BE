@@ -564,7 +564,7 @@
       }
     },
     "/api/admin/edit/building": {
-      "put": {
+      "post": {
         "description": "",
         "responses": {
           "200": {
