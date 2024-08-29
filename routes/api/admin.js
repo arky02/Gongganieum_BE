@@ -179,10 +179,11 @@ router.post(
 
       console.log("initialBuildingImgList: ", initialBuildingImgList);
 
-      const updatedImgList =
-        initialBuildingImgList.toString() +
-        "," +
-        addedBuildingImgList.toString();
+      const updatedImgList = initialBuildingImgList
+        ? initialBuildingImgList.toString() +
+          "," +
+          addedBuildingImgList.toString()
+        : addedBuildingImgList.toString();
 
       console.log("updatedImgList ", updatedImgList);
 
