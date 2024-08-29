@@ -123,25 +123,23 @@ router.post(
       const buildingImgList = getImgNameListToStr(req);
 
       const parsedBodyData = JSON.parse(req.body?.buildingFormData);
-      const { name, address, coord, tag, isours, cate } = parsedBodyData;
+      const { name, address, coord, tag, isours, cate, scanUrl } =
+        parsedBodyData;
 
-      maria.query(
-        `INSERT INTO Buildings (name, address, coord, tag, isours, cate, img) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${
-          isours === "true" ? 1 : 0
-        }, "${cate}", "${buildingImgList}");
-        `,
-        function (err, result) {
-          if (!err) {
-            console.log(`Buildings DB에 건물 추가 성공!`);
-            res.status(200).send({ message: "건물 등록에 성공하였습니다." });
-          } else {
-            console.log("ERR : " + err);
-            res.status(500).json({
-              error: "Error",
-            });
-          }
+      const query = `INSERT INTO Buildings (name, address, coord, tag, isours, cate, img, scanUrl) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${isours}, "${cate}", "${buildingImgList}", "${scanUrl}");
+        `;
+
+      maria.query(query, function (err, result) {
+        if (!err) {
+          console.log(`Buildings DB에 건물 추가 성공!`);
+          res.status(200).send({ message: "건물 등록에 성공하였습니다." });
+        } else {
+          console.log("ERR : " + err);
+          res.status(500).json({
+            error: "Error",
+          });
         }
-      );
+      });
     } catch (e) {
       console.log(e);
       if (e === "LIMIT_UNEXPECTED_FILE") {
