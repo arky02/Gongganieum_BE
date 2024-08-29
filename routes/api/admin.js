@@ -129,6 +129,8 @@ router.post(
       const query = `INSERT INTO Buildings (name, address, coord, tag, isours, cate, img, scanUrl) VALUES ("${name}", "${address}", "${coord}", "${tag}", ${isours}, "${cate}", "${buildingImgList}", "${scanUrl}");
         `;
 
+      console.log(query);
+
       maria.query(query, function (err, result) {
         if (!err) {
           console.log(`Buildings DB에 건물 추가 성공!`);
