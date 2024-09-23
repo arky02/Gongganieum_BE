@@ -66,8 +66,8 @@ router.post("/authorize", function (req, res) {
       const correctPwd = result[0]?.pwd;
 
       console.log("검증 요청 관리자: ", user);
-      console.log("입력한 비밀번호: ", pwd);
-      console.log("비밀번호: ", correctPwd);
+      // console.log("입력한 비밀번호: ", pwd);
+      // console.log("비밀번호: ", correctPwd);
 
       // no error, check authorization
       if (correctPwd === pwd) {
