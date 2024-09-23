@@ -166,7 +166,7 @@ router.post(
       console.log("addedBuildingImgList: ", addedBuildingImgList);
 
       const parsedBodyData = JSON.parse(req.body?.buildingFormData);
-      console.log(parsedBodyData);
+      console.log("parsedBodyData", parsedBodyData);
       const {
         _id,
         name,
@@ -186,8 +186,13 @@ router.post(
       if (initialBuildingImgList)
         updatedImgList = initialBuildingImgList.toString();
 
-      if (addedBuildingImgList)
+      if (addedBuildingImgList) {
         updatedImgList += "," + addedBuildingImgList.toString();
+        console.log("true");
+      }
+
+      console.log("addedBuildingImgList", addedBuildingImgList);
+      console.log("addedBuildingImgList.length", addedBuildingImgList.length);
 
       console.log("updatedImgList ", updatedImgList);
 
